@@ -43,7 +43,7 @@ export function SubzeroProcessModal() {
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-8 mt-0 flex-shrink-0">
                 <Image 
-                  src={isDarkMode ? "/kortix-logo-white.svg" : "/kortix-logo.svg"} 
+                  src={isDarkMode ? "/subzero-logo-white.png" : "/subzero-logo.png"} 
                   alt="Subzero Logo" 
                   width={60} 
                   height={21} 
