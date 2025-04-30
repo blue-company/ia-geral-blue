@@ -180,6 +180,7 @@ export function Navbar() {
                   </Link>
                 )}
               </div>
+              <ThemeToggle />
               <button
                 className="md:hidden border border-border size-8 rounded-md cursor-pointer flex items-center justify-center"
                 onClick={toggleDrawer}
@@ -292,6 +293,7 @@ export function Navbar() {
                     </>
                   )}
                   <div className="flex justify-between">
+                  <ThemeToggle />
                   </div>
                 </div>
               </div>
