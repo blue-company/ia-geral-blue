@@ -69,6 +69,9 @@ export const siteConfig = {
   nav: {
     links: [
       { id: 1, name: "Início", href: "#hero" },
+      { id: 2, name: "Casos de Uso", href: "#use-cases" },
+      { id: 3, name: "Código Aberto", href: "#open-source" },
+      { id: 4, name: "Preços", href: "#pricing" },
     ],
   },
   hero: {
@@ -88,7 +91,7 @@ export const siteConfig = {
     ),
     badge: "100% CÓDIGO ABERTO",
     githubUrl: "https://github.com/subzero/subzero",
-    title: "Subzero, o Funcionário de IA.",
+    title: "Subzero, a IA multitarefa a seu serviço. ",
     description: "Subzero – é um Agente de IA generalista que age em seu nome.",
     inputPlaceholder: "Peça ao Subzero para...",
   },

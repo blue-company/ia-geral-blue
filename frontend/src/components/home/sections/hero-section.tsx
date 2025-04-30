@@ -212,7 +212,7 @@ export function HeroSection() {
   };
 
   return (
-    <section id="hero" className="w-full relative overflow-hidden">
+    <section id="hero" className="w-full relative overflow-hidden pb-16">
       <div className="relative flex flex-col items-center w-full px-6">
         {/* Left side flickering grid with gradient fades */}
         <div className="absolute left-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">

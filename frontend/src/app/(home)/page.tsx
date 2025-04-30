@@ -8,7 +8,6 @@ export default function Home() {
     <main className="flex flex-col items-center justify-center min-h-screen w-full">
       <div className="w-full divide-y divide-border">
         <HeroSection />
-        <div className="py-16"></div>
         <FooterSection />
       </div>
     </main>
