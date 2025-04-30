@@ -320,7 +320,7 @@ function PricingTier({
   );
   const isPlanLoading = isLoading[tierPriceId];
 
-  let buttonText = isAuthenticated ? "Select Plan" : "Hire Subzero";
+  let buttonText = isAuthenticated ? "Select Plan" : "Hire Agent0";
   let buttonDisabled = isPlanLoading;
   let buttonVariant: ButtonVariant = null;
   let ringClass = "";

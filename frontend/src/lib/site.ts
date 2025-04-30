@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: "Subzero",
-  url: "https://subzero.so/",
-  description: "Subzero",
+  name: "Agent0",
+  url: "https://Agent0.so/",
+  description: "Agent0",
   links: {
-    twitter: "https://x.com/subzero",
-    github: "https://github.com/subzero/",
-    linkedin: "https://www.linkedin.com/company/subzero/",
+    twitter: "https://x.com/Agent0",
+    github: "https://github.com/Agent0/",
+    linkedin: "https://www.linkedin.com/company/Agent0/",
   },
 };
 

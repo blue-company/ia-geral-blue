@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Briefcase, ExternalLink } from "lucide-react"
-import { SubzeroProcessModal } from "@/components/sidebar/kortix-enterprise-modal"
+import { Agent0ProcessModal } from "@/components/sidebar/kortix-enterprise-modal"
 
 export function CTACard() {
   return (
@@ -11,7 +11,7 @@ export function CTACard() {
         <span className="text-xs text-muted-foreground mt-0.5">Funcionários de IA para sua empresa</span>
       </div>
       <div className="flex flex-col space-y-2">
-        <SubzeroProcessModal />
+        <Agent0ProcessModal />
         {/* <Link href="https://cal.com/marko-kraemer/15min" target="_blank" rel="noopener noreferrer">
           <Button 
             variant="outline" 

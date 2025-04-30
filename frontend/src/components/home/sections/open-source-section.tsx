@@ -15,7 +15,7 @@ export function OpenSourceSection() {
             100% Código Aberto
           </h2>
           <p className="text-muted-foreground text-center text-balance font-medium">
-            Subzero é totalmente de código aberto. Junte-se à nossa comunidade e ajude a moldar o futuro da IA.
+            Agent0 é totalmente de código aberto. Junte-se à nossa comunidade e ajude a moldar o futuro da IA.
           </p>
         </SectionHeader>
 
@@ -24,14 +24,14 @@ export function OpenSourceSection() {
             <div className="flex flex-col gap-6">
               <div className="flex items-center gap-2 text-primary font-medium">
                 <Github className="h-5 w-5" />
-                <span>kortix-ai/subzero</span>
+                <span>kortix-ai/Agent0</span>
               </div>
               <div className="relative">
                 <h3 className="text-2xl font-semibold tracking-tight">
                   O Agente de IA Generalista
                 </h3>
                 <p className="text-muted-foreground mt-2">
-                  Explore, contribua ou faça um fork do nosso repositório. Subzero é construído com transparência e colaboração em seu núcleo.
+                  Explore, contribua ou faça um fork do nosso repositório. Agent0 é construído com transparência e colaboração em seu núcleo.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@ export function OpenSourceSection() {
                 </span>
               </div>
               <Link 
-                href="https://github.com/subzero-ai/subzero" 
+                href="https://github.com/Agent0-ai/Agent0" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="group inline-flex h-10 items-center justify-center gap-2 text-sm font-medium tracking-wide rounded-full text-primary-foreground dark:text-black px-6 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] bg-primary dark:bg-white hover:bg-primary/90 dark:hover:bg-white/90 transition-all duration-200 w-fit"

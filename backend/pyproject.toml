@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "subzero"
+name = "Agent0"
 version = "1.0"
 description = "open source generalist AI Agent"
 authors = ["marko-kraemer <mail@markokraemer.com>"]
 readme = "README.md"
 license = "MIT"
-homepage = "https://www.subzero.so/"
-repository = "https://github.com/kortix-ai/subzero"
+homepage = "https://www.Agent0.so/"
+repository = "https://github.com/kortix-ai/Agent0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

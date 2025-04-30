@@ -1,14 +1,14 @@
 <div align="center">
 
-# Subzero - Open Source Generalist AI Agent
+# Agent0 - Open Source Generalist AI Agent
 
 (that acts on your behalf)
 
-![Subzero Screenshot](frontend/public/banner.png)
+![Agent0 Screenshot](frontend/public/banner.png)
 
-Subzero is a fully open source AI assistant that helps you accomplish real-world tasks with ease. Through natural conversation, Subzero becomes your digital companion for research, data analysis, and everyday challenges—combining powerful capabilities with an intuitive interface that understands what you need and delivers results.
+Agent0 is a fully open source AI assistant that helps you accomplish real-world tasks with ease. Through natural conversation, Agent0 becomes your digital companion for research, data analysis, and everyday challenges—combining powerful capabilities with an intuitive interface that understands what you need and delivers results.
 
-Subzero's powerful toolkit includes seamless browser automation to navigate the web and extract data, file management for document creation and editing, web crawling and extended search capabilities, command-line execution for system tasks, website deployment, and integration with various APIs and services. These capabilities work together harmoniously, allowing Subzero to solve your complex problems and automate workflows through simple conversations!
+Agent0's powerful toolkit includes seamless browser automation to navigate the web and extract data, file management for document creation and editing, web crawling and extended search capabilities, command-line execution for system tasks, website deployment, and integration with various APIs and services. These capabilities work together harmoniously, allowing Agent0 to solve your complex problems and automate workflows through simple conversations!
 
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue)](./license)
 [![Discord Follow](https://dcbadge.limes.pink/api/server/Py6pCBUUPw?style=flat)](https://discord.gg/Py6pCBUUPw)
@@ -21,7 +21,7 @@ Subzero's powerful toolkit includes seamless browser automation to navigate the 
 
 ## Table of Contents
 
-- [Subzero Architecture](#project-architecture)
+- [Agent0 Architecture](#project-architecture)
   - [Backend API](#backend-api)
   - [Frontend](#frontend)
   - [Agent Docker](#agent-docker)
@@ -37,7 +37,7 @@ Subzero's powerful toolkit includes seamless browser automation to navigate the 
 
 ![Architecture Diagram](docs/images/diagram.png)
 
-Subzero consists of four main components:
+Agent0 consists of four main components:
 
 ### Backend API
 Python/FastAPI service that handles REST endpoints, thread management, and LLM integration with Anthropic, and others via LiteLLM.
@@ -79,7 +79,7 @@ Handles data persistence with authentication, user management, conversation hist
 
 ## Run Locally / Self-Hosting
 
-Subzero can be self-hosted on your own infrastructure. Follow these steps to set up your own instance.
+Agent0 can be self-hosted on your own infrastructure. Follow these steps to set up your own instance.
 
 ### Requirements
 
@@ -267,10 +267,10 @@ docker compose up
 The Docker Compose setup includes a Redis service that will be used by the backend automatically.
 
 
-7. **Access Subzero**:
+7. **Access Agent0**:
    - Open your browser and navigate to `http://localhost:3000`
    - Sign up for an account using the Supabase authentication
-   - Start using your self-hosted Subzero instance!
+   - Start using your self-hosted Agent0 instance!
 
 ## Acknowledgements
 
@@ -292,5 +292,5 @@ The Docker Compose setup includes a Redis service that will be used by the backe
 
 ## License
 
-Kortix Subzero is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+Kortix Agent0 is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
 

@@ -29,10 +29,10 @@ export function UseCasesSection() {
     >
       <SectionHeader>
         <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-center text-balance">
-          Veja o Subzero em ação
+          Veja o Agent0 em ação
         </h2>
         <p className="text-muted-foreground text-center text-balance font-medium">
-          Explore exemplos reais de como o Subzero completa tarefas complexas de forma autônoma
+          Explore exemplos reais de como o Agent0 completa tarefas complexas de forma autônoma
         </p>
       </SectionHeader>
 
@@ -63,8 +63,8 @@ export function UseCasesSection() {
                 <div className="w-full h-[160px] bg-accent/10">
                   <div className="relative w-full h-full overflow-hidden">
                     <img 
-                      src={useCase.image || `https://placehold.co/800x400/f5f5f5/666666?text=Subzero+${useCase.title.split(' ').join('+')}`}
-                      alt={`Subzero ${useCase.title}`}
+                      src={useCase.image || `https://placehold.co/800x400/f5f5f5/666666?text=Agent0+${useCase.title.split(' ').join('+')}`}
+                      alt={`Agent0 ${useCase.title}`}
                       className="w-full h-full object-cover"
                     />
                     <a

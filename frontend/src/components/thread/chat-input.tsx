@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
 // Local storage keys
-const STORAGE_KEY_MODEL = 'subzero-preferred-model';
+const STORAGE_KEY_MODEL = 'Agent0-preferred-model';
 const DEFAULT_MODEL_ID = "sonnet-3.7"; // Define default model ID
 
 interface ChatInputProps {
@@ -549,7 +549,7 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
         >
           <div className="text-xs text-muted-foreground flex items-center gap-2">
             <Loader2 className="h-3 w-3 animate-spin" />
-            <span>Subzero está trabalhando...</span>
+            <span>Agent0 está trabalhando...</span>
           </div>
         </motion.div>
       )}

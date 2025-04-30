@@ -262,7 +262,7 @@ export function HeroSection() {
         <div className="relative z-10 pt-32 max-w-3xl mx-auto h-full w-full flex flex-col gap-10 items-center justify-center">
           <div className="flex flex-col items-center justify-center gap-5">
             <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium tracking-tighter text-balance text-center">
-              <span className="text-secondary">Subzero</span><span className="text-primary">, a IA multitarefa a seu serviço.</span>
+              <span className="text-secondary">Agent0</span><span className="text-primary">, a IA multitarefa a seu serviço.</span>
             </h1>
             <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight">
               {hero.description}
@@ -322,7 +322,7 @@ export function HeroSection() {
               </button> */}
             </div>
             <DialogDescription className="text-muted-foreground">
-              Sign in or create an account to talk with Subzero
+              Sign in or create an account to talk with Agent0
             </DialogDescription>
           </DialogHeader>
           

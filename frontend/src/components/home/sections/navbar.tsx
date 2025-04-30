@@ -100,8 +100,8 @@ export function Navbar() {
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
   const handleOverlayClick = () => setIsDrawerOpen(false);
 
-  const logoSrc = !mounted ? "/subzero-logo.png" : 
-    (resolvedTheme === "dark" ? "/subzero-logo-white.png" : "/subzero-logo.png");
+  const logoSrc = !mounted ? "/Agent0-logo.png" : 
+    (resolvedTheme === "dark" ? "/Agent0-logo-white.png" : "/Agent0-logo.png");
 
   return (
     <header
@@ -127,7 +127,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center gap-3">
               <Image 
                 src={logoSrc} 
-                alt="Subzero Logo" 
+                alt="Agent0 Logo" 
                 width={140} 
                 height={22} 
                 priority
@@ -151,7 +151,7 @@ export function Navbar() {
                       href="/auth"
                       className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
                     >
-                      Contratar Subzero
+                      Contratar Agent0
                     </Link>
                   </div>
                 ) : null}
@@ -223,13 +223,13 @@ export function Navbar() {
                   <Link href="/" className="flex items-center gap-3">
                     <Image 
                       src={logoSrc} 
-                      alt="Subzero Logo" 
+                      alt="Agent0 Logo" 
                       width={120} 
                       height={22} 
                       priority
                       unoptimized
                     />
-                    <span className="font-medium text-primary text-sm">/ Subzero</span>
+                    <span className="font-medium text-primary text-sm">/ Agent0</span>
                   </Link>
                   <button
                     onClick={toggleDrawer}

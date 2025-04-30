@@ -162,7 +162,7 @@ function DashboardContent() {
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[560px] max-w-[90%]">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-medium text-foreground mb-2">Hey </h1>
-          <h2 className="text-2xl text-muted-foreground">O que você gostaria que o Subzero fizesse hoje?</h2>
+          <h2 className="text-2xl text-muted-foreground">O que você gostaria que o Agent0 fizesse hoje?</h2>
         </div>
         
         <ChatInput 

@@ -11,7 +11,7 @@ import Image from "next/image"
 import Cal, { getCalApi } from "@calcom/embed-react"
 import { useTheme } from "next-themes"
 
-export function SubzeroProcessModal() {
+export function Agent0ProcessModal() {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { resolvedTheme } = useTheme()
@@ -43,8 +43,8 @@ export function SubzeroProcessModal() {
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-8 mt-0 flex-shrink-0">
                 <Image 
-                  src={isDarkMode ? "/subzero-logo-white.png" : "/subzero-logo.png"} 
-                  alt="Subzero Logo" 
+                  src={isDarkMode ? "/Agent0-logo-white.png" : "/Agent0-logo.png"} 
+                  alt="Agent0 Logo" 
                   width={120} 
                   height={42} 
                   className="h-6 w-auto"
@@ -123,7 +123,7 @@ export function SubzeroProcessModal() {
             <div className="h-full overflow-auto">
               <Cal 
                 namespace="enterprise-demo"
-                calLink="team/subzero/enterprise-demo"
+                calLink="team/Agent0/enterprise-demo"
                 style={{width:"100%", height:"100%"}}
                 config={{
                   layout: "month_view",

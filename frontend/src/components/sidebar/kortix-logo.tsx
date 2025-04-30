@@ -4,7 +4,7 @@ import Image from "next/image"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
-export function SubzeroLogo() {
+export function Agent0Logo() {
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
   
@@ -16,8 +16,8 @@ export function SubzeroLogo() {
   return (
     <div className="flex h-6 w-6 items-center justify-center flex-shrink-0">
       <Image
-        src="/subzero-symbol.png"
-        alt="Subzero"
+        src="/Agent0-symbol.png"
+        alt="Agent0"
         width={24}
         height={24}
         className={`${mounted && theme === 'dark' ? 'invert' : ''}`}
