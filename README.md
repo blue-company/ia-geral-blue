@@ -1,14 +1,14 @@
 <div align="center">
 
-# Suna - Open Source Generalist AI Agent
+# Subzero - Open Source Generalist AI Agent
 
 (that acts on your behalf)
 
-![Suna Screenshot](frontend/public/banner.png)
+![Subzero Screenshot](frontend/public/banner.png)
 
-Suna is a fully open source AI assistant that helps you accomplish real-world tasks with ease. Through natural conversation, Suna becomes your digital companion for research, data analysis, and everyday challenges—combining powerful capabilities with an intuitive interface that understands what you need and delivers results.
+Subzero is a fully open source AI assistant that helps you accomplish real-world tasks with ease. Through natural conversation, Subzero becomes your digital companion for research, data analysis, and everyday challenges—combining powerful capabilities with an intuitive interface that understands what you need and delivers results.
 
-Suna's powerful toolkit includes seamless browser automation to navigate the web and extract data, file management for document creation and editing, web crawling and extended search capabilities, command-line execution for system tasks, website deployment, and integration with various APIs and services. These capabilities work together harmoniously, allowing Suna to solve your complex problems and automate workflows through simple conversations!
+Subzero's powerful toolkit includes seamless browser automation to navigate the web and extract data, file management for document creation and editing, web crawling and extended search capabilities, command-line execution for system tasks, website deployment, and integration with various APIs and services. These capabilities work together harmoniously, allowing Subzero to solve your complex problems and automate workflows through simple conversations!
 
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue)](./license)
 [![Discord Follow](https://dcbadge.limes.pink/api/server/Py6pCBUUPw?style=flat)](https://discord.gg/Py6pCBUUPw)
@@ -21,7 +21,7 @@ Suna's powerful toolkit includes seamless browser automation to navigate the web
 
 ## Table of Contents
 
-- [Suna Architecture](#project-architecture)
+- [Subzero Architecture](#project-architecture)
   - [Backend API](#backend-api)
   - [Frontend](#frontend)
   - [Agent Docker](#agent-docker)
@@ -37,7 +37,7 @@ Suna's powerful toolkit includes seamless browser automation to navigate the web
 
 ![Architecture Diagram](docs/images/diagram.png)
 
-Suna consists of four main components:
+Subzero consists of four main components:
 
 ### Backend API
 Python/FastAPI service that handles REST endpoints, thread management, and LLM integration with Anthropic, and others via LiteLLM.
@@ -79,7 +79,7 @@ Handles data persistence with authentication, user management, conversation hist
 
 ## Run Locally / Self-Hosting
 
-Suna can be self-hosted on your own infrastructure. Follow these steps to set up your own instance.
+Subzero can be self-hosted on your own infrastructure. Follow these steps to set up your own instance.
 
 ### Requirements
 
@@ -267,10 +267,10 @@ docker compose up
 The Docker Compose setup includes a Redis service that will be used by the backend automatically.
 
 
-7. **Access Suna**:
+7. **Access Subzero**:
    - Open your browser and navigate to `http://localhost:3000`
    - Sign up for an account using the Supabase authentication
-   - Start using your self-hosted Suna instance!
+   - Start using your self-hosted Subzero instance!
 
 ## Acknowledgements
 
@@ -292,5 +292,5 @@ The Docker Compose setup includes a Redis service that will be used by the backe
 
 ## License
 
-Kortix Suna is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
+Kortix Subzero is licensed under the Apache License, Version 2.0. See [LICENSE](./LICENSE) for the full license text.
 
