@@ -2,6 +2,8 @@
 
 import { siteConfig } from "@/lib/home";
 import { ArrowRight, Github, X, AlertCircle } from "lucide-react";
+import { FlickeringGrid } from "@/components/home/ui/flickering-grid";
+import { HeroVideoSection } from "@/components/home/sections/hero-video-section";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useState, useEffect, useRef, FormEvent } from "react";
