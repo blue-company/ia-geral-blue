@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
 // Local storage keys
-const STORAGE_KEY_MODEL = 'suna-preferred-model';
+const STORAGE_KEY_MODEL = 'subzero-preferred-model';
 const DEFAULT_MODEL_ID = "sonnet-3.7"; // Define default model ID
 
 interface ChatInputProps {

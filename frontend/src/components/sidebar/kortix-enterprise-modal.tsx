@@ -11,7 +11,7 @@ import Image from "next/image"
 import Cal, { getCalApi } from "@calcom/embed-react"
 import { useTheme } from "next-themes"
 
-export function KortixProcessModal() {
+export function SubzeroProcessModal() {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const { resolvedTheme } = useTheme()
@@ -32,7 +32,7 @@ export function KortixProcessModal() {
           size="sm" 
           className="w-full text-xs"
         >
-          Learn More
+          Saiba Mais
         </Button>
       </DialogTrigger>
       <DialogContent className="p-0 gap-0 border-none max-w-[70vw] rounded-xl overflow-hidden">
@@ -44,7 +44,7 @@ export function KortixProcessModal() {
               <div className="mb-8 mt-0 flex-shrink-0">
                 <Image 
                   src={isDarkMode ? "/kortix-logo-white.svg" : "/kortix-logo.svg"} 
-                  alt="Kortix Logo" 
+                  alt="Subzero Logo" 
                   width={60} 
                   height={21} 
                   className="h-6 w-auto"
@@ -52,66 +52,66 @@ export function KortixProcessModal() {
               </div>
               
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4 text-foreground flex-shrink-0">
-                Custom AI Employees for your Business
+                Funcionários de IA Personalizados para sua Empresa
               </h2>
               <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-lg flex-shrink-0">
-                Create custom AI employees for your business based on your human employees data.
+                Crie funcionários de IA personalizados para sua empresa com base nos dados dos seus funcionários humanos.
               </p>
               
               <div className="space-y-8 mb-auto flex-shrink-0">
                 <div className="transition-all duration-300 hover:translate-x-1 group">
                   <h3 className="text-base md:text-lg font-medium mb-3 flex items-center">
                     <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full inline-flex items-center justify-center mr-3 text-sm group-hover:shadow-md transition-all duration-300">1</span>
-                    <span>Record</span>
+                    <span>Gravação</span>
                   </h3>
                   <p className="text-base text-muted-foreground ml-10">
-                    We record what employees do to understand their workflows and tasks.
+                    Registramos o que os funcionários fazem para entender seus fluxos de trabalho e tarefas.
                   </p>
                 </div>
                 
                 <div className="transition-all duration-300 hover:translate-x-1 group">
                   <h3 className="text-base md:text-lg font-medium mb-3 flex items-center">
                     <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full inline-flex items-center justify-center mr-3 text-sm group-hover:shadow-md transition-all duration-300">2</span>
-                    <span>Train</span>
+                    <span>Treinamento</span>
                   </h3>
                   <p className="text-base text-muted-foreground ml-10">
-                    AI is trained on the captured data to learn the tasks and decision-making.
+                    A IA é treinada nos dados capturados para aprender as tarefas e tomadas de decisão.
                   </p>
                 </div>
                 
                 <div className="transition-all duration-300 hover:translate-x-1 group">
                   <h3 className="text-base md:text-lg font-medium mb-3 flex items-center">
                     <span className="bg-primary text-primary-foreground w-7 h-7 rounded-full inline-flex items-center justify-center mr-3 text-sm group-hover:shadow-md transition-all duration-300">3</span>
-                    <span>Automate</span>
+                    <span>Automação</span>
                   </h3>
                   <p className="text-base text-muted-foreground ml-10">
-                    AI agents automate tasks previously done by humans, with continuous learning and improvement.
+                    Os agentes de IA automatizam tarefas anteriormente realizadas por humanos, com aprendizado e melhoria contínuos.
                   </p>
                 </div>
               </div>
               
               <div className="border-t border-gray-200 dark:border-gray-800 pt-6 mt-6 flex-shrink-0">
-                <p className="text-base font-medium mb-3">Key Benefits</p>
+                <p className="text-base font-medium mb-3">Benefícios principais</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4">
                   <div className="flex items-center">
                     <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                    <p className="text-sm text-muted-foreground">Reduce operational costs</p>
+                    <p className="text-sm text-muted-foreground">Redução de custos operacionais</p>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                    <p className="text-sm text-muted-foreground">Increase workflow efficiency</p>
+                    <p className="text-sm text-muted-foreground">Aumento da eficiência do fluxo de trabalho</p>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                    <p className="text-sm text-muted-foreground">Improve task accuracy</p>
+                    <p className="text-sm text-muted-foreground">Melhoria na precisão das tarefas</p>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                    <p className="text-sm text-muted-foreground">Scale operations seamlessly</p>
+                    <p className="text-sm text-muted-foreground">Escalonamento de operações sem complicações</p>
                   </div>
                   <div className="flex items-center">
                     <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                    <p className="text-sm text-muted-foreground">24/7 productivity</p>
+                    <p className="text-sm text-muted-foreground">Produtividade 24/7</p>
                   </div>
                 </div>
               </div>
@@ -121,7 +121,7 @@ export function KortixProcessModal() {
             <div className="h-full overflow-auto">
               <Cal 
                 namespace="enterprise-demo"
-                calLink="team/kortix/enterprise-demo"
+                calLink="team/subzero/enterprise-demo"
                 style={{width:"100%", height:"100%"}}
                 config={{
                   layout: "month_view",

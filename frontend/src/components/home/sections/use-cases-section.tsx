@@ -29,10 +29,10 @@ export function UseCasesSection() {
     >
       <SectionHeader>
         <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-center text-balance">
-          See Subzero in action
+          Veja o Subzero em ação
         </h2>
         <p className="text-muted-foreground text-center text-balance font-medium">
-          Explore real-world examples of how Subzero completes complex tasks autonomously
+          Explore exemplos reais de como o Subzero completa tarefas complexas de forma autônoma
         </p>
       </SectionHeader>
 
@@ -74,7 +74,7 @@ export function UseCasesSection() {
                       className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end justify-start p-4 group"
                     >
                       <span className="flex items-center gap-2 text-sm text-white font-medium">
-                        Watch replay 
+                        Assistir replay 
                         <ArrowRight className="size-4 transform group-hover:translate-x-1 transition-transform" />
                       </span>
                     </a>
@@ -87,7 +87,7 @@ export function UseCasesSection() {
         
         {featuredUseCases.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <p className="text-muted-foreground">No use cases available yet.</p>
+            <p className="text-muted-foreground">Nenhum caso de uso disponível ainda.</p>
           </div>
         )}
       </div>

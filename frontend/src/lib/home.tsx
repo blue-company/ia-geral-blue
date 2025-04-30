@@ -49,29 +49,29 @@ export interface PricingTier {
 }
 
 export const siteConfig = {
-  name: "Kortix Subzero",
-  description: "The Generalist AI Agent that can act on your behalf.",
-  cta: "Hire Subzero",
+  name: "Subzero",
+  description: "O Agente de IA Generalista que pode agir em seu nome.",
+  cta: "Contratar Subzero",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   keywords: [
-    "AI Agent",
-    "Generalist AI",
-    "Open Source AI",
-    "Autonomous Agent",
+    "Agente de IA",
+    "IA Generalista",
+    "IA de Código Aberto",
+    "Agente Autônomo",
   ],
   links: {
-    email: "support@kortix.ai",
-    twitter: "https://x.com/kortixai",
-    discord: "https://discord.gg/kortixai",
-    github: "https://github.com/Kortix-ai/Subzero",
-    instagram: "https://instagram.com/kortixai",
+    email: "support@subzero.so",
+    twitter: "https://x.com/subzero",
+    discord: "https://discord.gg/subzero",
+    github: "https://github.com/subzero/subzero",
+    instagram: "https://instagram.com/subzero",
   },
   nav: {
     links: [
-      { id: 1, name: "Home", href: "#hero" },
-      { id: 2, name: "Use Cases", href: "#use-cases" },
-      { id: 3, name: "Open Source", href: "#open-source" },
-      { id: 4, name: "Pricing", href: "#pricing" },
+      { id: 1, name: "Início", href: "#hero" },
+      { id: 2, name: "Casos de Uso", href: "#use-cases" },
+      { id: 3, name: "Código Aberto", href: "#open-source" },
+      { id: 4, name: "Preços", href: "#pricing" },
     ],
   },
   hero: {
@@ -89,23 +89,23 @@ export const siteConfig = {
         <path d="M2.37845 10.5993L2.57045 10.4893L6.88445 12.9533C7.22435 13.1474 7.60901 13.2496 8.00045 13.2496C8.39189 13.2496 8.77656 13.1474 9.11645 12.9533L13.4305 10.4883L13.6225 10.5983C13.7374 10.6638 13.833 10.7586 13.8994 10.8731C13.9659 10.9875 14.0009 11.1175 14.0009 11.2498C14.0009 11.3821 13.9659 11.5121 13.8994 11.6265C13.833 11.7409 13.7374 11.8357 13.6225 11.9013L8.37245 14.9013C8.25915 14.966 8.13093 15 8.00045 15C7.86997 15 7.74175 14.966 7.62845 14.9013L2.37845 11.9013C2.2635 11.8357 2.16795 11.7409 2.10148 11.6265C2.03501 11.5121 2 11.3821 2 11.2498C2 11.1175 2.03501 10.9875 2.10148 10.8731C2.16795 10.7586 2.2635 10.6638 2.37845 10.5983V10.5993Z" stroke="currentColor" strokeWidth="1.25"/>
       </svg>
     ),
-    badge: "100% OPEN SOURCE",
-    githubUrl: "https://github.com/kortix-ai/subzero",
-    title: "Subzero, the AI Employee.",
-    description: "Subzero by Kortix – is a generalist AI Agent that acts on your behalf.",
-    inputPlaceholder: "Ask Subzero to...",
+    badge: "100% CÓDIGO ABERTO",
+    githubUrl: "https://github.com/subzero/subzero",
+    title: "Subzero, o Funcionário de IA.",
+    description: "Subzero – é um Agente de IA generalista que age em seu nome.",
+    inputPlaceholder: "Peça ao Subzero para...",
   },
   cloudPricingItems: [
     {
-      name: "Free",
+      name: "Grátis",
       price: "$0",
-      description: "Get started with",
-      buttonText: "Hire Subzero",
+      description: "Comece com",
+      buttonText: "Contratar Subzero",
       buttonColor: "bg-secondary text-white",
       isPopular: false,
       hours: "10 min",
       features: [
-        "Public Projects",
+        "Projetos Públicos",
       ],
       stripePriceId: config.SUBSCRIPTION_TIERS.FREE.priceId,
       upgradePlans: [],
@@ -113,37 +113,37 @@ export const siteConfig = {
     {
       name: "Pro",
       price: "$20",
-      description: "Everything in Free, plus:",
-      buttonText: "Hire Subzero",
+      description: "Tudo do Grátis, mais:",
+      buttonText: "Contratar Subzero",
       buttonColor: "bg-primary text-white dark:text-black",
       isPopular: true,
       hours: "2 hours",
       features: [
-        "2 hours",
-        "Private projects",
-        "Team functionality (coming soon)",
+        "2 horas",
+        "Projetos privados",
+        "Funcionalidade de equipe (em breve)",
       ],
       stripePriceId: config.SUBSCRIPTION_TIERS.TIER_2_20.priceId,
       upgradePlans: [],
     },
     {
-      name: "Custom",
+      name: "Personalizado",
       price: "$50",
-      description: "Everything in Pro, plus:",
-      buttonText: "Hire Subzero",
+      description: "Tudo do Pro, mais:",
+      buttonText: "Contratar Subzero",
       buttonColor: "bg-secondary text-white",
       isPopular: false,
-      hours: "6 hours",
+      hours: "6 horas",
       features: [
-        "Unlimited seats",
+        "Assentos ilimitados",
       ],
       upgradePlans: [
-        { hours: "6 hours", price: "$50", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_6_50.priceId },
-        { hours: "12 hours", price: "$100", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_12_100.priceId },
-        { hours: "25 hours", price: "$200", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_25_200.priceId },
-        { hours: "50 hours", price: "$400", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_50_400.priceId },
-        { hours: "125 hours", price: "$800", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_125_800.priceId },
-        { hours: "200 hours", price: "$1000", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_200_1000.priceId },
+        { hours: "6 horas", price: "$50", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_6_50.priceId },
+        { hours: "12 horas", price: "$100", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_12_100.priceId },
+        { hours: "25 horas", price: "$200", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_25_200.priceId },
+        { hours: "50 horas", price: "$400", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_50_400.priceId },
+        { hours: "125 horas", price: "$800", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_125_800.priceId },
+        { hours: "200 horas", price: "$1000", stripePriceId: config.SUBSCRIPTION_TIERS.TIER_200_1000.priceId },
       ],
       stripePriceId: config.SUBSCRIPTION_TIERS.TIER_6_50.priceId,
     },
@@ -152,7 +152,7 @@ export const siteConfig = {
     companyLogos: [
       {
         id: 1,
-        name: "Company 1",
+        name: "Empresa 1",
         logo: (
           <svg
             width="110"
@@ -174,7 +174,7 @@ export const siteConfig = {
       },
       {
         id: 2,
-        name: "Company 2",
+        name: "Empresa 2",
         logo: (
           <svg
             width="113"
@@ -350,15 +350,15 @@ export const siteConfig = {
     ],
   },
   featureSection: {
-    title: "How Kortix Subzero Works",
+    title: "How Subzero Works",
     description:
-      "Discover how Kortix Subzero transforms your commands into action in four easy steps",
+      "Discover how Subzero transforms your commands into action in four easy steps",
     items: [
       {
         id: 1,
         title: "Request an Action",
         content:
-          "Speak or type your command—let Kortix Subzero capture your intent. Your request instantly sets the process in motion.",
+          "Speak or type your command—let Subzero capture your intent. Your request instantly sets the process in motion.",
         image:
           "https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
@@ -389,9 +389,9 @@ export const siteConfig = {
     ],
   },
   bentoSection: {
-    title: "Empower Your Workflow with Kortix Subzero",
+    title: "Empower Your Workflow with Subzero",
     description:
-      "Let Kortix Subzero act on your behalf with advanced AI capabilities, seamless integrations, and autonomous task execution.",
+      "Let Subzero act on your behalf with advanced AI capabilities, seamless integrations, and autonomous task execution.",
     items: [
       {
         id: 1,
@@ -755,7 +755,7 @@ export const siteConfig = {
   },
   quoteSection: {
     quote:
-      "Kortix Subzero has transformed how we approach everyday tasks. The level of automation it provides, combined with its open source nature, makes it an invaluable tool for our entire organization.",
+      "Subzero has transformed how we approach everyday tasks. The level of automation it provides, combined with its open source nature, makes it an invaluable tool for our entire organization.",
     author: {
       name: "Alex Johnson",
       role: "CTO, Innovatech",
@@ -765,7 +765,7 @@ export const siteConfig = {
   pricing: {
     title: "Open Source & Free Forever",
     description:
-      "Kortix Subzero is 100% open source and free to use. No hidden fees, no premium features locked behind paywalls.",
+      "Subzero is 100% open source and free to use. No hidden fees, no premium features locked behind paywalls.",
     pricingItems: [
       {
         name: "Community",
@@ -1030,7 +1030,7 @@ export const siteConfig = {
   faqSection: {
     title: "Frequently Asked Questions",
     description:
-      "Answers to common questions about Kortix Subzero and its capabilities. If you have any other questions, please don't hesitate to contact us.",
+      "Answers to common questions about Subzero and its capabilities. If you have any other questions, please don't hesitate to contact us.",
     faQitems: [
       {
         id: 1,
@@ -1040,39 +1040,39 @@ export const siteConfig = {
       },
       {
         id: 2,
-        question: "How does Kortix Subzero work?",
+        question: "How does Subzero work?",
         answer:
-          "Kortix Subzero works by analyzing your requirements, leveraging advanced AI algorithms to understand context, and executing tasks based on your instructions. It can integrate with your workflow, learn from feedback, and continuously improve its performance.",
+          "Subzero works by analyzing your requirements, leveraging advanced AI algorithms to understand context, and executing tasks based on your instructions. It can integrate with your workflow, learn from feedback, and continuously improve its performance.",
       },
       {
         id: 3,
-        question: "Is Kortix Subzero really free?",
+        question: "Is Subzero really free?",
         answer:
-          "Yes, Kortix Subzero is completely free and open source. We believe in democratizing AI technology and making it accessible to everyone. You can use it, modify it, and contribute to its development without any cost.",
+          "Yes, Subzero is completely free and open source. We believe in democratizing AI technology and making it accessible to everyone. You can use it, modify it, and contribute to its development without any cost.",
       },
       {
         id: 4,
         question: "Can I integrate Subzero with my existing tools?",
         answer:
-          "Yes, Kortix Subzero is designed to be highly compatible with popular tools and platforms. We offer APIs and pre-built integrations for seamless connection with your existing workflow tools and systems.",
+          "Yes, Subzero is designed to be highly compatible with popular tools and platforms. We offer APIs and pre-built integrations for seamless connection with your existing workflow tools and systems.",
       },
       {
         id: 5,
-        question: "How can I contribute to Kortix Subzero?",
+        question: "How can I contribute to Subzero?",
         answer:
-          "You can contribute to Kortix Subzero by submitting pull requests on GitHub, reporting bugs, suggesting new features, or helping with documentation. Join our Discord community to connect with other contributors and Hire Subzero.",
+          "You can contribute to Subzero by submitting pull requests on GitHub, reporting bugs, suggesting new features, or helping with documentation. Join our Discord community to connect with other contributors and Hire Subzero.",
       },
       {
         id: 6,
-        question: "How does Kortix Subzero save me time?",
+        question: "How does Subzero save me time?",
         answer:
-          "Kortix Subzero automates repetitive tasks, streamlines workflows, and provides quick solutions to common challenges. This automation and efficiency can save hours of manual work, allowing you to focus on more strategic activities.",
+          "Subzero automates repetitive tasks, streamlines workflows, and provides quick solutions to common challenges. This automation and efficiency can save hours of manual work, allowing you to focus on more strategic activities.",
       },
     ],
   },
   ctaSection: {
     id: "cta",
-    title: "Start Using Kortix Subzero Today",
+    title: "Start Using Subzero Today",
     backgroundImage: "/holo.png",
     button: {
       text: "Hire Subzero today",
@@ -1082,19 +1082,19 @@ export const siteConfig = {
   },
   footerLinks: [
     {
-      title: "Kortix",
+      title: "Subzero",
       links: [
-        { id: 1, title: "About", url: "https://kortix.ai" },
-        { id: 3, title: "Contact", url: "mailto:hey@kortix.ai" },
-        { id: 4, title: "Careers", url: "https://kortix.ai/careers" },
+        { id: 1, title: "About", url: "https://subzero.so" },
+        { id: 3, title: "Contact", url: "mailto:hey@subzero.so" },
+        { id: 4, title: "Careers", url: "https://subzero.so/careers" },
       ],
     },
     {
       title: "Resources",
       links: [
-        { id: 5, title: "Documentation", url: "https://github.com/Kortix-ai/Subzero" },
+        { id: 5, title: "Documentation", url: "https://github.com/subzero/subzero" },
         { id: 7, title: "Discord", url: "https://discord.gg/Py6pCBUUPw" },
-        { id: 8, title: "GitHub", url: "https://github.com/Kortix-ai/Subzero" },
+        { id: 8, title: "GitHub", url: "https://github.com/subzero/subzero" },
       ],
     },
     {
@@ -1102,7 +1102,7 @@ export const siteConfig = {
       links: [
         { id: 9, title: "Privacy Policy", url: "https://subzero.so/legal?tab=privacy" },
         { id: 10, title: "Terms of Service", url: "https://subzero.so/legal?tab=terms" },
-        { id: 11, title: "License Apache 2.0", url: "https://github.com/Kortix-ai/Subzero/blob/main/LICENSE" },
+        { id: 11, title: "License Apache 2.0", url: "https://github.com/subzero/subzero/blob/main/LICENSE" },
       ],
     },
   ],

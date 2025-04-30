@@ -1,11 +1,11 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Shared Conversation',
-  description: 'View a shared AI conversation',
+  title: 'Conversa Compartilhada',
+  description: 'Visualize uma conversa de IA compartilhada',
   openGraph: {
-    title: 'Shared AI Conversation',
-    description: 'View a shared AI conversation from Kortix Suna',
+    title: 'Conversa de IA Compartilhada',
+    description: 'Visualize uma conversa de IA compartilhada do Subzero',
     images: ['/kortix-logo.png'],
   },
 };

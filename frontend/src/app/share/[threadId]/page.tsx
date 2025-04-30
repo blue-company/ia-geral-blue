@@ -1095,7 +1095,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
       
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
-        metaDescription.setAttribute('content', `${projectName} - Public AI conversation shared from Kortix Suna`);
+        metaDescription.setAttribute('content', `${projectName} - Public AI conversation shared from Kortix Subzero`);
       }
       
       const ogTitle = document.querySelector('meta[property="og:title"]');
@@ -1551,7 +1551,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                         <div key={group.key} ref={groupIndex === groupedMessages.length - 1 ? latestMessageRef : null}>
                           <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 w-5 h-5 mt-2 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                              <Image src="/kortix-symbol.svg" alt="Suna" width={14} height={14} className="object-contain"/>
+                              <Image src="/kortix-symbol.svg" alt="Subzero" width={14} height={14} className="object-contain"/>
                             </div>
                             <div className="flex-1">
                               <div className="inline-flex max-w-[90%] rounded-lg bg-muted/5 px-4 py-3 text-sm">
@@ -1660,7 +1660,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                   <div ref={latestMessageRef}>
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-5 h-5 mt-2 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                        <Image src="/kortix-symbol.svg" alt="Suna" width={14} height={14} className="object-contain"/>
+                        <Image src="/kortix-symbol.svg" alt="Subzero" width={14} height={14} className="object-contain"/>
                       </div>
                       <div className="flex-1 space-y-2">
                         <div className="inline-flex items-center gap-1.5 py-1.5 px-3 text-xs font-medium text-primary bg-primary/10 rounded-md border border-primary/20">
@@ -1679,7 +1679,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                   <div ref={latestMessageRef}>
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-5 h-5 mt-2 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                        <Image src="/kortix-symbol.svg" alt="Suna" width={14} height={14} className="object-contain"/>
+                        <Image src="/kortix-symbol.svg" alt="Subzero" width={14} height={14} className="object-contain"/>
                       </div>
                       <div className="flex-1 space-y-2">
                         <div className="max-w-[90%] px-4 py-3 text-sm">

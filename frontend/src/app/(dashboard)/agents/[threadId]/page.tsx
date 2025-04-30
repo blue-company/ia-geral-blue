@@ -977,18 +977,18 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
   useEffect(() => {
     if (projectName) {
       // Update document title when project name changes
-      document.title = `${projectName} | Kortix Suna`;
+      document.title = `${projectName} | Subzero`;
       
       // Update meta tags for SEO
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
-        metaDescription.setAttribute('content', `${projectName} - Interactive agent conversation powered by Kortix Suna`);
+        metaDescription.setAttribute('content', `${projectName} - Conversa interativa com agente desenvolvida pela Subzero`);
       }
       
       // Update OpenGraph tags if they exist
       const ogTitle = document.querySelector('meta[property="og:title"]');
       if (ogTitle) {
-        ogTitle.setAttribute('content', `${projectName} | Kortix Suna`);
+        ogTitle.setAttribute('content', `${projectName} | Kortix Subzero`);
       }
       
       const ogDescription = document.querySelector('meta[property="og:description"]');
@@ -1481,7 +1481,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                     <div ref={latestMessageRef}>
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                          <Image src="/kortix-symbol.svg" alt="Suna" width={14} height={14} className="object-contain"/>
+                          <Image src="/kortix-symbol.svg" alt="Subzero" width={14} height={14} className="object-contain"/>
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="max-w-[90%] px-4 py-3 text-sm">
@@ -1516,7 +1516,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
             value={newMessage}
             onChange={setNewMessage}
             onSubmit={handleSubmitMessage}
-            placeholder="Ask Suna anything..."
+            placeholder="Ask Subzero anything..."
             loading={isSending}
             disabled={isSending || agentStatus === 'running' || agentStatus === 'connecting'}
             isAgentRunning={agentStatus === 'running' || agentStatus === 'connecting'}

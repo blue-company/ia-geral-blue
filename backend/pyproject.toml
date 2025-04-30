@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "suna"
+name = "subzero"
 version = "1.0"
 description = "open source generalist AI Agent"
 authors = ["marko-kraemer <mail@markokraemer.com>"]
 readme = "README.md"
 license = "MIT"
-homepage = "https://www.suna.so/"
-repository = "https://github.com/kortix-ai/suna"
+homepage = "https://www.subzero.so/"
+repository = "https://github.com/kortix-ai/subzero"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
