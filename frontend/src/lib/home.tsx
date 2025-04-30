@@ -1028,89 +1028,89 @@ export const siteConfig = {
     },
   ],
   faqSection: {
-    title: "Frequently Asked Questions",
+    title: "Perguntas Frequentes",
     description:
-      "Answers to common questions about Subzero and its capabilities. If you have any other questions, please don't hesitate to contact us.",
+      "Respostas para perguntas comuns sobre o Subzero e suas capacidades. Se você tiver outras dúvidas, não hesite em entrar em contato conosco.",
     faQitems: [
       {
         id: 1,
-        question: "What is an AI Agent?",
+        question: "O que é um Agente de IA?",
         answer:
-          "An AI Agent is an intelligent software program that can perform tasks autonomously, learn from interactions, and make decisions to help achieve specific goals. It combines artificial intelligence and machine learning to provide personalized assistance and automation.",
+          "Um Agente de IA é um programa de software inteligente que pode realizar tarefas de forma autônoma, aprender com interações e tomar decisões para ajudar a alcançar objetivos específicos. Ele combina inteligência artificial e aprendizado de máquina para fornecer assistência personalizada e automação.",
       },
       {
         id: 2,
-        question: "How does Subzero work?",
+        question: "Como funciona o Subzero?",
         answer:
-          "Subzero works by analyzing your requirements, leveraging advanced AI algorithms to understand context, and executing tasks based on your instructions. It can integrate with your workflow, learn from feedback, and continuously improve its performance.",
+          "O Subzero funciona analisando seus requisitos, aproveitando algoritmos avançados de IA para entender o contexto e executando tarefas com base em suas instruções. Ele pode se integrar ao seu fluxo de trabalho, aprender com feedback e melhorar continuamente seu desempenho.",
       },
       {
         id: 3,
-        question: "Is Subzero really free?",
+        question: "O Subzero é realmente gratuito?",
         answer:
-          "Yes, Subzero is completely free and open source. We believe in democratizing AI technology and making it accessible to everyone. You can use it, modify it, and contribute to its development without any cost.",
+          "Sim, o Subzero é completamente gratuito e de código aberto. Acreditamos na democratização da tecnologia de IA e em torná-la acessível a todos. Você pode usá-lo, modificá-lo e contribuir para seu desenvolvimento sem nenhum custo.",
       },
       {
         id: 4,
-        question: "Can I integrate Subzero with my existing tools?",
+        question: "Posso integrar o Subzero com minhas ferramentas existentes?",
         answer:
-          "Yes, Subzero is designed to be highly compatible with popular tools and platforms. We offer APIs and pre-built integrations for seamless connection with your existing workflow tools and systems.",
+          "Sim, o Subzero foi projetado para ser altamente compatível com ferramentas e plataformas populares. Oferecemos APIs e integrações pré-construídas para conexão perfeita com suas ferramentas e sistemas de fluxo de trabalho existentes.",
       },
       {
         id: 5,
-        question: "How can I contribute to Subzero?",
+        question: "Como posso contribuir para o Subzero?",
         answer:
-          "You can contribute to Subzero by submitting pull requests on GitHub, reporting bugs, suggesting new features, or helping with documentation. Join our Discord community to connect with other contributors and Hire Subzero.",
+          "Você pode contribuir para o Subzero enviando pull requests no GitHub, relatando bugs, sugerindo novos recursos ou ajudando com a documentação. Junte-se à nossa comunidade no Discord para se conectar com outros colaboradores e contratar o Subzero.",
       },
       {
         id: 6,
-        question: "How does Subzero save me time?",
+        question: "Como o Subzero economiza meu tempo?",
         answer:
-          "Subzero automates repetitive tasks, streamlines workflows, and provides quick solutions to common challenges. This automation and efficiency can save hours of manual work, allowing you to focus on more strategic activities.",
+          "O Subzero automatiza tarefas repetitivas, otimiza fluxos de trabalho e fornece soluções rápidas para desafios comuns. Essa automação e eficiência podem economizar horas de trabalho manual, permitindo que você se concentre em atividades mais estratégicas.",
       },
     ],
   },
   ctaSection: {
     id: "cta",
-    title: "Start Using Subzero Today",
+    title: "Comece a usar o Subzero hoje",
     backgroundImage: "/holo.png",
-    button: {
-      text: "Hire Subzero today",
+    cta: {
+      text: "Contrate o Subzero hoje",
       href: "/auth",
     },
-    subtext: "The generalist AI Agent that acts on your behalf",
+    subtext: "O Agente de IA generalista que age em seu nome",
   },
   footerLinks: [
     {
       title: "Subzero",
       links: [
-        { id: 1, title: "About", url: "https://subzero.so" },
-        { id: 3, title: "Contact", url: "mailto:hey@subzero.so" },
-        { id: 4, title: "Careers", url: "https://subzero.so/careers" },
+        { id: 1, title: "Sobre", url: "https://subzero.so" },
+        { id: 3, title: "Contato", url: "mailto:hey@subzero.so" },
+        { id: 4, title: "Carreiras", url: "https://subzero.so/careers" },
       ],
     },
     {
-      title: "Resources",
+      title: "Recursos",
       links: [
-        { id: 5, title: "Documentation", url: "https://github.com/subzero/subzero" },
+        { id: 5, title: "Documentação", url: "https://github.com/subzero/subzero" },
         { id: 7, title: "Discord", url: "https://discord.gg/Py6pCBUUPw" },
         { id: 8, title: "GitHub", url: "https://github.com/subzero/subzero" },
       ],
     },
     {
-      title: "Legal",
+      title: "Jurídico",
       links: [
-        { id: 9, title: "Privacy Policy", url: "https://subzero.so/legal?tab=privacy" },
-        { id: 10, title: "Terms of Service", url: "https://subzero.so/legal?tab=terms" },
-        { id: 11, title: "License Apache 2.0", url: "https://github.com/subzero/subzero/blob/main/LICENSE" },
+        { id: 9, title: "Política de Privacidade", url: "https://subzero.so/legal?tab=privacy" },
+        { id: 10, title: "Termos de Serviço", url: "https://subzero.so/legal?tab=terms" },
+        { id: 11, title: "Licença Apache 2.0", url: "https://github.com/subzero/subzero/blob/main/LICENSE" },
       ],
     },
   ],
   useCases: [
     {
       id: "competitor-analysis",
-      title: "Competitor Analysis",
-      description: "Analyze the market for my next company in the healthcare industry, located in the UK. Give me the major players, their market size, strengths, and weaknesses, and add their website URLs. Once done, generate a PDF report.",
+      title: "Análise de Concorrentes",
+      description: "Analise o mercado para minha próxima empresa no setor de saúde, localizada no Reino Unido. Mostre os principais players, tamanho de mercado, pontos fortes e fracos, e adicione as URLs dos sites. Ao finalizar, gere um relatório em PDF.",
       category: "research",
       featured: true,
       icon: (
@@ -1125,8 +1125,8 @@ export const siteConfig = {
     },
     {
       id: "vc-list",
-      title: "VC List",
-      description: "Give me the list of the most important VC Funds in the United States based on Assets Under Management. Give me website URLs, and if possible an email to reach them out.",
+      title: "Lista de VCs",
+      description: "Forneça uma lista dos Fundos de Venture Capital mais importantes nos Estados Unidos com base em Ativos sob Gestão. Inclua URLs dos sites e, se possível, um email para contatá-los.",
       category: "finance",
       featured: true,
       icon: (
@@ -1140,8 +1140,8 @@ export const siteConfig = {
     },
     {
       id: "candidate-search",
-      title: "Looking for Candidates",
-      description: "Go on LinkedIn, and find me 10 profiles available - they are not working right now - for a junior software engineer position, who are located in Munich, Germany. They should have at least one bachelor's degree in Computer Science or anything related to it, and 1-year of experience in any field/role.",
+      title: "Procurando Candidatos",
+      description: "Procure no LinkedIn 10 perfis disponíveis - que não estão trabalhando no momento - para uma vaga de engenheiro de software júnior, localizados em Munique, Alemanha. Eles devem ter pelo menos um bacharelado em Ciência da Computação ou área relacionada, e 1 ano de experiência em qualquer campo/função.",
       category: "recruitment",
       featured: true,
       icon: (
@@ -1156,8 +1156,8 @@ export const siteConfig = {
     },
     {
       id: "company-trip",
-      title: "Planning Company Trip",
-      description: "Generate me a route plan for my company. We should go to California. We'll be in 8 people. Compose the trip from the departure (Paris, France) to the activities we can do considering that the trip will be 7 days long - departure on the 21st of Apr 2025.",
+      title: "Planejando Viagem Corporativa",
+      description: "Gere um plano de rota para minha empresa. Devemos ir para a Califórnia. Seremos 8 pessoas. Elabore a viagem desde a partida (Paris, França) até as atividades que podemos fazer, considerando que a viagem terá 7 dias de duração - partida em 21 de abril de 2025.",
       category: "travel",
       featured: true,
       icon: (
