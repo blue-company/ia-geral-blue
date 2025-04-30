@@ -1,6 +1,6 @@
 "use client";
 
-import { FlickeringGrid } from "@/components/home/ui/flickering-grid";
+
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { siteConfig } from "@/lib/home";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
@@ -91,26 +91,6 @@ export function FooterSection() {
           </div>
         </div>
       </div>
-      <Link 
-        href="https://www.youtube.com/watch?v=nuf5BF1jvjQ" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="block w-full h-48 md:h-64 relative mt-24 z-0 cursor-pointer"
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent to-background z-10 from-40%" />
-        <div className="absolute inset-0 mx-6">
-          <FlickeringGrid
-            text={tablet ? "Agentes Agentes Agentes" : "Agentes Agentes Agentes"}
-            fontSize={tablet ? 70 : 90}
-            className="h-full w-full"
-            squareSize={2}
-            gridGap={tablet ? 2 : 3}
-            color="#6B7280"
-            maxOpacity={0.3}
-            flickerChance={0.1}
-          />
-        </div>
-      </Link>
     </footer>
   );
 }

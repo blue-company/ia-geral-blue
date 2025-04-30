@@ -140,12 +140,20 @@ export function Navbar() {
             <div className="flex flex-row items-center gap-1 md:gap-3 shrink-0">
               <div className="flex items-center space-x-3">
                 {!user ? (
-                  <Link
-                    href="/auth"
-                    className="bg-blue-500 hover:bg-blue-600 text-white h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] transition-all ease-out active:scale-95 mr-2"
-                  >
-                    Login / Registrar
-                  </Link>
+                  <div className="flex space-x-2">
+                    <Link
+                      href="/auth"
+                      className="bg-blue-500 hover:bg-blue-600 text-white h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] transition-all ease-out active:scale-95"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/auth"
+                      className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
+                    >
+                      Contratar Subzero
+                    </Link>
+                  </div>
                 ) : null}
                 {/* <Link
                   href="https://github.com/kortix-ai/suna"
@@ -275,12 +283,20 @@ export function Navbar() {
                       Painel
                     </Link>
                   ) : (
-                    <Link
-                      href="/auth"
-                      className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
-                    >
-                      Contratar Subzero
-                    </Link>
+                    <>
+                      <Link
+                        href="/auth"
+                        className="bg-blue-500 hover:bg-blue-600 text-white h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] transition-all ease-out active:scale-95 mb-2"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/auth"
+                        className="bg-secondary h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] hover:bg-secondary/80 transition-all ease-out active:scale-95"
+                      >
+                        Contratar Subzero
+                      </Link>
+                    </>
                   )}
                   <div className="flex justify-between">
                     <ThemeToggle />
