@@ -25,10 +25,10 @@ export function CTASection() {
             </h1>
             <div className="absolute bottom-10 flex flex-col items-center justify-center gap-2">
               <Link
-                href={ctaSection.button.href}
+                href={"https://bluecompany.ai"}
                 className="bg-white text-black font-semibold text-sm h-10 w-fit px-4 rounded-full flex items-center justify-center shadow-md"
               >
-                {ctaSection.button.text}
+                {"https://bluecompany.ai"}
               </Link>
               <span className="text-white text-sm">{ctaSection.subtext}</span>
             </div>
