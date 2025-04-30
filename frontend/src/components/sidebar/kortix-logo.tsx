@@ -16,7 +16,7 @@ export function Agent0Logo() {
   return (
     <div className="flex h-6 w-6 items-center justify-center flex-shrink-0">
       <Image
-        src="/Agent0-symbol.png"
+        src="/agent0-symbol.png"
         alt="Agent0"
         width={24}
         height={24}

@@ -43,7 +43,7 @@ export function Agent0ProcessModal() {
             <div className="relative z-10 flex flex-col h-full">
               <div className="mb-8 mt-0 flex-shrink-0">
                 <Image 
-                  src={isDarkMode ? "/Agent0-logo-white.png" : "/Agent0-logo.png"} 
+                  src={isDarkMode ? "/agent0-logo-white.png" : "/agent0-logo.png"} 
                   alt="Agent0 Logo" 
                   width={120} 
                   height={42} 

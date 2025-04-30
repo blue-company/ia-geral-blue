@@ -100,8 +100,8 @@ export function Navbar() {
   const toggleDrawer = () => setIsDrawerOpen((prev) => !prev);
   const handleOverlayClick = () => setIsDrawerOpen(false);
 
-  const logoSrc = !mounted ? "/Agent0-logo.png" : 
-    (resolvedTheme === "dark" ? "/Agent0-logo-white.png" : "/Agent0-logo.png");
+  const logoSrc = !mounted ? "/agent0-logo.png" : 
+    (resolvedTheme === "dark" ? "/agent0-logo-white.png" : "/agent0-logo.png");
 
   return (
     <header
