@@ -45,9 +45,11 @@ export function SubzeroProcessModal() {
                 <Image 
                   src={isDarkMode ? "/subzero-logo-white.png" : "/subzero-logo.png"} 
                   alt="Subzero Logo" 
-                  width={60} 
-                  height={21} 
+                  width={120} 
+                  height={42} 
                   className="h-6 w-auto"
+                  priority
+                  unoptimized
                 />
               </div>
               

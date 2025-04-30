@@ -131,6 +131,7 @@ export function Navbar() {
                 width={140} 
                 height={22} 
                 priority
+                unoptimized
               />
             </Link>
 
@@ -218,6 +219,7 @@ export function Navbar() {
                       width={120} 
                       height={22} 
                       priority
+                      unoptimized
                     />
                     <span className="font-medium text-primary text-sm">/ Subzero</span>
                   </Link>

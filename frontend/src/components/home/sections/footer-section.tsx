@@ -33,6 +33,7 @@ export function FooterSection() {
               width={122} 
               height={22} 
               priority
+              unoptimized
             />
           </Link>
           <p className="tracking-tight text-muted-foreground font-medium">

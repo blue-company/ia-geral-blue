@@ -1660,7 +1660,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                   <div ref={latestMessageRef}>
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-5 h-5 mt-2 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                        <Image src="/subzero-symbol.png" alt="Subzero" width={14} height={14} className="object-contain"/>
+                        <Image src="/subzero-symbol.svg" alt="Subzero" width={14} height={14} className="object-contain"/>
                       </div>
                       <div className="flex-1 space-y-2">
                         <div className="inline-flex items-center gap-1.5 py-1.5 px-3 text-xs font-medium text-primary bg-primary/10 rounded-md border border-primary/20">
@@ -1679,7 +1679,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                   <div ref={latestMessageRef}>
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-5 h-5 mt-2 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                        <Image src="/subzero-symbol.png" alt="Subzero" width={14} height={14} className="object-contain"/>
+                        <Image src="/subzero-symbol.svg" alt="Subzero" width={14} height={14} className="object-contain"/>
                       </div>
                       <div className="flex-1 space-y-2">
                         <div className="max-w-[90%] px-4 py-3 text-sm">
