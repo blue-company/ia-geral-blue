@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import {
   ArrowDown, CheckCircle, CircleDashed, AlertTriangle, Info, File, ChevronRight
 } from 'lucide-react';
-import { addUserMessage, getMessages, startAgent, stopAgent, getAgentRuns, getProject, getThread, updateProject, Project, Message as BaseApiMessageType, BillingError, checkBillingStatus } from '@/lib/api';
+import { addUserMessage, getMessages, startAgent, stopAgent, getAgentRuns, getProject, getThread, updateProject, Project, Message as BaseApiMessageType, BillingError, checkBillingStatus, PromptLimitExceededError } from '@/lib/api';
+import { PromptLimitModal } from "@/components/prompt-limit-modal";
 import { toast } from 'sonner';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChatInput } from '@/components/thread/chat-input';
@@ -18,6 +19,8 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useAgentStream } from '@/hooks/useAgentStream';
 import { Markdown } from '@/components/ui/markdown';
 import { cn } from "@/lib/utils";
+import { useAccounts } from '@/hooks/use-accounts';
+import { createClient } from '@/lib/supabase/client';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BillingErrorAlert } from '@/components/billing/usage-limit-alert';
 import { isLocalMode } from "@/lib/config";
@@ -238,6 +241,35 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
   const [fileViewerOpen, setFileViewerOpen] = useState(false);
   const [projectName, setProjectName] = useState<string>('');
   const [fileToView, setFileToView] = useState<string | null>(null);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    // Obter o usuário atual
+    const getUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Erro ao obter usuário:', error);
+      }
+    };
+
+    getUser();
+
+    // Configurar listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const initialLoadCompleted = useRef<boolean>(false);
   const messagesLoadedRef = useRef(false);
@@ -633,6 +665,18 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
           return; // Stop further execution in this case
         }
         
+        // Verificar se é um erro de limite de prompts
+        if (error instanceof PromptLimitExceededError) {
+          console.log("Limite de prompts excedido:", error.message);
+          
+          // Mostrar o modal de limite de prompts
+          setShowLimitModal(true);
+          
+          // Remove the optimistic message since the agent couldn't start
+          setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
+          return; // Stop further execution in this case
+        }
+        
         // Handle other agent start errors
         throw new Error(`Failed to start agent: ${error?.message || error}`);
       }
@@ -644,8 +688,8 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
     } catch (err) {
       // Catch errors from addUserMessage or non-BillingError agent start errors
       console.error('Error sending message or starting agent:', err);
-      // Don't show billing alert here, only for specific BillingError
-      if (!(err instanceof BillingError)) {
+      // Don't show billing alert here, only for specific BillingError or PromptLimitExceededError
+      if (!(err instanceof BillingError) && !(err instanceof PromptLimitExceededError)) {
         toast.error(err instanceof Error ? err.message : 'Operation failed');
       }
       // Ensure optimistic message is removed on any error during submit
@@ -1481,7 +1525,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                     <div ref={latestMessageRef}>
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                          <Image src="/agent0-symbol.svg" alt="Agent0" width={14} height={14} className="object-contain"/>
+                          <Image src="/agent0-symbol.png" alt="Agent0" width={14} height={14} className="object-contain"/>
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="max-w-[90%] px-4 py-3 text-sm">
@@ -1552,6 +1596,14 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
           sandboxId={sandboxId}
           initialFilePath={fileToView}
           project={project || undefined}
+        />
+      )}
+
+      {user && (
+        <PromptLimitModal
+          isOpen={showLimitModal}
+          onClose={() => setShowLimitModal(false)}
+          userId={user.id}
         />
       )}
 

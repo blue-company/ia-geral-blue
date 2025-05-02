@@ -1,4 +1,8 @@
 import { createClient } from '@/lib/supabase/client';
+import { canMakePrompt, incrementPromptCount, PromptLimitExceededError } from './prompt-limiter';
+
+// Re-export PromptLimitExceededError para uso em outros componentes
+export { PromptLimitExceededError } from './prompt-limiter';
 
 // Get backend URL from environment variables
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
@@ -398,16 +402,36 @@ export const createThread = async (projectId: string): Promise<Thread> => {
     throw new Error('You must be logged in to create a thread');
   }
   
+  // First, get the account_id from the project
+  const { data: projectData, error: projectError } = await supabase
+    .from('projects')
+    .select('account_id')
+    .eq('project_id', projectId)
+    .single();
+  
+  if (projectError) {
+    console.error('Error fetching project:', projectError);
+    throw new Error(`Failed to get project information: ${projectError.message}`);
+  }
+  
+  if (!projectData?.account_id) {
+    throw new Error('Project has no associated account');
+  }
+  
+  // Now create the thread with the account_id from the project
   const { data, error } = await supabase
     .from('threads')
     .insert({
       project_id: projectId,
-      account_id: user.id, // Use the current user's ID as the account ID
+      account_id: projectData.account_id, // Use the project's account_id instead of user.id
     })
     .select()
     .single();
   
-  if (error) throw error;
+  if (error) {
+    console.error('Error creating thread:', error);
+    throw error;
+  }
   
   return data;
 };
@@ -480,6 +504,15 @@ export const startAgent = async (
     if (!API_URL) {
       throw new Error('Backend URL is not configured. Set NEXT_PUBLIC_BACKEND_URL in your environment.');
     }
+    
+    // Verificar se o usuário ainda pode fazer prompts hoje
+    const userId = session.user.id;
+    if (!canMakePrompt(userId)) {
+      throw new PromptLimitExceededError('Você atingiu o limite diário de prompts.');
+    }
+    
+    // Incrementar a contagem de prompts do usuário
+    incrementPromptCount(userId);
 
     console.log(`[API] Starting agent for thread ${threadId} using ${API_URL}/thread/${threadId}/agent/start`);
     
@@ -496,21 +529,39 @@ export const startAgent = async (
     });
     
     if (!response.ok) {
-      // Check for 402 Payment Required first
-      if (response.status === 402) {
+      // Check for 402 Payment Required or 426 Upgrade Required (prompt limit)
+      if (response.status === 402 || response.status === 426) {
         try {
           const errorData = await response.json();
-          console.error(`[API] Billing error starting agent (402):`, errorData);
+          console.error(`[API] Payment/Limit error starting agent (${response.status}):`, errorData);
+          
+          // Verificar se é um erro de limite de prompts
+          if (errorData.detail?.error === 'prompt_limit_exceeded' || errorData.error === 'prompt_limit_exceeded') {
+            const detail = errorData.detail || errorData;
+            console.log('[API] Prompt limit exceeded:', detail);
+            throw new PromptLimitExceededError(
+              detail.message || 'Você atingiu o limite diário de prompts.',
+              detail.current_count,
+              detail.max_allowed
+            );
+          }
+          
+          // Caso contrário, tratar como erro de pagamento normal
           // Ensure detail exists and has a message property
-          const detail = errorData?.detail || { message: 'Payment Required' };
+          const detail = errorData.detail || errorData || { message: 'Payment Required' };
           if (typeof detail.message !== 'string') {
             detail.message = 'Payment Required'; // Default message if missing
           }
           throw new BillingError(response.status, detail);
         } catch (parseError) {
+          // Se o erro for já um PromptLimitExceededError, apenas repassar
+          if (parseError instanceof PromptLimitExceededError) {
+            throw parseError;
+          }
+          
           // Handle cases where parsing fails or the structure isn't as expected
-          console.error('[API] Could not parse 402 error response body:', parseError);
-          throw new BillingError(response.status, { message: 'Payment Required' }, `Error starting agent: ${response.statusText} (402)`);
+          console.error(`[API] Could not parse ${response.status} error response body:`, parseError);
+          throw new BillingError(response.status, { message: 'Payment Required' }, `Error starting agent: ${response.statusText} (${response.status})`);
         }
       }
       

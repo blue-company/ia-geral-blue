@@ -5,7 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from 'next/navigation';
 import { Menu } from "lucide-react";
 import { ChatInput, ChatInputHandles } from '@/components/thread/chat-input';
-import { initiateAgent, createThread, addUserMessage, startAgent, createProject, BillingError } from "@/lib/api";
+import { initiateAgent, createThread, addUserMessage, startAgent, createProject, BillingError, PromptLimitExceededError } from "@/lib/api";
+import { PromptLimitModal } from "@/components/prompt-limit-modal";
 import { generateThreadName } from "@/lib/actions/threads";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -14,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useBillingError } from "@/hooks/useBillingError";
 import { BillingErrorAlert } from "@/components/billing/usage-limit-alert";
 import { useAccounts } from "@/hooks/use-accounts";
+import { createClient } from '@/lib/supabase/client';
 import { isLocalMode, config } from "@/lib/config";
 import { toast } from "sonner";
 
@@ -31,6 +33,36 @@ function DashboardContent() {
   const { data: accounts } = useAccounts();
   const personalAccount = accounts?.find(account => account.personal_account);
   const chatInputRef = useRef<ChatInputHandles>(null);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  
+  // Implementação inline do hook useAuth
+  useEffect(() => {
+    const supabase = createClient();
+    
+    // Obter o usuário atual
+    const getUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Erro ao obter usuário:', error);
+      }
+    };
+
+    getUser();
+
+    // Configurar listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleSubmit = async (message: string, options?: { model_name?: string; enable_thinking?: boolean; reasoning_effort?: string; stream?: boolean; enable_context_manager?: boolean }) => {
     if ((!message.trim() && !(chatInputRef.current?.getPendingFiles().length)) || isSubmitting) return;
@@ -100,6 +132,12 @@ function DashboardContent() {
              });
              setIsSubmitting(false);
              return; // Stop further processing for billing errors
+        } else if (error instanceof PromptLimitExceededError) {
+             // Tratar erro de limite de prompts excedido
+             console.log("Limite de prompts excedido:", error.message);
+             setShowLimitModal(true);
+             setIsSubmitting(false);
+             return; // Parar o processamento para erros de limite de prompts
         }
 
         // Handle other errors
@@ -185,6 +223,15 @@ function DashboardContent() {
         onDismiss={clearBillingError}
         isOpen={!!billingError}
       />
+      
+      {/* Prompt Limit Modal */}
+      {user && (
+        <PromptLimitModal
+          isOpen={showLimitModal}
+          onClose={() => setShowLimitModal(false)}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 }

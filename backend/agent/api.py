@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Body, File, UploadFile, Form
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import asyncio
 import json
 import traceback
@@ -20,6 +20,8 @@ from utils.logger import logger
 from services.billing import check_billing_status
 from sandbox.sandbox import create_sandbox, get_or_start_sandbox
 from services.llm import make_llm_api_call
+from utils.id_utils import normalize_uuid
+from utils.prompt_utils import check_prompt_limit
 
 # Initialize shared resources
 router = APIRouter()
@@ -357,8 +359,19 @@ async def start_agent(
 
     logger.info(f"Starting new agent for thread: {thread_id} with config: model={body.model_name}, thinking={body.enable_thinking}, effort={body.reasoning_effort}, stream={body.stream}, context_manager={body.enable_context_manager} (Instance: {instance_id})")
     client = await db.client
+    
+    # Garantir que o user_id está no formato UUID esperado pelo Supabase
+    try:
+        # Verificar se o user_id é um UUID válido
+        uuid_obj = uuid.UUID(user_id)
+        formatted_user_id = str(uuid_obj)  # Converter para string no formato padrão UUID
+        logger.debug(f"Validated user_id as UUID: {formatted_user_id}")
+    except ValueError:
+        # Se não for um UUID válido, usar o ID original e registrar um aviso
+        formatted_user_id = user_id
+        logger.warning(f"User ID is not in UUID format: {user_id}")
 
-    await verify_thread_access(client, thread_id, user_id)
+    await verify_thread_access(client, thread_id, formatted_user_id)
     thread_result = await client.table('threads').select('project_id', 'account_id').eq('thread_id', thread_id).execute()
     if not thread_result.data:
         raise HTTPException(status_code=404, detail="Thread not found")
@@ -366,50 +379,134 @@ async def start_agent(
     project_id = thread_data.get('project_id')
     account_id = thread_data.get('account_id')
 
+    # Verificar status de faturamento
     can_run, message, subscription = await check_billing_status(client, account_id)
     if not can_run:
         raise HTTPException(status_code=402, detail={"message": message, "subscription": subscription})
+        
+    # Verificar limite de prompts
+    can_make_prompt, prompt_message, current_count, max_allowed = await check_prompt_limit(client, formatted_user_id)
+    if not can_make_prompt:
+        logger.warning(f"Limite de prompts excedido para o usuário {formatted_user_id}: {current_count}/{max_allowed}")
+        # Usando código 402 (Payment Required) para limite de prompts excedido
+        # Este código é mais apropriado para indicar que o usuário precisa de um plano premium ou esperar até o próximo dia
+        raise HTTPException(
+            status_code=402, 
+            detail={
+                "error": "prompt_limit_exceeded",
+                "message": prompt_message,
+                "current_count": current_count,
+                "max_allowed": max_allowed
+            }
+        )
 
     active_run_id = await check_for_active_project_agent_run(client, project_id)
     if active_run_id:
         logger.info(f"Stopping existing agent run {active_run_id} for project {project_id}")
         await stop_agent_run(active_run_id)
 
+    # Variável para controlar se o prompt foi consumido
+    prompt_consumed = False
+    agent_run_id = None
+
     try:
+        # Tentar obter ou criar o sandbox
         sandbox, sandbox_id, sandbox_pass = await get_or_create_project_sandbox(client, project_id)
-    except Exception as e:
-        logger.error(f"Failed to get/create sandbox for project {project_id}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to initialize sandbox: {str(e)}")
+        
+        # Criar o agent run no banco de dados
+        agent_run = await client.table('agent_runs').insert({
+            "thread_id": thread_id, "status": "running",
+            "started_at": datetime.now(timezone.utc).isoformat()
+        }).execute()
+        agent_run_id = agent_run.data[0]['id']
+        logger.info(f"Created new agent run: {agent_run_id}")
 
-    agent_run = await client.table('agent_runs').insert({
-        "thread_id": thread_id, "status": "running",
-        "started_at": datetime.now(timezone.utc).isoformat()
-    }).execute()
-    agent_run_id = agent_run.data[0]['id']
-    logger.info(f"Created new agent run: {agent_run_id}")
+        # Incrementar o contador de prompts do usuário no Supabase
+        current_date = datetime.now(timezone.utc).date().isoformat()
+        
+        try:
+            # Verificar se já existe um registro para hoje
+            usage_result = await client.table('prompt_usage')\
+                .select('*')\
+                .eq('user_id', formatted_user_id)\
+                .eq('date', current_date)\
+                .execute()
+                
+            if not usage_result.data:
+                # Criar novo registro se não existir
+                logger.info(f"Criando novo registro de uso de prompts para o usuário {formatted_user_id}")
+                insert_result = await client.table('prompt_usage')\
+                    .insert({
+                        "user_id": formatted_user_id,
+                        "date": current_date,
+                        "count": 1
+                    })\
+                    .execute()
+                logger.info(f"Novo registro criado: {insert_result.data if hasattr(insert_result, 'data') else 'sem dados'}")
+            else:
+                # Atualizar registro existente
+                logger.info(f"Atualizando registro existente de uso de prompts para o usuário {formatted_user_id}")
+                update_result = await client.table('prompt_usage')\
+                    .update({"count": usage_result.data[0]['count'] + 1})\
+                    .eq('id', usage_result.data[0]['id'])\
+                    .execute()
+                logger.info(f"Registro atualizado: {update_result.data if hasattr(update_result, 'data') else 'sem dados'}")
+            
+            # Marcar que o prompt foi consumido
+            prompt_consumed = True
+        except Exception as e:
+            logger.error(f"Erro ao processar uso de prompts: {str(e)}")
+            # Não marcar o prompt como consumido em caso de erro
 
-    # Register this run in Redis with TTL using instance ID
-    instance_key = f"active_run:{instance_id}:{agent_run_id}"
-    try:
-        await redis.set(instance_key, "running", ex=redis.REDIS_KEY_TTL)
-    except Exception as e:
-        logger.warning(f"Failed to register agent run in Redis ({instance_key}): {str(e)}")
+        # Register this run in Redis with TTL using instance ID
+        instance_key = f"active_run:{instance_id}:{agent_run_id}"
+        try:
+            await redis.set(instance_key, "running", ex=redis.REDIS_KEY_TTL)
+        except Exception as e:
+            logger.warning(f"Failed to register agent run in Redis ({instance_key}): {str(e)}")
 
-    # Run the agent in the background
-    task = asyncio.create_task(
-        run_agent_background(
-            agent_run_id=agent_run_id, thread_id=thread_id, instance_id=instance_id,
-            project_id=project_id, sandbox=sandbox,
-            model_name=MODEL_NAME_ALIASES.get(body.model_name, body.model_name),
-            enable_thinking=body.enable_thinking, reasoning_effort=body.reasoning_effort,
-            stream=body.stream, enable_context_manager=body.enable_context_manager
+        # Run the agent in the background
+        task = asyncio.create_task(
+            run_agent_background(
+                agent_run_id=agent_run_id, thread_id=thread_id, instance_id=instance_id,
+                project_id=project_id, sandbox=sandbox,
+                model_name=MODEL_NAME_ALIASES.get(body.model_name, body.model_name),
+                enable_thinking=body.enable_thinking, reasoning_effort=body.reasoning_effort,
+                stream=body.stream, enable_context_manager=body.enable_context_manager
+            )
         )
-    )
+        
+        # Return the agent run ID
+        return {"agent_run_id": agent_run_id}
+    except Exception as e:
+        error_message = f"Failed to start agent: {str(e)}"
+        logger.error(error_message)
+        
+        # Se o agent_run_id foi criado, atualizar o status para falha
+        if agent_run_id:
+            await update_agent_run_status(client, agent_run_id, "failed", error=error_message)
+        
+        # Se o prompt foi consumido, reverter a contagem
+        if prompt_consumed:
+            try:
+                logger.info(f"Revertendo contagem de prompts para o usuário {formatted_user_id} devido a erro")
+                usage_result = await client.table('prompt_usage')\
+                    .select('*')\
+                    .eq('user_id', formatted_user_id)\
+                    .eq('date', current_date)\
+                    .execute()
+                
+                if usage_result.data and usage_result.data[0]['count'] > 0:
+                    await client.table('prompt_usage')\
+                        .update({"count": usage_result.data[0]['count'] - 1})\
+                        .eq('id', usage_result.data[0]['id'])\
+                        .execute()
+                    logger.info(f"Contagem de prompts revertida com sucesso")
+            except Exception as revert_error:
+                logger.error(f"Erro ao reverter contagem de prompts: {str(revert_error)}")
+        
+        raise HTTPException(status_code=500, detail=error_message)
 
-    # Set a callback to clean up Redis instance key when task is done
-    task.add_done_callback(lambda _: asyncio.create_task(_cleanup_redis_instance_key(agent_run_id)))
-
-    return {"agent_run_id": agent_run_id, "status": "running"}
 
 @router.post("/agent-run/{agent_run_id}/stop")
 async def stop_agent(agent_run_id: str, user_id: str = Depends(get_current_user_id_from_jwt)):
@@ -868,12 +965,30 @@ async def initiate_agent_with_files(
 
     logger.info(f"[\033[91mDEBUG\033[0m] Initiating new agent with prompt and {len(files)} files (Instance: {instance_id}), model: {model_name}, enable_thinking: {enable_thinking}")
     client = await db.client
-    account_id = user_id # In Basejump, personal account_id is the same as user_id
+    # Garantir que o user_id está no formato UUID esperado pelo Supabase
+    try:
+        # Verificar se o user_id é um UUID válido
+        uuid_obj = uuid.UUID(user_id)
+        account_id = str(uuid_obj)  # Converter para string no formato padrão UUID
+        logger.debug(f"Validated user_id as UUID: {account_id}")
+    except ValueError:
+        # Se não for um UUID válido, usar o ID original e registrar um aviso
+        account_id = user_id
+        logger.warning(f"User ID is not in UUID format: {user_id}")
+    
+    # In Basejump, personal account_id is the same as user_id
 
     can_run, message, subscription = await check_billing_status(client, account_id)
     if not can_run:
         raise HTTPException(status_code=402, detail={"message": message, "subscription": subscription})
 
+    # Variável para controlar se o prompt foi consumido
+    prompt_consumed = False
+    project_id = None
+    thread_id = None
+    agent_run_id = None
+    usage_result = None
+    
     try:
         # 1. Create Project
         placeholder_name = f"{prompt[:30]}..." if len(prompt) > 30 else prompt
@@ -898,6 +1013,43 @@ async def initiate_agent_with_files(
         # 3. Create Sandbox
         sandbox, sandbox_id, sandbox_pass = await get_or_create_project_sandbox(client, project_id)
         logger.info(f"Using sandbox {sandbox_id} for new project {project_id}")
+        
+        # Incrementar o contador de prompts do usuário no Supabase
+        current_date = datetime.now(timezone.utc).date().isoformat()
+        
+        try:
+            # Verificar se já existe um registro para hoje
+            usage_result = await client.table('prompt_usage')\
+                .select('*')\
+                .eq('user_id', formatted_user_id)\
+                .eq('date', current_date)\
+                .execute()
+                
+            if not usage_result.data:
+                # Criar novo registro se não existir
+                logger.info(f"Criando novo registro de uso de prompts para o usuário {formatted_user_id}")
+                insert_result = await client.table('prompt_usage')\
+                    .insert({
+                        "user_id": formatted_user_id,
+                        "date": current_date,
+                        "count": 1
+                    })\
+                    .execute()
+                logger.info(f"Novo registro criado: {insert_result.data if hasattr(insert_result, 'data') else 'sem dados'}")
+            else:
+                # Atualizar registro existente
+                logger.info(f"Atualizando registro existente de uso de prompts para o usuário {formatted_user_id}")
+                update_result = await client.table('prompt_usage')\
+                    .update({"count": usage_result.data[0]['count'] + 1})\
+                    .eq('id', usage_result.data[0]['id'])\
+                    .execute()
+                logger.info(f"Registro atualizado: {update_result.data if hasattr(update_result, 'data') else 'sem dados'}")
+            
+            # Marcar que o prompt foi consumido
+            prompt_consumed = True
+        except Exception as e:
+            logger.error(f"Erro ao processar uso de prompts: {str(e)}")
+            # Não marcar o prompt como consumido em caso de erro
 
         # 4. Upload Files to Sandbox (if any)
         message_content = prompt
@@ -996,6 +1148,42 @@ async def initiate_agent_with_files(
         return {"thread_id": thread_id, "agent_run_id": agent_run_id}
 
     except Exception as e:
+        # Se ocorrer um erro e o prompt já foi consumido, devemos reverter a contagem
+        if prompt_consumed:
+            try:
+                # Reverter o incremento do contador de prompts
+                if usage_result and usage_result.data:
+                    await client.table('prompt_usage')\
+                        .update({"count": usage_result.data[0]['count']})\
+                        .eq('id', usage_result.data[0]['id'])\
+                        .execute()
+                else:
+                    # Se foi um novo registro, excluí-lo
+                    await client.table('prompt_usage')\
+                        .delete()\
+                        .eq('user_id', user_id)\
+                        .eq('date', current_date)\
+                        .execute()
+                logger.info(f"Reverted prompt count for user {user_id} due to error")
+            except Exception as revert_error:
+                logger.error(f"Failed to revert prompt count: {revert_error}")
+        
+        # Se o agent_run foi criado, atualizá-lo para status de erro
+        if agent_run_id:
+            try:
+                await update_agent_run_status(client, agent_run_id, "failed", error=str(e))
+            except Exception as update_error:
+                logger.error(f"Failed to update agent run status: {update_error}")
+                
+        # Limpar recursos criados em caso de falha
+        try:
+            if thread_id and project_id:
+                # Tentar excluir o thread e o projeto se foram criados
+                await client.table('threads').delete().eq('thread_id', thread_id).execute()
+                await client.table('projects').delete().eq('project_id', project_id).execute()
+                logger.info(f"Cleaned up thread {thread_id} and project {project_id} after error")
+        except Exception as cleanup_error:
+            logger.error(f"Failed to clean up resources: {cleanup_error}")
+                
         logger.error(f"Error in agent initiation: {str(e)}\n{traceback.format_exc()}")
-        # TODO: Clean up created project/thread if initiation fails mid-way
         raise HTTPException(status_code=500, detail=f"Failed to initiate agent session: {str(e)}")
