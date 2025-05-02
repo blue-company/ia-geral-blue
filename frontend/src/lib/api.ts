@@ -406,7 +406,7 @@ export const createThread = async (projectId: string): Promise<Thread> => {
     // First, get the project to verify it exists and get its account_id
     const { data: projectData, error: projectError } = await supabase
       .from('projects')
-      .select('*')
+      .select('account_id')
       .eq('project_id', projectId)
       .single();
     
@@ -419,38 +419,12 @@ export const createThread = async (projectId: string): Promise<Thread> => {
       throw new Error(`Project not found: ${projectId}`);
     }
     
-    // For new users, we need to make sure they have a Basejump account
-    // First, check if the user has any accounts in Basejump
-    const { data: accounts } = await supabase.rpc('get_accounts');
-    
-    // If the user doesn't have any accounts, we need to create a personal account for them
-    if (!accounts || accounts.length === 0) {
-      console.log('User has no Basejump accounts, creating a personal account...');
-      try {
-        // Call the create_account RPC function to create a personal account
-        const { data: newAccount, error: accountError } = await supabase.rpc('create_account', {
-          account_name: `${user.email}'s Account`,
-          account_type: 'personal'
-        });
-        
-        if (accountError) {
-          console.error('Error creating account:', accountError);
-          throw new Error(`Failed to create account: ${accountError.message}`);
-        }
-        
-        console.log('Created new account:', newAccount);
-      } catch (accountError) {
-        console.error('Failed to create account:', accountError);
-        throw new Error(`Failed to create account: ${accountError}`);
-      }
-    }
-    
-    // Now create the thread with just the project_id
-    // The database should handle the account_id relationship through the project
+    // Create the thread with the same account_id as the project
     const { data, error } = await supabase
       .from('threads')
       .insert({
         project_id: projectId,
+        account_id: projectData.account_id // Use the project's account_id
       })
       .select()
       .single();
