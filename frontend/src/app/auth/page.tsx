@@ -394,8 +394,8 @@ function LoginContent() {
                   {isSignUp && (
                     <div className="space-y-2">
                       <Input
-                        id="confirm"
-                        name="confirm"
+                        id="confirmPassword"
+                        name="confirmPassword"
                         type="password"
                         placeholder="Confirme a senha"
                         className="h-12 rounded-full bg-background border-border"
