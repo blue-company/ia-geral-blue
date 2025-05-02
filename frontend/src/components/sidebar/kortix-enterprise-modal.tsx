@@ -45,8 +45,8 @@ export function Agent0ProcessModal() {
                 <Image 
                   src={isDarkMode ? "/agent0-logo-white.png" : "/agent0-logo.png"} 
                   alt="Agent0 Logo" 
-                  width={120} 
-                  height={42} 
+                  width={80} 
+                  height={80} 
                   className="h-6 w-auto"
                   priority
                   unoptimized

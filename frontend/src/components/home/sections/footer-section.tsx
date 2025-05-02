@@ -30,8 +30,8 @@ export function FooterSection() {
             <Image 
               src={logoSrc} 
               alt="Agent0 Logo" 
-              width={122} 
-              height={22} 
+              width={80} 
+              height={80} 
               priority
               unoptimized
             />
