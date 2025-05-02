@@ -245,242 +245,191 @@ function LoginContent() {
                   </p>
                   
                   <p className="text-lg font-medium mb-6">
-                    {registrationEmail || "seu endereço de e-mail"}
-                  </p>
-                  
-                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/50 rounded-lg p-6 mb-8 max-w-md w-full">
-                    <p className="text-sm text-green-800 dark:text-green-400 leading-relaxed">
-                      Clique no link no e-mail para ativar sua conta. Se você não vir o e-mail, verifique sua pasta de spam.
-                    </p>
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
-                    <Link
-                      href="/"
-                      className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
-                    >
-                      Voltar para a página inicial
-                    </Link>
-                    <button
-                      onClick={resetRegistrationSuccess}
-                      className="flex h-12 items-center justify-center w-full text-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
-                    >
-                      Voltar para o login
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </main>
-    );
-  }
 
+// Show loading spinner while checking auth state
+if (isLoading) {
+  return (
+    <main className="flex flex-col items-center justify-center min-h-screen w-full">
+      <Loader2 className="h-12 w-12 animate-spin text-primary" />
+    </main>
+  );
+}
+
+// Registration success view
+if (registrationSuccess) {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen w-full">
       <div className="w-full divide-y divide-border">
-        {/* Hero-like header with flickering grid */}
         <section className="w-full relative overflow-hidden">
           <div className="relative flex flex-col items-center w-full px-6">
-            {/* Left side flickering grid with gradient fades */}
+            {/* Background elements from the original view */}
             <div className="absolute left-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-              {/* Horizontal fade from left to right */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background z-10" />
-              
-              {/* Vertical fade from top */}
               <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-              
-              {/* Vertical fade to bottom */}
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-              
-              <div className="h-full w-full">
-                <FlickeringGrid
-                  className="h-full w-full"
-                  squareSize={mounted && tablet ? 2 : 2.5}
-                  gridGap={mounted && tablet ? 2 : 2.5}
-                  color="var(--secondary)"
-                  maxOpacity={0.4}
-                  flickerChance={isScrolling ? 0.01 : 0.03}
-                />
-              </div>
             </div>
             
-            {/* Right side flickering grid with gradient fades */}
             <div className="absolute right-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-              {/* Horizontal fade from right to left */}
               <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background z-10" />
-              
-              {/* Vertical fade from top */}
               <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-              
-              {/* Vertical fade to bottom */}
               <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-              
-              <div className="h-full w-full">
-                <FlickeringGrid
-                  className="h-full w-full"
-                  squareSize={mounted && tablet ? 2 : 2.5}
-                  gridGap={mounted && tablet ? 2 : 2.5}
-                  color="var(--secondary)"
-                  maxOpacity={0.4}
-                  flickerChance={isScrolling ? 0.01 : 0.03}
-                />
-              </div>
             </div>
             
-            {/* Center content background with rounded bottom */}
             <div className="absolute inset-x-1/4 top-0 h-[600px] md:h-[800px] -z-20 bg-background rounded-b-xl"></div>
             
-            {/* Header content */}
-            <div className="relative z-10 pt-24 pb-8 max-w-md mx-auto h-full w-full flex flex-col gap-2 items-center justify-center">
-              <Link 
-                href="/" 
-                className="group border border-border/50 bg-background hover:bg-accent/20 rounded-full text-sm h-8 px-3 flex items-center gap-2 transition-all duration-200 shadow-sm mb-6"
-              >
-                <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium text-muted-foreground text-xs tracking-wide">Voltar para a página inicial</span>
-              </Link>
-              
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance text-primary">
-                {isSignUp ? "Junte-se ao Agent0" : "Bem-vindo de volta"}
-              </h1>
-              <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight mt-2 mb-6">
-                {isSignUp ? "Crie sua conta e comece a construir com IA" : "Entre na sua conta para continuar"}
-              </p>
-            </div>
-            
-            {/* Form container */}
-            <div className="relative z-10 w-full max-w-md mx-auto pb-24">
-              <form className="space-y-6">
-                <div className="space-y-4">
-                  {/* OAuth providers */}
-                  <GoogleSignIn />
-                  
-                  {/* Divider */}
-                  <div className="relative flex items-center my-6">
-                    <div className="flex-grow border-t border-border"></div>
-                    <span className="px-2 bg-[#F3F4F6] dark:bg-[#F9FAFB]/[0.02] text-muted-foreground">
-                      ou continue com e-mail
-                    </span>
-                    <div className="flex-grow border-t border-border"></div>
-                  </div>
-                  
-                  {/* Email field */}
-                  <div className="space-y-2">
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Endereço de e-mail"
-                      className="h-12 rounded-full bg-background border-border"
-                      required
-                    />
-                  </div>
-                  
-                  {/* Password field */}
-                  <div className="space-y-2">
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="Senha"
-                      className="h-12 rounded-full bg-background border-border"
-                      required
-                    />
-                  </div>
-                  
-                  {/* Confirm password field (only for signup) */}
-                  {isSignUp && (
-                    <div className="space-y-2">
-                      <Input
-                        id="confirm"
-                        name="confirm"
-                        type="password"
-                        placeholder="Confirme a senha"
-                        className="h-12 rounded-full bg-background border-border"
-                        required
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Forgot password link (only for signin) */}
-                  {!isSignUp && (
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => setForgotPasswordOpen(true)}
-                        className="text-sm text-primary hover:underline"
-                      >
-                        Esqueceu a senha?
-                      </button>
-                    </div>
-                  )}
-                  
-                  {/* Action buttons */}
-                  <div className="flex flex-col gap-3 pt-2">
-                    {isSignUp ? (
-                      <>
-                        <SubmitButton
-                          formAction={handleSignUp}
-                          className="w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
-                          pendingText="Criando conta..."
-                        >
-                          Cadastrar
-                        </SubmitButton>
-                        
-                        <Link
-                          href={`/auth${returnUrl ? `?returnUrl=${returnUrl}` : ''}`}
-                          className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
-                        >
-                          Voltar para login
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <SubmitButton
-                          formAction={handleSignIn}
-                          className="w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
-                          pendingText="Entrando..."
-                        >
-                          Entrar
-                        </SubmitButton>
-                        
-                        <Link
-                          href={`/auth?mode=signup${returnUrl ? `&returnUrl=${returnUrl}` : ''}`}
-                          className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
-                        >
-                          Criar nova conta
-                        </Link>
-                      </>
-                    )}
-                  </div>
+            {/* Success content */}
+            <div className="relative z-10 pt-24 pb-8 max-w-xl mx-auto h-full w-full flex flex-col gap-2 items-center justify-center">
+              <div className="flex flex-col items-center text-center">
+                <div className="bg-green-50 dark:bg-green-950/20 rounded-full p-4 mb-6">
+                  <MailCheck className="h-12 w-12 text-green-500 dark:text-green-400" />
                 </div>
                 
-                {/* Sign in/up toggle */}
-                <div className="text-center text-sm text-muted-foreground">
-                  {isSignUp ? (
-                    <>
-                      Já tem uma conta?{" "}
-                      <Link
-                        href="/auth"
-                        className="text-primary hover:underline"
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance text-primary mb-4">
+                  Verifique seu e-mail
+                </h1>
+                
+                <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight max-w-md mb-2">
+                  Enviamos um link de confirmação para:
+                </p>
+                
+                <p className="text-lg font-medium mb-6">
+                  {registrationEmail || "seu endereço de e-mail"}
+                </p>
+                
+                <div className="bg-green-50 dark:bg-green-950/20 border border-green-100 dark:border-green-900/50 rounded-lg p-6 mb-8 max-w-md w-full">
+                  <p className="text-sm text-green-800 dark:text-green-400 leading-relaxed">
+                    Clique no link no e-mail para ativar sua conta. Se você não vir o e-mail, verifique sua pasta de spam.
+                  </p>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+                  <Link
+                    href="/"
+                    className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
+                  >
+                    Voltar para a página inicial
+                  </Link>
+                  <button
+                    onClick={resetRegistrationSuccess}
+                    className="flex h-12 items-center justify-center w-full text-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
+                  >
+                    Voltar para o login
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+return (
+  <main className="flex flex-col items-center justify-center min-h-screen w-full">
+    <div className="w-full divide-y divide-border">
+      {/* Hero-like header with flickering grid */}
+      <section className="w-full relative overflow-hidden">
+        <div className="relative flex flex-col items-center w-full px-6">
+          {/* Left side flickering grid with gradient fades */}
+          <div className="absolute left-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
+            {/* Horizontal fade from left to right */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background z-10" />
+            
+            {/* Vertical fade from top */}
+            <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
+            
+            {/* Vertical fade to bottom */}
+            <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
+            
+            <div className="h-full w-full">
+              <FlickeringGrid
+                className="h-full w-full"
+                squareSize={mounted && tablet ? 2 : 2.5}
+                gridGap={mounted && tablet ? 2 : 2.5}
+                color="var(--secondary)"
+                maxOpacity={0.4}
+                flickerChance={isScrolling ? 0.01 : 0.03}
+              />
+            </div>
+          </div>
+          
+          {/* Right side flickering grid with gradient fades */}
+          <div className="absolute right-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
+            {/* Horizontal fade from right to left */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background z-10" />
+            
+            {/* Vertical fade from top */}
+            <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
+            
+            {/* Vertical fade to bottom */}
+            <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
+            
+            <div className="h-full w-full">
+              <FlickeringGrid
+                className="h-full w-full"
+                squareSize={mounted && tablet ? 2 : 2.5}
+                gridGap={mounted && tablet ? 2 : 2.5}
+                color="var(--secondary)"
+                maxOpacity={0.4}
+                flickerChance={isScrolling ? 0.01 : 0.03}
+              />
+            </div>
+          </div>
+          
+          {/* Center content background with rounded bottom */}
+          <div className="absolute inset-x-1/4 top-0 h-[600px] md:h-[800px] -z-20 bg-background rounded-b-xl"></div>
+          
+          {/* Header content */}
+          <div className="relative z-10 pt-24 pb-8 max-w-md mx-auto h-full w-full flex flex-col gap-2 items-center justify-center">
+            <Link 
+              href="/" 
+              className="group border border-border/50 bg-background hover:bg-accent/20 rounded-full text-sm h-8 px-3 flex items-center gap-2 transition-all duration-200 shadow-sm mb-6"
+            >
+              <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium text-muted-foreground text-xs tracking-wide">Voltar para a página inicial</span>
+            </Link>
+            
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance text-primary">
+              {isSignUp ? "Crie sua conta" : "Faça login"}
+            </h1>
+              {isSignUp ? "Crie sua conta e comece a construir com IA" : "Entre na sua conta para continuar"}
+            </p>
+          </div>
+{{ ... }}
+                      <SubmitButton
+                        formAction={handleSignUp}
+                        className="w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
+                        pendingText="Criando conta..."
                       >
-                        Entrar
+                        Criar conta
+                      </SubmitButton>
+                      
+                      <Link
+                        href={`/auth${returnUrl ? `?returnUrl=${returnUrl}` : ''}`}
+                        className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
+                      >
+                        Voltar para entrar
                       </Link>
                     </>
                   ) : (
                     <>
-                      Não tem uma conta?{" "}
-                      <Link
-                        href="/auth?mode=signup"
-                        className="text-primary hover:underline"
+                      <SubmitButton
+                        formAction={handleSignIn}
+                        className="w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
+                        pendingText="Entrando..."
                       >
-                        Cadastre-se
+                        Entrar
+                      </SubmitButton>
+                      
+                      <Link
+                        href={`/auth?mode=signup${returnUrl ? `&returnUrl=${returnUrl}` : ''}`}
+                        className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
+                      >
+                        Criar conta
                       </Link>
                     </>
                   )}
-                </div>
               </form>
 
               <div className="mt-8 text-center text-xs text-muted-foreground">
@@ -551,7 +500,7 @@ function LoginContent() {
                 onClick={() => setForgotPasswordOpen(false)}
                 className="h-12 px-6 rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
               >
-                Cancelar
+                Cancelarar
               </button>
             </DialogFooter>
           </form>
