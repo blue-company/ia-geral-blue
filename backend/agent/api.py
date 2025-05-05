@@ -987,7 +987,7 @@ async def initiate_agent_with_files(
             # Criar uma conta automaticamente para o usuário
             try:
                 # Obter informações do usuário da tabela auth.users se disponível
-                user_info = await client.from_('users').select('email').eq('id', formatted_user_id).execute()
+                user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
                 email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
                 
                 # Criar slug baseado no nome
