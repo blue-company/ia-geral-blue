@@ -977,26 +977,56 @@ async def initiate_agent_with_files(
         logger.warning(f"User ID is not in UUID format: {user_id}")
     
     # In Basejump, personal account_id is the same as user_id
-    # Verificar se já existe uma conta para este usuário
+    # Verificar se existe uma conta associada a este usuário
     try:
+        # Verificar se já existe uma conta para este usuário
         account_check = await client.from_('basejump.accounts').select('*').eq('id', formatted_user_id).execute()
+        
         if not account_check.data or len(account_check.data) == 0:
             logger.warning(f"No account found for user {formatted_user_id} in basejump.accounts table. Creating one automatically.")
             
-            # Criar uma conta automaticamente para o usuário usando a função create_account_for_user
+            # Criar uma conta automaticamente para o usuário
             try:
-                # Chamar a função SQL que criamos para contornar os triggers
-                await client.rpc('create_account_for_user', { 'user_id': formatted_user_id }).execute()
+                # Obter informações do usuário da tabela auth.users se disponível
+                user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
+                email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
+                
+                # Criar nome baseado no email
+                user_name = email.split('@')[0]
+                
+                # Usar o cliente admin para contornar RLS
+                admin_client = client.supabase_admin_client if hasattr(client, 'supabase_admin_client') else client
+                
+                # Inserir nova conta na tabela accounts com os campos corretos
+                new_account = await admin_client.from_('basejump.accounts').insert({
+                    "id": formatted_user_id,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "name": user_name,  # Usar parte do email como nome
+                    "primary_owner_user_id": formatted_user_id,  # Campo obrigatório
+                    "personal_account": True,  # Usar True para corresponder ao padrão existente
+                    "slug": None,  # Usar None para corresponder ao padrão existente
+                    "private_metadata": {},  # Adicionar metadata vazio
+                    "public_metadata": {}   # Adicionar metadata vazio
+                }).execute()
+                
+                # Também criar entrada na tabela account_user para permissões
+                await admin_client.from_('basejump.account_user').insert({
+                    "account_id": formatted_user_id,
+                    "user_id": formatted_user_id,
+                    "account_role": "owner"
+                }).execute()
                 
                 logger.info(f"Created new account automatically for user {formatted_user_id}")
             except Exception as create_error:
                 logger.error(f"Failed to create account automatically: {str(create_error)}")
                 # Continuar mesmo com erro, tentando usar o ID do usuário como account_id
+        
+        account_id = formatted_user_id
     except Exception as e:
-        logger.error(f"Erro ao verificar/criar conta: {str(e)}")
-        # Continuar mesmo com erro
-    
-    account_id = formatted_user_id
+        logger.error(f"Error checking account existence: {str(e)}")
+        # Continuar com o ID do usuário como account_id mesmo com erro
+        account_id = formatted_user_id
 
     can_run, message, subscription = await check_billing_status(client, account_id)
     if not can_run:
