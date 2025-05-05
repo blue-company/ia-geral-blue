@@ -979,10 +979,9 @@ async def initiate_agent_with_files(
     # In Basejump, personal account_id is the same as user_id
     # Verificar se existe uma conta associada a este usuário
     try:
-        # Verificar se já existe uma conta para este usuário
-        account_check = await client.from_('basejump.accounts').select('*').eq('id', formatted_user_id).execute()
+        account_result = await client.from_('basejump.accounts').select('id').eq('id', formatted_user_id).execute()
         
-        if not account_check.data or len(account_check.data) == 0:
+        if not account_result.data or len(account_result.data) == 0:
             logger.warning(f"No account found for user {formatted_user_id} in basejump.accounts table. Creating one automatically.")
             
             # Criar uma conta automaticamente para o usuário
@@ -990,28 +989,23 @@ async def initiate_agent_with_files(
                 # Obter informações do usuário da tabela auth.users se disponível
                 user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
                 email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
+                user_name = email.split('@')[0]  # Usar parte do email como nome
                 
-                # Criar nome baseado no email
-                user_name = email.split('@')[0]
-                
-                # Usar o cliente admin para contornar RLS
-                admin_client = client.supabase_admin_client if hasattr(client, 'supabase_admin_client') else client
-                
-                # Inserir nova conta na tabela accounts com os campos corretos
-                new_account = await admin_client.from_('basejump.accounts').insert({
+                # Inserir nova conta na tabela basejump.accounts com todos os campos necessários
+                new_account = await client.from_('basejump.accounts').insert({
                     "id": formatted_user_id,
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "name": user_name,  # Usar parte do email como nome
+                    "name": user_name,
                     "primary_owner_user_id": formatted_user_id,  # Campo obrigatório
-                    "personal_account": True,  # Usar True para corresponder ao padrão existente
-                    "slug": None,  # Usar None para corresponder ao padrão existente
-                    "private_metadata": {},  # Adicionar metadata vazio
-                    "public_metadata": {}   # Adicionar metadata vazio
+                    "personal_account": True,  # Nome correto do campo
+                    "slug": None,  # Usar null para corresponder ao padrão existente
+                    "private_metadata": {},  # Campo obrigatório
+                    "public_metadata": {}   # Campo obrigatório
                 }).execute()
                 
                 # Também criar entrada na tabela account_user para permissões
-                await admin_client.from_('basejump.account_user').insert({
+                await client.from_('basejump.account_user').insert({
                     "account_id": formatted_user_id,
                     "user_id": formatted_user_id,
                     "account_role": "owner"
