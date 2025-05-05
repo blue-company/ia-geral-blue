@@ -983,36 +983,10 @@ async def initiate_agent_with_files(
         if not account_check.data or len(account_check.data) == 0:
             logger.warning(f"No account found for user {formatted_user_id} in basejump.accounts table. Creating one automatically.")
             
-            # Criar uma conta automaticamente para o usuário
+            # Criar uma conta automaticamente para o usuário usando a função create_account_for_user
             try:
-                # Obter informações do usuário da tabela auth.users se disponível
-                user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
-                email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
-                
-                # Criar slug baseado no nome
-                import re
-                user_name = email.split('@')[0]
-                account_slug = re.sub(r'[^a-zA-Z0-9]', '-', user_name.lower())
-                
-                # Inserir nova conta na tabela accounts com os campos corretos
-                new_account = await client.from_('basejump.accounts').insert({
-                    "id": formatted_user_id,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "name": user_name,  # Usar parte do email como nome
-                    "primary_owner_user_id": formatted_user_id,  # Campo obrigatório
-                    "personal_account": True,  # Usar True para corresponder ao padrão existente
-                    "slug": None,  # Usar None para corresponder ao padrão existente
-                    "private_metadata": {},  # Adicionar metadata vazio
-                    "public_metadata": {}   # Adicionar metadata vazio
-                }).execute()
-                
-                # Também criar entrada na tabela account_user para permissões
-                await client.from_('basejump.account_user').insert({
-                    "account_id": formatted_user_id,
-                    "user_id": formatted_user_id,
-                    "account_role": "owner"
-                }).execute()
+                # Chamar a função SQL que criamos para contornar os triggers
+                await client.rpc('create_account_for_user', { 'user_id': formatted_user_id }).execute()
                 
                 logger.info(f"Created new account automatically for user {formatted_user_id}")
             except Exception as create_error:
