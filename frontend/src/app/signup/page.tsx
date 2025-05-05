@@ -48,12 +48,12 @@ function SignupForm() {
     try {
       const supabase = createClient();
       
-      // Registrar o usuário
+      // Registrar o usuário sem confirmação por email
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          // Removido emailRedirectTo para evitar convite por email
+          emailRedirectTo: `${window.location.origin}/dashboard`,
           data: inviteCode ? {
             invite_code: inviteCode
           } : undefined
@@ -64,12 +64,28 @@ function SignupForm() {
         throw error;
       }
       
-      toast.success('Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.');
+      // Fazer login automaticamente após o cadastro
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
       
-      // Redirecionar para a página de login após alguns segundos
-      setTimeout(() => {
-        router.push('/login');
-      }, 3000);
+      if (signInError) {
+        console.error('Erro ao fazer login automático:', signInError);
+        toast.success('Cadastro realizado com sucesso! Faça login para continuar.');
+        
+        // Redirecionar para a página de login
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        toast.success('Cadastro realizado com sucesso! Redirecionando para o dashboard...');
+        
+        // Redirecionar para o dashboard
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1000);
+      }
       
     } catch (error: any) {
       console.error('Erro ao cadastrar:', error);

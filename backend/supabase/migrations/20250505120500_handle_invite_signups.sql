@@ -34,7 +34,7 @@ BEGIN
   END IF;
 END $$;
 
--- Modificar o trigger de criação de contas para também processar os convites
+-- Modificar o trigger de criação de contas para também processar os convites e confirmar usuários automaticamente
 CREATE OR REPLACE FUNCTION public.create_accounts_for_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -52,6 +52,18 @@ BEGIN
   ELSE
     user_name := 'User ' || substr(NEW.id::text, 1, 8);
   END IF;
+  
+  -- Confirmar o usuário automaticamente (sem necessidade de verificação por email)
+  BEGIN
+    -- Definir email_confirmed_at para o timestamp atual
+    UPDATE auth.users
+    SET email_confirmed_at = NOW()
+    WHERE id = NEW.id AND (email_confirmed_at IS NULL);
+    
+    RAISE NOTICE 'User % automatically confirmed', NEW.id;
+  EXCEPTION WHEN OTHERS THEN
+    RAISE NOTICE 'Error confirming user %: %', NEW.id, SQLERRM;
+  END;
   
   -- 1. Inserir na tabela public.accounts (necessária para a chave estrangeira)
   INSERT INTO public.accounts (id)
@@ -149,49 +161,59 @@ BEGIN
         SELECT ui.inviter_id INTO inviter_id
         FROM public.user_invites ui
         WHERE ui.invite_code::TEXT = invite_code::TEXT
-        AND (ui.used = FALSE OR ui.used IS NULL)
         LIMIT 1;
         
         IF inviter_id IS NOT NULL THEN
-          -- Marcar o convite como utilizado
+          -- Marcar o convite como utilizado (mesmo que já tenha sido usado antes)
           UPDATE public.user_invites ui
           SET 
             used = TRUE,
-            used_at = NOW(),
-            used_by = NEW.id,
+            used_at = COALESCE(ui.used_at, NOW()),
+            used_by = COALESCE(ui.used_by, NEW.id),
             updated_at = NOW()
           WHERE ui.invite_code::TEXT = invite_code::TEXT
-          AND (ui.used = FALSE OR ui.used IS NULL);
+          AND inviter_id IS NOT NULL;
           
           -- Incrementar o contador de convites utilizados para o usuário que convidou
           UPDATE public.user_invites ui
           SET used_count = COALESCE(ui.used_count, 0) + 1
-          WHERE ui.inviter_id = inviter_id;
+          WHERE ui.inviter_id = inviter_id
+          AND ui.invite_code::TEXT = invite_code::TEXT;
           
           -- Adicionar um prompt extra ao limite diário do usuário que criou o convite
-          -- Primeiro, verificar se já existe um registro para hoje
+          -- Garantir que o usuário receba o bônus para todas as datas futuras
           DECLARE
             current_date_str TEXT;
             inviter_usage_record RECORD;
+            bonus_prompts INTEGER;
           BEGIN
             current_date_str := CURRENT_DATE::TEXT;
             
+            -- Calcular o número total de convites utilizados para este usuário
+            SELECT COUNT(*) INTO bonus_prompts
+            FROM public.user_invites
+            WHERE inviter_id = inviter_id
+            AND used = TRUE;
+            
+            -- Garantir que o bonus_count seja pelo menos igual ao número de convites utilizados
             SELECT * INTO inviter_usage_record
             FROM public.prompt_usage
             WHERE user_id = inviter_id
             AND date = CURRENT_DATE;
             
             IF inviter_usage_record IS NULL THEN
-              -- Criar novo registro com bonus_count = 1
+              -- Criar novo registro com bonus_count igual ao número de convites utilizados
               INSERT INTO public.prompt_usage (user_id, date, count, bonus_count)
-              VALUES (inviter_id, CURRENT_DATE, 0, 1);
+              VALUES (inviter_id, CURRENT_DATE, 0, GREATEST(1, bonus_prompts));
             ELSE
-              -- Incrementar o bonus_count no registro existente
+              -- Atualizar o bonus_count no registro existente para ser pelo menos igual ao número de convites utilizados
               UPDATE public.prompt_usage
-              SET bonus_count = COALESCE(bonus_count, 0) + 1
+              SET bonus_count = GREATEST(COALESCE(bonus_count, 0) + 1, bonus_prompts)
               WHERE user_id = inviter_id
               AND date = CURRENT_DATE;
             END IF;
+            
+            RAISE NOTICE 'Added bonus prompt to inviter %. Total bonus: %', inviter_id, bonus_prompts;
           EXCEPTION WHEN OTHERS THEN
             RAISE NOTICE 'Error adding bonus prompt to inviter: %', SQLERRM;
           END;
@@ -217,6 +239,7 @@ RETURNS void AS $$
 DECLARE
   bonus_prompts INTEGER := 0;
   today DATE := CURRENT_DATE;
+  existing_record RECORD;
 BEGIN
   -- Calcular o número de bônus de prompts com base nos convites utilizados
   SELECT COUNT(*) INTO bonus_prompts
@@ -225,19 +248,23 @@ BEGIN
   AND used = TRUE;
   
   -- Verificar se já existe um registro para o usuário na data atual
-  IF NOT EXISTS (
-    SELECT 1 FROM public.prompt_usage
-    WHERE user_id = p_user_id AND date = today
-  ) THEN
+  SELECT * INTO existing_record
+  FROM public.prompt_usage
+  WHERE user_id = p_user_id AND date = today;
+  
+  IF existing_record IS NULL THEN
     -- Inserir um novo registro com contagem 0 e o bônus calculado
     INSERT INTO public.prompt_usage (user_id, date, count, bonus_count)
-    VALUES (p_user_id, today, 0, bonus_prompts);
+    VALUES (p_user_id, today, 0, GREATEST(0, bonus_prompts));
+    
+    RAISE NOTICE 'Created new prompt usage record for user % with % bonus prompts', p_user_id, bonus_prompts;
   ELSE
-    -- Atualizar o bonus_count no registro existente
+    -- Atualizar o bonus_count no registro existente para ser pelo menos igual ao número de convites utilizados
     UPDATE public.prompt_usage
-    SET bonus_count = bonus_prompts
-    WHERE user_id = p_user_id AND date = today
-    AND (bonus_count IS NULL OR bonus_count < bonus_prompts);
+    SET bonus_count = GREATEST(COALESCE(existing_record.bonus_count, 0), bonus_prompts)
+    WHERE user_id = p_user_id AND date = today;
+    
+    RAISE NOTICE 'Updated prompt usage record for user % with % bonus prompts', p_user_id, GREATEST(COALESCE(existing_record.bonus_count, 0), bonus_prompts);
   END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -251,13 +278,32 @@ RETURNS void AS $$
 DECLARE
   user_record RECORD;
   processed_count INTEGER := 0;
+  bonus_count INTEGER := 0;
 BEGIN
+  -- Primeiro, confirmar todos os usuários que ainda não foram confirmados
+  UPDATE auth.users
+  SET email_confirmed_at = NOW()
+  WHERE email_confirmed_at IS NULL;
+  
+  RAISE NOTICE 'Confirmed all pending users';
+  
+  -- Depois, inicializar os registros de prompt_usage para todos os usuários
   FOR user_record IN SELECT id FROM auth.users
   LOOP
     -- Chamar a função ensure_prompt_usage_record para cada usuário
     BEGIN
       PERFORM public.ensure_prompt_usage_record(user_record.id);
       processed_count := processed_count + 1;
+      
+      -- Verificar se o usuário tem convites utilizados
+      SELECT COUNT(*) INTO bonus_count
+      FROM public.user_invites
+      WHERE inviter_id = user_record.id
+      AND used = TRUE;
+      
+      IF bonus_count > 0 THEN
+        RAISE NOTICE 'User % has % bonus prompts from invites', user_record.id, bonus_count;
+      END IF;
     EXCEPTION WHEN OTHERS THEN
       RAISE NOTICE 'Error processing user %: %', user_record.id, SQLERRM;
     END;
@@ -270,3 +316,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Conceder permissão para executar as funções
 GRANT EXECUTE ON FUNCTION public.ensure_prompt_usage_record TO service_role;
 GRANT EXECUTE ON FUNCTION public.initialize_prompt_usage_for_all_users TO service_role;
+
+-- Remover o trigger existente se houver
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+-- Criar o trigger para executar a função após a criação de um novo usuário
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.create_accounts_for_new_user();

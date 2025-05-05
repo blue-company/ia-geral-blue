@@ -120,7 +120,7 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
           
           {showSuccess && (
             <p className="text-center text-sm text-muted-foreground mb-4">
-              Obrigado por compartilhar o Agent0! Você ganhou {extraPrompts} prompt extra.
+              Por compartilhar o Agent0, você ganhará {extraPrompts} prompt extra.
             </p>
           )}
           
