@@ -84,7 +84,12 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error during application startup: {e}")
         raise
 
-app = FastAPI(lifespan=lifespan)
+# Configurar o FastAPI com limites aumentados para uploads de arquivos grandes
+app = FastAPI(
+    lifespan=lifespan,
+    # Aumentar o limite de tamanho máximo de upload para 100MB
+    max_request_size=104857600  # 100MB em bytes
+)
 
 @app.middleware("http")
 async def log_requests_middleware(request: Request, call_next):
@@ -157,5 +162,11 @@ if __name__ == "__main__":
         host="0.0.0.0", 
         port=8000,
         workers=workers,
-        reload=True
+        reload=True,
+        limit_concurrency=100,
+        limit_max_requests=10000,
+        timeout_keep_alive=120,
+        limit_request_line=8190,
+        limit_request_fields=100,
+        limit_request_field_size=8190
     )

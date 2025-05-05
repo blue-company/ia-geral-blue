@@ -110,11 +110,18 @@ async def get_sandbox_by_id_safely(client, sandbox_id: str):
         logger.error(f"Error retrieving sandbox {sandbox_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to retrieve sandbox: {str(e)}")
 
+# Configurar o endpoint para aceitar arquivos de até 100MB
+from fastapi import UploadFile as FastAPIUploadFile
+
+# Criar uma classe personalizada para aumentar o limite de tamanho
+class LargeUploadFile(FastAPIUploadFile):
+    max_size = 104857600  # 100MB em bytes
+
 @router.post("/sandboxes/{sandbox_id}/files")
 async def create_file(
     sandbox_id: str, 
     path: str = Form(...),
-    file: UploadFile = File(...),
+    file: UploadFile = File(..., description="Arquivo a ser enviado (limite de 100MB)"),
     request: Request = None,
     user_id: Optional[str] = Depends(get_optional_user_id)
 ):
