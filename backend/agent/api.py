@@ -987,12 +987,22 @@ async def initiate_agent_with_files(
             
             # Criar uma conta automaticamente para o usuário
             try:
-                # Inserir apenas o ID na tabela public.accounts (o mínimo necessário para a chave estrangeira)
-                new_account = await client.from_('accounts').insert({
-                    "id": formatted_user_id
-                }).execute()
+                # Usar SQL direto para garantir que a inserção funcione corretamente
+                # Isso contorna qualquer problema com RLS ou outros mecanismos de segurança
+                insert_result = await client.rpc(
+                    'execute_sql',
+                    {
+                        'query': f"INSERT INTO public.accounts (id) VALUES ('{formatted_user_id}'::uuid) ON CONFLICT (id) DO NOTHING;"
+                    }
+                ).execute()
                 
-                logger.info(f"Created new account in public.accounts for user {formatted_user_id}")
+                logger.info(f"Created new account in public.accounts for user {formatted_user_id} using direct SQL")
+                
+                # Verificar se a inserção funcionou
+                verify_result = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
+                if not verify_result.data or len(verify_result.data) == 0:
+                    logger.error(f"Failed to create account in public.accounts for user {formatted_user_id}")
+                    raise Exception("Failed to create account in public.accounts")
                 
                 # Também criar conta em basejump.accounts para manter consistência com o resto do sistema
                 try:
@@ -1001,25 +1011,44 @@ async def initiate_agent_with_files(
                     email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
                     user_name = email.split('@')[0]  # Usar parte do email como nome
                     
-                    # Inserir na tabela basejump.accounts com todos os campos necessários
-                    await client.from_('basejump.accounts').insert({
-                        "id": formatted_user_id,
-                        "created_at": datetime.now(timezone.utc).isoformat(),
-                        "updated_at": datetime.now(timezone.utc).isoformat(),
-                        "name": user_name,
-                        "primary_owner_user_id": formatted_user_id,
-                        "personal_account": True,
-                        "slug": None,
-                        "private_metadata": {},
-                        "public_metadata": {}
-                    }).execute()
+                    # Usar SQL direto para inserir na tabela basejump.accounts
+                    await client.rpc(
+                        'execute_sql',
+                        {
+                            'query': f"""
+                            INSERT INTO basejump.accounts (
+                                id, created_at, updated_at, name, primary_owner_user_id, 
+                                personal_account, slug, private_metadata, public_metadata
+                            ) VALUES (
+                                '{formatted_user_id}'::uuid, 
+                                '{datetime.now(timezone.utc).isoformat()}', 
+                                '{datetime.now(timezone.utc).isoformat()}', 
+                                '{user_name}', 
+                                '{formatted_user_id}'::uuid, 
+                                true, 
+                                null, 
+                                '{{}}'::jsonb, 
+                                '{{}}'::jsonb
+                            ) ON CONFLICT (id) DO NOTHING;
+                            """
+                        }
+                    ).execute()
                     
-                    # Também criar entrada na tabela basejump.account_user para permissões
-                    await client.from_('basejump.account_user').insert({
-                        "account_id": formatted_user_id,
-                        "user_id": formatted_user_id,
-                        "account_role": "owner"
-                    }).execute()
+                    # Também inserir na tabela basejump.account_user
+                    await client.rpc(
+                        'execute_sql',
+                        {
+                            'query': f"""
+                            INSERT INTO basejump.account_user (
+                                account_id, user_id, account_role
+                            ) VALUES (
+                                '{formatted_user_id}'::uuid,
+                                '{formatted_user_id}'::uuid,
+                                'owner'
+                            ) ON CONFLICT (account_id, user_id) DO NOTHING;
+                            """
+                        }
+                    ).execute()
                     
                     logger.info(f"Also created account in basejump.accounts for user {formatted_user_id}")
                 except Exception as basejump_error:
