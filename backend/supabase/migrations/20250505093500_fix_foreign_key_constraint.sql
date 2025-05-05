@@ -1,16 +1,13 @@
--- Migração para criar trigger que cria contas automaticamente quando necessário
--- Quando um thread ou projeto é criado com um account_id que não existe,
--- este trigger criará automaticamente a conta correspondente no esquema basejump
+-- Migração para corrigir o problema de violação de chave estrangeira
+-- Esta migração cria uma função e um trigger que garantem que a conta exista antes de inserir um thread
 
--- Remover triggers e funções anteriores para garantir uma instalação limpa
+-- Remover triggers anteriores para garantir uma instalação limpa
 DROP TRIGGER IF EXISTS trigger_auto_create_account_threads ON threads;
 DROP TRIGGER IF EXISTS trigger_auto_create_account_projects ON projects;
-DROP TRIGGER IF EXISTS trigger_auto_create_account_on_user_creation ON auth.users;
 DROP FUNCTION IF EXISTS public.auto_create_account_on_thread_or_project();
-DROP FUNCTION IF EXISTS public.auto_create_account_on_user_creation();
 
 -- Função para criar automaticamente uma conta quando um thread ou projeto é criado
-CREATE OR REPLACE FUNCTION public.auto_create_account_on_thread_or_project()
+CREATE OR REPLACE FUNCTION public.ensure_account_exists()
 RETURNS TRIGGER AS $$
 DECLARE
   user_email TEXT;
@@ -41,15 +38,19 @@ BEGIN
         name,
         primary_owner_user_id,
         personal_account,
-        slug
+        slug,
+        private_metadata,
+        public_metadata
       ) VALUES (
         NEW.account_id,
         NOW(),
         NOW(),
         user_name,
         NEW.account_id,
-        false,
-        account_slug
+        true,
+        null,
+        '{}'::jsonb,
+        '{}'::jsonb
       );
       
       -- Também criar entrada na tabela account_user para permissões
@@ -76,14 +77,15 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger para a tabela threads
-DROP TRIGGER IF EXISTS trigger_auto_create_account_threads ON threads;
-CREATE TRIGGER trigger_auto_create_account_threads
+DROP TRIGGER IF EXISTS ensure_account_exists_before_thread ON threads;
+CREATE TRIGGER ensure_account_exists_before_thread
 BEFORE INSERT ON threads
 FOR EACH ROW
-EXECUTE FUNCTION public.auto_create_account_on_thread_or_project();
+EXECUTE FUNCTION public.ensure_account_exists();
 
 -- Trigger para a tabela projects
-CREATE TRIGGER trigger_auto_create_account_projects
+DROP TRIGGER IF EXISTS ensure_account_exists_before_project ON projects;
+CREATE TRIGGER ensure_account_exists_before_project
 BEFORE INSERT ON projects
 FOR EACH ROW
-EXECUTE FUNCTION public.auto_create_account_on_thread_or_project();
+EXECUTE FUNCTION public.ensure_account_exists();

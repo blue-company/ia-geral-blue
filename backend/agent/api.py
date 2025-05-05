@@ -1001,8 +1001,10 @@ async def initiate_agent_with_files(
                     "updated_at": datetime.now(timezone.utc).isoformat(),
                     "name": user_name,  # Usar parte do email como nome
                     "primary_owner_user_id": formatted_user_id,  # Campo obrigatório
-                    "personal_account": False,  # Usar False em vez de True
-                    "slug": account_slug  # Adicionar slug
+                    "personal_account": True,  # Usar True para corresponder ao padrão existente
+                    "slug": None,  # Usar None para corresponder ao padrão existente
+                    "private_metadata": {},  # Adicionar metadata vazio
+                    "public_metadata": {}   # Adicionar metadata vazio
                 }).execute()
                 
                 # Também criar entrada na tabela account_user para permissões
