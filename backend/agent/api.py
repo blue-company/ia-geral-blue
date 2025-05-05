@@ -1011,44 +1011,17 @@ async def initiate_agent_with_files(
                     email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
                     user_name = email.split('@')[0]  # Usar parte do email como nome
                     
-                    # Usar SQL direto para inserir na tabela basejump.accounts
+                    # Usar a função RPC basejump.create_account_for_user para criar a conta
+                    # Esta função tem SECURITY DEFINER e pode contornar RLS
                     await client.rpc(
-                        'execute_sql',
+                        'create_account_for_user',
                         {
-                            'query': f"""
-                            INSERT INTO basejump.accounts (
-                                id, created_at, updated_at, name, primary_owner_user_id, 
-                                personal_account, slug, private_metadata, public_metadata
-                            ) VALUES (
-                                '{formatted_user_id}'::uuid, 
-                                '{datetime.now(timezone.utc).isoformat()}', 
-                                '{datetime.now(timezone.utc).isoformat()}', 
-                                '{user_name}', 
-                                '{formatted_user_id}'::uuid, 
-                                true, 
-                                null, 
-                                '{{}}'::jsonb, 
-                                '{{}}'::jsonb
-                            ) ON CONFLICT (id) DO NOTHING;
-                            """
+                            'user_id': formatted_user_id,
+                            'user_name': user_name
                         }
                     ).execute()
                     
-                    # Também inserir na tabela basejump.account_user
-                    await client.rpc(
-                        'execute_sql',
-                        {
-                            'query': f"""
-                            INSERT INTO basejump.account_user (
-                                account_id, user_id, account_role
-                            ) VALUES (
-                                '{formatted_user_id}'::uuid,
-                                '{formatted_user_id}'::uuid,
-                                'owner'
-                            ) ON CONFLICT (account_id, user_id) DO NOTHING;
-                            """
-                        }
-                    ).execute()
+                    logger.info(f"Created account in basejump.accounts for user {formatted_user_id} using RPC function")
                     
                     logger.info(f"Also created account in basejump.accounts for user {formatted_user_id}")
                 except Exception as basejump_error:
