@@ -969,14 +969,46 @@ async def initiate_agent_with_files(
     try:
         # Verificar se o user_id é um UUID válido
         uuid_obj = uuid.UUID(user_id)
-        account_id = str(uuid_obj)  # Converter para string no formato padrão UUID
-        logger.debug(f"Validated user_id as UUID: {account_id}")
+        formatted_user_id = str(uuid_obj)  # Converter para string no formato padrão UUID
+        logger.debug(f"Validated user_id as UUID: {formatted_user_id}")
     except ValueError:
         # Se não for um UUID válido, usar o ID original e registrar um aviso
-        account_id = user_id
+        formatted_user_id = user_id
         logger.warning(f"User ID is not in UUID format: {user_id}")
     
     # In Basejump, personal account_id is the same as user_id
+    # Verificar se existe uma conta associada a este usuário
+    try:
+        account_result = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
+        
+        if not account_result.data or len(account_result.data) == 0:
+            logger.warning(f"No account found for user {formatted_user_id} in basejump.accounts table. Creating one automatically.")
+            
+            # Criar uma conta automaticamente para o usuário
+            try:
+                # Obter informações do usuário da tabela auth.users se disponível
+                user_info = await client.from_('users').select('email').eq('id', formatted_user_id).execute()
+                email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
+                
+                # Inserir nova conta na tabela accounts
+                new_account = await client.from_('accounts').insert({
+                    "id": formatted_user_id,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "name": email.split('@')[0],  # Usar parte do email como nome
+                    "personal": True
+                }).execute()
+                
+                logger.info(f"Created new account automatically for user {formatted_user_id}")
+            except Exception as create_error:
+                logger.error(f"Failed to create account automatically: {str(create_error)}")
+                # Continuar mesmo com erro, tentando usar o ID do usuário como account_id
+        
+        account_id = formatted_user_id
+    except Exception as e:
+        logger.error(f"Error checking account existence: {str(e)}")
+        # Continuar com o ID do usuário como account_id mesmo com erro
+        account_id = formatted_user_id
 
     can_run, message, subscription = await check_billing_status(client, account_id)
     if not can_run:
