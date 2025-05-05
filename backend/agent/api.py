@@ -979,37 +979,54 @@ async def initiate_agent_with_files(
     # In Basejump, personal account_id is the same as user_id
     # Verificar se existe uma conta associada a este usuário
     try:
-        account_result = await client.from_('basejump.accounts').select('id').eq('id', formatted_user_id).execute()
+        # Verificar se existe uma conta na tabela public.accounts (que é referenciada pela chave estrangeira)
+        account_result = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
         
         if not account_result.data or len(account_result.data) == 0:
-            logger.warning(f"No account found for user {formatted_user_id} in basejump.accounts table. Creating one automatically.")
+            logger.warning(f"No account found for user {formatted_user_id} in public.accounts table. Creating one automatically.")
             
             # Criar uma conta automaticamente para o usuário
             try:
-                # Obter informações do usuário da tabela auth.users se disponível
-                user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
-                email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
-                user_name = email.split('@')[0]  # Usar parte do email como nome
-                
-                # Inserir nova conta na tabela basejump.accounts com todos os campos necessários
-                new_account = await client.from_('basejump.accounts').insert({
-                    "id": formatted_user_id,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "name": user_name,
-                    "primary_owner_user_id": formatted_user_id,  # Campo obrigatório
-                    "personal_account": True,  # Nome correto do campo
-                    "slug": None,  # Usar null para corresponder ao padrão existente
-                    "private_metadata": {},  # Campo obrigatório
-                    "public_metadata": {}   # Campo obrigatório
+                # Inserir apenas o ID na tabela public.accounts (o mínimo necessário para a chave estrangeira)
+                new_account = await client.from_('accounts').insert({
+                    "id": formatted_user_id
                 }).execute()
                 
-                # Também criar entrada na tabela account_user para permissões
-                await client.from_('basejump.account_user').insert({
-                    "account_id": formatted_user_id,
-                    "user_id": formatted_user_id,
-                    "account_role": "owner"
-                }).execute()
+                logger.info(f"Created new account in public.accounts for user {formatted_user_id}")
+                
+                # Também criar conta em basejump.accounts para manter consistência com o resto do sistema
+                try:
+                    # Obter informações do usuário da tabela auth.users se disponível
+                    user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
+                    email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
+                    user_name = email.split('@')[0]  # Usar parte do email como nome
+                    
+                    # Inserir na tabela basejump.accounts com todos os campos necessários
+                    await client.from_('basejump.accounts').insert({
+                        "id": formatted_user_id,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "name": user_name,
+                        "primary_owner_user_id": formatted_user_id,
+                        "personal_account": True,
+                        "slug": None,
+                        "private_metadata": {},
+                        "public_metadata": {}
+                    }).execute()
+                    
+                    # Também criar entrada na tabela basejump.account_user para permissões
+                    await client.from_('basejump.account_user').insert({
+                        "account_id": formatted_user_id,
+                        "user_id": formatted_user_id,
+                        "account_role": "owner"
+                    }).execute()
+                    
+                    logger.info(f"Also created account in basejump.accounts for user {formatted_user_id}")
+                except Exception as basejump_error:
+                    # Se falhar ao criar na tabela basejump.accounts, não é crítico
+                    # porque a chave estrangeira só precisa da entrada em public.accounts
+                    logger.warning(f"Failed to create account in basejump.accounts: {str(basejump_error)}")
+                    # Não propagar o erro, pois a conta já foi criada em public.accounts
                 
                 logger.info(f"Created new account automatically for user {formatted_user_id}")
             except Exception as create_error:
