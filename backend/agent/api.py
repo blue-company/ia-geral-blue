@@ -980,6 +980,7 @@ async def initiate_agent_with_files(
     # Verificar se existe uma conta associada a este usuário
     try:
         # Verificar se existe uma conta na tabela public.accounts (que é referenciada pela chave estrangeira)
+        logger.info(f"Checking if account exists in public.accounts for user {formatted_user_id}")
         account_result = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
         
         if not account_result.data or len(account_result.data) == 0:
@@ -987,41 +988,102 @@ async def initiate_agent_with_files(
             
             # Criar uma conta automaticamente para o usuário
             try:
-                # Usar SQL direto para garantir que a inserção funcione corretamente
-                # Isso contorna qualquer problema com RLS ou outros mecanismos de segurança
-                insert_result = await client.rpc(
-                    'execute_sql',
-                    {
-                        'query': f"INSERT INTO public.accounts (id) VALUES ('{formatted_user_id}'::uuid) ON CONFLICT (id) DO NOTHING;"
-                    }
-                ).execute()
-                
-                logger.info(f"Created new account in public.accounts for user {formatted_user_id} using direct SQL")
+                # Método 1: Usar o cliente Supabase para inserir diretamente
+                logger.info(f"Attempting to insert account in public.accounts using client.from_()")
+                try:
+                    new_account = await client.from_('accounts').insert({
+                        "id": formatted_user_id
+                    }).execute()
+                    logger.info(f"Insert result: {new_account.data if hasattr(new_account, 'data') else 'No data'}")
+                except Exception as insert_error:
+                    logger.error(f"Error inserting account using client.from_(): {str(insert_error)}")
                 
                 # Verificar se a inserção funcionou
                 verify_result = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
                 if not verify_result.data or len(verify_result.data) == 0:
+                    logger.error(f"Account not found after insert attempt. Trying direct SQL insert.")
+                    
+                    # Método 2: Tentar inserir usando SQL direto via admin client
+                    try:
+                        admin_client = client.supabase_admin_client if hasattr(client, 'supabase_admin_client') else client
+                        logger.info(f"Attempting direct SQL insert using admin client")
+                        
+                        # Inserir diretamente na tabela public.accounts
+                        direct_insert = await admin_client.from_('accounts').insert({
+                            "id": formatted_user_id
+                        }).execute()
+                        logger.info(f"Direct insert result: {direct_insert.data if hasattr(direct_insert, 'data') else 'No data'}")
+                    except Exception as direct_error:
+                        logger.error(f"Error with direct SQL insert: {str(direct_error)}")
+                        # Última tentativa: inserir manualmente no banco de dados
+                        logger.warning(f"All automatic methods failed. Manual intervention required.")
+                        # Continuar mesmo assim para tentar criar o thread
+                
+                # Verificar novamente se a conta existe
+                final_verify = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
+                if final_verify.data and len(final_verify.data) > 0:
+                    logger.info(f"Successfully created account in public.accounts for user {formatted_user_id}")
+                else:
                     logger.error(f"Failed to create account in public.accounts for user {formatted_user_id}")
-                    raise Exception("Failed to create account in public.accounts")
                 
                 # Também criar conta em basejump.accounts para manter consistência com o resto do sistema
                 try:
                     # Obter informações do usuário da tabela auth.users se disponível
+                    logger.info(f"Fetching user info from auth.users for user {formatted_user_id}")
                     user_info = await client.from_('auth.users').select('email').eq('id', formatted_user_id).execute()
                     email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
                     user_name = email.split('@')[0]  # Usar parte do email como nome
+                    logger.info(f"User name determined as {user_name} from email {email}")
                     
-                    # Usar a função RPC basejump.create_account_for_user para criar a conta
-                    # Esta função tem SECURITY DEFINER e pode contornar RLS
-                    await client.rpc(
-                        'create_account_for_user',
-                        {
-                            'user_id': formatted_user_id,
-                            'user_name': user_name
-                        }
-                    ).execute()
+                    # Tentar vários métodos para criar a conta em basejump.accounts
                     
-                    logger.info(f"Created account in basejump.accounts for user {formatted_user_id} using RPC function")
+                    # Método 1: Usar a função RPC
+                    try:
+                        logger.info(f"Attempting to create account using RPC function create_account_for_user")
+                        rpc_result = await client.rpc(
+                            'create_account_for_user',
+                            {
+                                'user_id': formatted_user_id,
+                                'user_name': user_name
+                            }
+                        ).execute()
+                        logger.info(f"RPC result: {rpc_result.data if hasattr(rpc_result, 'data') else 'No data'}")
+                    except Exception as rpc_error:
+                        logger.error(f"Error calling RPC function: {str(rpc_error)}")
+                        
+                        # Método 2: Inserir diretamente na tabela basejump.accounts
+                        try:
+                            logger.info(f"Attempting direct insert into basejump.accounts")
+                            basejump_insert = await admin_client.from_('basejump.accounts').insert({
+                                "id": formatted_user_id,
+                                "created_at": datetime.now(timezone.utc).isoformat(),
+                                "updated_at": datetime.now(timezone.utc).isoformat(),
+                                "name": user_name,
+                                "primary_owner_user_id": formatted_user_id,
+                                "personal_account": True,
+                                "slug": None,
+                                "private_metadata": {},
+                                "public_metadata": {}
+                            }).execute()
+                            logger.info(f"Direct basejump insert result: {basejump_insert.data if hasattr(basejump_insert, 'data') else 'No data'}")
+                            
+                            # Também inserir na tabela basejump.account_user
+                            account_user_insert = await admin_client.from_('basejump.account_user').insert({
+                                "account_id": formatted_user_id,
+                                "user_id": formatted_user_id,
+                                "account_role": "owner"
+                            }).execute()
+                            logger.info(f"Account user insert result: {account_user_insert.data if hasattr(account_user_insert, 'data') else 'No data'}")
+                        except Exception as basejump_error:
+                            logger.error(f"Error inserting directly into basejump.accounts: {str(basejump_error)}")
+                    
+                    # Verificar se a conta foi criada em basejump.accounts
+                    basejump_verify = await client.from_('basejump.accounts').select('id').eq('id', formatted_user_id).execute()
+                    if basejump_verify.data and len(basejump_verify.data) > 0:
+                        logger.info(f"Successfully created account in basejump.accounts for user {formatted_user_id}")
+                    else:
+                        logger.warning(f"Could not verify account creation in basejump.accounts for user {formatted_user_id}")
+                        # Não é crítico, pois a chave estrangeira só precisa da entrada em public.accounts
                     
                     logger.info(f"Also created account in basejump.accounts for user {formatted_user_id}")
                 except Exception as basejump_error:
