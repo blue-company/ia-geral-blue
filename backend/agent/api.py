@@ -1,27 +1,24 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Body, File, UploadFile, Form
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import StreamingResponse
 import asyncio
 import json
-import traceback
-from datetime import datetime, timezone
-import uuid
-from typing import Optional, List, Dict, Any
-import jwt
-from pydantic import BaseModel
-import tempfile
+import logging
 import os
+import re
+import time
+import uuid
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from agentpress.thread_manager import ThreadManager
-from services.supabase import DBConnection
-from services import redis
-from agent.run import run_agent
-from utils.auth_utils import get_current_user_id_from_jwt, get_user_id_from_stream_auth, verify_thread_access
-from utils.logger import logger
-from services.billing import check_billing_status
-from sandbox.sandbox import create_sandbox, get_or_start_sandbox
-from services.llm import make_llm_api_call
-from utils.id_utils import normalize_uuid
-from utils.prompt_utils import check_prompt_limit
+from pydantic import BaseModel, Field
+from supabase import Client
+
+from agent.prompt_counter import increment_prompt_count, decrement_prompt_count
+from ..db import db
+from ..utils.auth import get_current_user_id_from_jwt
+from ..utils.billing import check_billing_status
+from ..utils.prompt_utils import check_prompt_limit
 
 # Initialize shared resources
 router = APIRouter()
@@ -422,10 +419,17 @@ async def start_agent(
         agent_run_id = agent_run.data[0]['id']
         logger.info(f"Created new agent run: {agent_run_id}")
 
-                # Não incrementamos o contador de prompts aqui para evitar a contagem dupla
-        # A contagem será feita na função start_agent que é chamada pelo endpoint /thread/{thread_id}/agent/start
-        logger.info(f"Pulando contagem de prompts na função initiate_agent_with_files para o usuário {formatted_user_id}")
-        prompt_consumed = False
+        # Incrementar o contador de prompts se não estiver pulando a contagem
+        if not skip_prompt_count:
+            logger.info(f"Incrementando contagem de prompts para o usuário {formatted_user_id}")
+            prompt_consumed = await increment_prompt_count(client, formatted_user_id)
+            if prompt_consumed:
+                logger.info(f"Contagem de prompts incrementada com sucesso")
+            else:
+                logger.warning(f"Não foi possível incrementar a contagem de prompts")
+        else:
+            logger.info(f"Pulando contagem de prompts para o usuário {formatted_user_id} (skip_prompt_count=True)")
+            prompt_consumed = False
 
         # Register this run in Redis with TTL using instance ID
         instance_key = f"active_run:{instance_id}:{agent_run_id}"
@@ -1187,6 +1191,14 @@ async def initiate_agent_with_files(
         }).execute()
         agent_run_id = agent_run.data[0]['id']
         logger.info(f"Created new agent run: {agent_run_id}")
+        
+        # Incrementar o contador de prompts
+        logger.info(f"Incrementando contagem de prompts para o usuário {formatted_user_id}")
+        prompt_consumed = await increment_prompt_count(client, formatted_user_id)
+        if prompt_consumed:
+            logger.info(f"Contagem de prompts incrementada com sucesso")
+        else:
+            logger.warning(f"Não foi possível incrementar a contagem de prompts")
 
         # Register run in Redis
         instance_key = f"active_run:{instance_id}:{agent_run_id}"

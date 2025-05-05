@@ -27,6 +27,14 @@ async def increment_prompt_count(client, user_id: str, increment: bool = True) -
     
     if increment:
         try:
+            # Primeiro, verificar se o usuário já atingiu o limite de prompts
+            from ..utils.prompt_utils import check_prompt_limit
+            can_make_prompt, _, current_count, max_allowed = await check_prompt_limit(client, formatted_user_id)
+            
+            if not can_make_prompt:
+                logger.warning(f"Não incrementando contador: limite de prompts já atingido para o usuário {formatted_user_id}: {current_count}/{max_allowed}")
+                return False
+                
             # Verificar se já existe um registro para hoje
             usage_result = await client.table('prompt_usage')\
                 .select('*')\
@@ -35,17 +43,31 @@ async def increment_prompt_count(client, user_id: str, increment: bool = True) -
                 .execute()
                 
             if not usage_result.data:
+                # Obter o número de convites utilizados para definir o bonus_count
+                invites_result = await client.table('user_invites')\
+                    .select('*')\
+                    .eq('inviter_id', formatted_user_id)\
+                    .eq('used', True)\
+                    .execute()
+                
+                bonus_count = len(invites_result.data) if invites_result.data else 0
+                logger.info(f"Bônus calculado para novo registro: {bonus_count}")
+                
                 # Criar novo registro se não existir
                 logger.info(f"Criando novo registro de uso de prompts para o usuário {formatted_user_id}")
                 insert_result = await client.table('prompt_usage')\
                     .insert({
                         "user_id": formatted_user_id,
                         "date": current_date,
-                        "count": 1
+                        "count": 1,
+                        "bonus_count": bonus_count
                     })\
                     .execute()
                 logger.info(f"Novo registro criado: {insert_result.data if hasattr(insert_result, 'data') else 'sem dados'}")
             else:
+                # Preservar o bonus_count existente
+                bonus_count = usage_result.data[0].get('bonus_count', 0)
+                
                 # Atualizar registro existente
                 logger.info(f"Atualizando registro existente de uso de prompts para o usuário {formatted_user_id}")
                 update_result = await client.table('prompt_usage')\
