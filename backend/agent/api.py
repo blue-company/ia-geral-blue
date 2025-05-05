@@ -990,25 +990,38 @@ async def initiate_agent_with_files(
                 user_info = await client.from_('users').select('email').eq('id', formatted_user_id).execute()
                 email = user_info.data[0]['email'] if user_info.data and len(user_info.data) > 0 else 'user@example.com'
                 
-                # Inserir nova conta na tabela accounts
+                # Criar slug baseado no nome
+                import re
+                user_name = email.split('@')[0]
+                account_slug = re.sub(r'[^a-zA-Z0-9]', '-', user_name.lower())
+                
+                # Inserir nova conta na tabela accounts com os campos corretos
                 new_account = await client.from_('accounts').insert({
                     "id": formatted_user_id,
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "name": email.split('@')[0],  # Usar parte do email como nome
-                    "personal": True
+                    "name": user_name,  # Usar parte do email como nome
+                    "primary_owner_user_id": formatted_user_id,  # Campo obrigatório
+                    "personal_account": False,  # Usar False em vez de True
+                    "slug": account_slug  # Adicionar slug
+                }).execute()
+                
+                # Também criar entrada na tabela account_user para permissões
+                await client.from_('account_user').insert({
+                    "account_id": formatted_user_id,
+                    "user_id": formatted_user_id,
+                    "account_role": "owner"
                 }).execute()
                 
                 logger.info(f"Created new account automatically for user {formatted_user_id}")
             except Exception as create_error:
                 logger.error(f"Failed to create account automatically: {str(create_error)}")
                 # Continuar mesmo com erro, tentando usar o ID do usuário como account_id
-        
-        account_id = formatted_user_id
     except Exception as e:
-        logger.error(f"Error checking account existence: {str(e)}")
-        # Continuar com o ID do usuário como account_id mesmo com erro
-        account_id = formatted_user_id
+        logger.error(f"Erro ao verificar/criar conta: {str(e)}")
+        # Continuar mesmo com erro
+    
+    account_id = formatted_user_id
 
     can_run, message, subscription = await check_billing_status(client, account_id)
     if not can_run:
