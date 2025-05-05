@@ -28,7 +28,7 @@ async def increment_prompt_count(client, user_id: str, increment: bool = True) -
     if increment:
         try:
             # Primeiro, verificar se o usuário já atingiu o limite de prompts
-            from ..utils.prompt_utils import check_prompt_limit
+            from utils.prompt_utils import check_prompt_limit
             can_make_prompt, _, current_count, max_allowed = await check_prompt_limit(client, formatted_user_id)
             
             if not can_make_prompt:

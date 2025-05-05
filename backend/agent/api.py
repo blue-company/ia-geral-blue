@@ -15,10 +15,10 @@ from pydantic import BaseModel, Field
 from supabase import Client
 
 from agent.prompt_counter import increment_prompt_count, decrement_prompt_count
-from ..db import db
-from ..utils.auth import get_current_user_id_from_jwt
-from ..utils.billing import check_billing_status
-from ..utils.prompt_utils import check_prompt_limit
+from db import db
+from utils.auth import get_current_user_id_from_jwt
+from utils.billing import check_billing_status
+from utils.prompt_utils import check_prompt_limit
 
 # Initialize shared resources
 router = APIRouter()
