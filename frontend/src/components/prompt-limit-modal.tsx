@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Gift, Copy, Check } from "lucide-react";
@@ -21,35 +21,27 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
   const maxPrompts = getMaxPromptsPerDay();
   const extraPrompts = getExtraPromptsPerInvite();
 
-  // Carregar o número de prompts restantes e gerar link de convite quando o modal abrir
-  useEffect(() => {
-    if (isOpen && userId) {
-      loadRemainingPrompts();
-      if (!inviteLink) {
-        generateInviteLinkForUser();
-      }
-    }
-  }, [isOpen, userId]);
-
-  const loadRemainingPrompts = async () => {
+  // Define as funções com useCallback para evitar recriações desnecessárias
+  const loadRemainingPrompts = useCallback(async () => {
     try {
       const remaining = await getRemainingPrompts(userId);
       setRemainingPrompts(remaining);
     } catch (error) {
       console.error('Erro ao carregar prompts restantes:', error);
     }
-  };
+  }, [userId]);
 
-  const generateInviteLinkForUser = async () => {
+  const generateInviteLinkForUser = useCallback(async () => {
     setIsSubmitting(true);
     
     try {
-      // Gerar link de convite sem email
-      const link = await generateInviteLink(userId);
+      // Gerar link de convite com email genérico
+      const emailPlaceholder = `convite-${Date.now()}@agent0.app`;
+      const link = await generateInviteLink(userId, emailPlaceholder);
       
       if (link) {
         setInviteLink(link);
-        await registerInvite(userId);
+        await registerInvite(userId, emailPlaceholder);
         
         // Mostrar mensagem de sucesso
         setShowSuccess(true);
@@ -68,9 +60,19 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [userId, loadRemainingPrompts]);
   
-  const copyInviteLink = async () => {
+  // Carregar o número de prompts restantes quando o modal abrir
+  useEffect(() => {
+    if (isOpen && userId) {
+      loadRemainingPrompts();
+      if (!inviteLink) {
+        generateInviteLinkForUser();
+      }
+    }
+  }, [isOpen, userId, inviteLink, loadRemainingPrompts, generateInviteLinkForUser]);
+  
+  const copyInviteLink = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(inviteLink);
       setCopied(true);
@@ -81,7 +83,7 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
       console.error('Erro ao copiar link:', error);
       toast.error('Não foi possível copiar o link. Tente novamente.');
     }
-  };
+  }, [inviteLink]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

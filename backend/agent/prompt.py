@@ -587,6 +587,6 @@ Para conversa casual e interações sociais:
 
 def get_system_prompt():
     '''
-    Returns the system prompt
+    Retorna o prompt do sistema
     '''
     return SYSTEM_PROMPT 
