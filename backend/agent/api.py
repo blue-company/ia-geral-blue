@@ -1,23 +1,27 @@
 from fastapi import APIRouter, HTTPException, Depends, Request, Body, File, UploadFile, Form
-from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import asyncio
 import json
-import logging
-import os
-import re
-import time
-import uuid
+import traceback
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple, Union
-
-from pydantic import BaseModel, Field
-from supabase import Client
+import uuid
+from typing import Optional, List, Dict, Any
+import jwt
+from pydantic import BaseModel
+import tempfile
+import os
 
 from agent.prompt_counter import increment_prompt_count, decrement_prompt_count
-from db import db
-from utils.auth import get_current_user_id_from_jwt
-from utils.billing import check_billing_status
+from agentpress.thread_manager import ThreadManager
+from services.supabase import DBConnection
+from services import redis
+from agent.run import run_agent
+from utils.auth_utils import get_current_user_id_from_jwt, get_user_id_from_stream_auth, verify_thread_access
+from utils.logger import logger
+from services.billing import check_billing_status
+from sandbox.sandbox import create_sandbox, get_or_start_sandbox
+from services.llm import make_llm_api_call
+from utils.id_utils import normalize_uuid
 from utils.prompt_utils import check_prompt_limit
 
 # Initialize shared resources
