@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { AlertCircle, Mail, Gift, Copy, Check } from "lucide-react";
+import { AlertCircle, Gift, Copy, Check } from "lucide-react";
 import { registerInvite, getMaxPromptsPerDay, getExtraPromptsPerInvite, getRemainingPrompts, generateInviteLink } from '@/lib/prompt-limiter';
 import { toast } from 'sonner';
 
@@ -13,7 +12,6 @@ interface PromptLimitModalProps {
 }
 
 export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalProps) {
-  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [inviteLink, setInviteLink] = useState('');
@@ -23,10 +21,13 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
   const maxPrompts = getMaxPromptsPerDay();
   const extraPrompts = getExtraPromptsPerInvite();
 
-  // Carregar o número de prompts restantes quando o modal abrir
+  // Carregar o número de prompts restantes e gerar link de convite quando o modal abrir
   useEffect(() => {
     if (isOpen && userId) {
       loadRemainingPrompts();
+      if (!inviteLink) {
+        generateInviteLinkForUser();
+      }
     }
   }, [isOpen, userId]);
 
@@ -39,32 +40,22 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
     }
   };
 
-  const handleSendInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !email.includes('@')) {
-      toast.error('Por favor, insira um e-mail válido');
-      return;
-    }
-    
+  const generateInviteLinkForUser = async () => {
     setIsSubmitting(true);
     
     try {
-      // Gerar link de convite
-      const link = await generateInviteLink(userId, email);
+      // Gerar link de convite sem email
+      const link = await generateInviteLink(userId);
       
       if (link) {
         setInviteLink(link);
-        await registerInvite(userId, email);
+        await registerInvite(userId);
         
         // Mostrar mensagem de sucesso
         setShowSuccess(true);
         
-        // Limpar o campo de e-mail
-        setEmail('');
-        
         // Exibir toast de sucesso
-        toast.success('Convite gerado com sucesso!');
+        toast.success('Link de convite gerado com sucesso!');
         
         // Atualizar prompts restantes
         await loadRemainingPrompts();
@@ -72,8 +63,8 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
         toast.error('Não foi possível gerar o link de convite. Tente novamente.');
       }
     } catch (error) {
-      console.error('Erro ao enviar convite:', error);
-      toast.error('Ocorreu um erro ao enviar o convite. Tente novamente.');
+      console.error('Erro ao gerar link de convite:', error);
+      toast.error('Ocorreu um erro ao gerar o link de convite. Tente novamente.');
     } finally {
       setIsSubmitting(false);
     }
@@ -107,43 +98,13 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
           </DialogDescription>
         </DialogHeader>
 
-        {showSuccess ? (
-          <div className="py-6 flex flex-col items-center justify-center">
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-full p-4 mb-4">
-              <Gift className="h-8 w-8 text-green-500 dark:text-green-400" />
-            </div>
-            <p className="text-center text-sm text-muted-foreground mb-4">
-              Obrigado por compartilhar o Agent0! Você ganhou {extraPrompts} prompt extra.
-            </p>
-            <p className="text-center font-medium mb-4">
-              Prompts restantes hoje: {remainingPrompts}
-            </p>
-            
-            {inviteLink && (
-              <div className="w-full">
-                <p className="text-center text-sm font-medium mb-2">Link de convite:</p>
-                <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
-                  <div className="text-xs text-muted-foreground overflow-hidden text-ellipsis flex-1">
-                    {inviteLink}
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8" 
-                    onClick={copyInviteLink}
-                  >
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
-                </div>
-                <p className="text-center text-xs text-muted-foreground mt-2">
-                  Compartilhe este link com seu amigo para que ele ganhe acesso ao Agent0.
-                </p>
-              </div>
-            )}
+        <div className="py-6 flex flex-col items-center justify-center">
+          <div className="bg-green-50 dark:bg-green-900/20 rounded-full p-4 mb-4">
+            <Gift className="h-8 w-8 text-green-500 dark:text-green-400" />
           </div>
-        ) : (
-          <>
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/50 rounded-lg p-4 mb-4">
+          
+          {!showSuccess && (
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/50 rounded-lg p-4 mb-4 w-full">
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
                 <div>
@@ -153,38 +114,50 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
                 </div>
               </div>
             </div>
-
-            <form onSubmit={handleSendInvite} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="invite-email" className="text-sm font-medium">
-                  E-mail do amigo
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="invite-email"
-                    type="email"
-                    placeholder="email@exemplo.com"
-                    className="pl-10"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
+          )}
+          
+          {showSuccess && (
+            <p className="text-center text-sm text-muted-foreground mb-4">
+              Obrigado por compartilhar o Agent0! Você ganhou {extraPrompts} prompt extra.
+            </p>
+          )}
+          
+          <p className="text-center font-medium mb-4">
+            Prompts restantes hoje: {remainingPrompts}
+          </p>
+          
+          {inviteLink ? (
+            <div className="w-full">
+              <p className="text-center text-sm font-medium mb-2">Link de convite:</p>
+              <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                <div className="text-xs text-muted-foreground overflow-hidden text-ellipsis flex-1">
+                  {inviteLink}
                 </div>
-              </div>
-
-              <DialogFooter className="sm:justify-start">
                 <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="w-full"
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={copyInviteLink}
                 >
-                  {isSubmitting ? 'Enviando...' : 'Enviar Convite'}
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
-              </DialogFooter>
-            </form>
-          </>
-        )}
+              </div>
+              <p className="text-center text-xs text-muted-foreground mt-2">
+                Compartilhe este link com seu amigo para que ele ganhe acesso ao Agent0.
+              </p>
+            </div>
+          ) : (
+            <DialogFooter className="sm:justify-start w-full">
+              <Button 
+                onClick={generateInviteLinkForUser} 
+                disabled={isSubmitting}
+                className="w-full"
+              >
+                {isSubmitting ? 'Gerando...' : 'Gerar Link de Convite'}
+              </Button>
+            </DialogFooter>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
