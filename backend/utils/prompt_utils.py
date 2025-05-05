@@ -55,8 +55,20 @@ async def check_prompt_limit(client, user_id: str) -> Tuple[bool, str, int, int]
         
         # Calcular o número de prompts permitidos
         invites_count = len(invites_result.data) if invites_result.data else 0
-        max_allowed = MAX_PROMPTS_PER_DAY + (invites_count * EXTRA_PROMPTS_PER_INVITE)
-        logger.info(f"Limite calculado: {max_allowed} (base: {MAX_PROMPTS_PER_DAY} + {invites_count} convites)")
+        
+        # Verificar se há um registro de uso com bonus_count
+        bonus_count = 0
+        if usage_result.data and 'bonus_count' in usage_result.data[0]:
+            bonus_count = usage_result.data[0]['bonus_count'] or 0
+            logger.info(f"Bônus de prompts encontrado no registro: {bonus_count}")
+        
+        # Se não houver bonus_count no registro, usar o número de convites utilizados
+        if bonus_count == 0:
+            bonus_count = invites_count
+            logger.info(f"Usando número de convites como bônus: {invites_count}")
+        
+        max_allowed = MAX_PROMPTS_PER_DAY + (bonus_count * EXTRA_PROMPTS_PER_INVITE)
+        logger.info(f"Limite calculado: {max_allowed} (base: {MAX_PROMPTS_PER_DAY} + bônus: {bonus_count} convites)")
         
         # Verificar se já existe um registro para hoje
         if not usage_result.data:
