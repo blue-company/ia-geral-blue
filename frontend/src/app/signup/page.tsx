@@ -53,7 +53,7 @@ function SignupForm() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`,
+          // Removido emailRedirectTo para evitar convite por email
           data: inviteCode ? {
             invite_code: inviteCode
           } : undefined
