@@ -977,11 +977,10 @@ async def initiate_agent_with_files(
         logger.warning(f"User ID is not in UUID format: {user_id}")
     
     # In Basejump, personal account_id is the same as user_id
-    # Verificar se existe uma conta associada a este usuário
+    # Verificar se já existe uma conta para este usuário
     try:
-        account_result = await client.from_('accounts').select('id').eq('id', formatted_user_id).execute()
-        
-        if not account_result.data or len(account_result.data) == 0:
+        account_check = await client.from_('basejump.accounts').select('*').eq('id', formatted_user_id).execute()
+        if not account_check.data or len(account_check.data) == 0:
             logger.warning(f"No account found for user {formatted_user_id} in basejump.accounts table. Creating one automatically.")
             
             # Criar uma conta automaticamente para o usuário
@@ -996,7 +995,7 @@ async def initiate_agent_with_files(
                 account_slug = re.sub(r'[^a-zA-Z0-9]', '-', user_name.lower())
                 
                 # Inserir nova conta na tabela accounts com os campos corretos
-                new_account = await client.from_('accounts').insert({
+                new_account = await client.from_('basejump.accounts').insert({
                     "id": formatted_user_id,
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "updated_at": datetime.now(timezone.utc).isoformat(),
@@ -1007,7 +1006,7 @@ async def initiate_agent_with_files(
                 }).execute()
                 
                 # Também criar entrada na tabela account_user para permissões
-                await client.from_('account_user').insert({
+                await client.from_('basejump.account_user').insert({
                     "account_id": formatted_user_id,
                     "user_id": formatted_user_id,
                     "account_role": "owner"
