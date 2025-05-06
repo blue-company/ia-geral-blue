@@ -145,7 +145,8 @@ function getFallbackPromptUsage(userId: string): PromptUsage {
 }
 
 /**
- * Incrementa a contagem de prompts para um usuário no Supabase
+ * Obtém a contagem de prompts para um usuário no Supabase
+ * Nota: A funcionalidade de incremento foi movida para o backend
  */
 export async function incrementPromptCount(userId: string): Promise<PromptUsage> {
   if (!userId) {
@@ -156,7 +157,7 @@ export async function incrementPromptCount(userId: string): Promise<PromptUsage>
     const supabase = createClient();
     const currentDate = getCurrentDate();
 
-    // Verificar se já existe um registro para hoje
+    // Apenas verificar o uso atual de prompts
     const { data: existingData, error: checkError } = await supabase
       .from('prompt_usage')
       .select('*')
@@ -169,35 +170,20 @@ export async function incrementPromptCount(userId: string): Promise<PromptUsage>
       return incrementFallbackPromptCount(userId);
     }
 
-    let result;
-
+    // Se não houver dados, retornar um objeto vazio
     if (!existingData) {
-      // Criar novo registro se não existir
-      result = await supabase
-        .from('prompt_usage')
-        .insert({
-          user_id: userId,
-          date: currentDate,
-          count: 1
-        })
-        .select()
-        .single();
-    } else {
-      // Atualizar registro existente
-      result = await supabase
-        .from('prompt_usage')
-        .update({
-          count: existingData.count + 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', existingData.id)
-        .select()
-        .single();
-    }
+      // Buscar os convites do usuário que foram utilizados
+      const { data: invitesData } = await supabase
+        .from('user_invites')
+        .select('email')
+        .eq('inviter_id', userId)
+        .eq('used', true);
 
-    if (result.error) {
-      console.error('Erro ao incrementar contagem de prompts:', result.error);
-      return incrementFallbackPromptCount(userId);
+      return {
+        count: 0,
+        date: currentDate,
+        invites: invitesData?.map(invite => invite.email) || []
+      };
     }
 
     // Buscar os convites do usuário que foram utilizados
@@ -208,11 +194,11 @@ export async function incrementPromptCount(userId: string): Promise<PromptUsage>
       .eq('used', true);
 
     if (invitesError) {
-      console.error('Erro ao buscar convites após incremento:', invitesError);
+      console.error('Erro ao buscar convites:', invitesError);
     }
 
     return {
-      count: result.data.count,
+      count: existingData.count,
       date: currentDate,
       invites: invitesData?.map(invite => invite.email) || []
     };

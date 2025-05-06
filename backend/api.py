@@ -165,8 +165,5 @@ if __name__ == "__main__":
         reload=True,
         limit_concurrency=100,
         limit_max_requests=10000,
-        timeout_keep_alive=120,
-        limit_request_line=8190,
-        limit_request_fields=100,
-        limit_request_field_size=8190
+        timeout_keep_alive=120
     )
