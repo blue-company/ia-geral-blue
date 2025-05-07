@@ -141,6 +141,28 @@ class Configuration:
     DAYTONA_SERVER_URL: str
     DAYTONA_TARGET: str
     
+    # Chaves adicionais de API Daytona (opcionais)
+    DAYTONA_API_KEY_1: Optional[str] = None
+    DAYTONA_API_KEY_2: Optional[str] = None
+    DAYTONA_API_KEY_3: Optional[str] = None
+    DAYTONA_API_KEY_4: Optional[str] = None
+    DAYTONA_API_KEY_5: Optional[str] = None
+    DAYTONA_API_KEY_6: Optional[str] = None
+    DAYTONA_API_KEY_7: Optional[str] = None
+    DAYTONA_API_KEY_8: Optional[str] = None
+    DAYTONA_API_KEY_9: Optional[str] = None
+    DAYTONA_API_KEY_10: Optional[str] = None
+    DAYTONA_API_KEY_11: Optional[str] = None
+    DAYTONA_API_KEY_12: Optional[str] = None
+    DAYTONA_API_KEY_13: Optional[str] = None
+    DAYTONA_API_KEY_14: Optional[str] = None
+    DAYTONA_API_KEY_15: Optional[str] = None
+    DAYTONA_API_KEY_16: Optional[str] = None
+    DAYTONA_API_KEY_17: Optional[str] = None
+    DAYTONA_API_KEY_18: Optional[str] = None
+    DAYTONA_API_KEY_19: Optional[str] = None
+    DAYTONA_API_KEY_20: Optional[str] = None
+    
     # Search and other API keys
     TAVILY_API_KEY: str
     RAPID_API_KEY: str
