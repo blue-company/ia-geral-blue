@@ -23,16 +23,26 @@ interface WavesProps {
 }
 
 class Grad {
-  constructor(x, y, z) {
+  x: number;
+  y: number;
+  z: number;
+  
+  constructor(x: number, y: number, z: number) {
     this.x = x
     this.y = y
     this.z = z
   }
-  dot2(x, y) {
+  
+  dot2(x: number, y: number): number {
     return this.x * x + this.y * y
   }
 }
 class Noise {
+  grad3: Grad[];
+  p: number[];
+  perm: number[];
+  gradP: Grad[];
+  
   constructor(seed = 0) {
     this.grad3 = [
       new Grad(1, 1, 0),
@@ -70,39 +80,41 @@ class Noise {
     this.gradP = new Array(512)
     this.seed(seed)
   }
-  seed(seed) {
+  seed(seed: number): void {
     if (seed > 0 && seed < 1) seed *= 65536
     seed = Math.floor(seed)
     if (seed < 256) seed |= seed << 8
     for (let i = 0; i < 256; i++) {
-      let v = i & 1 ? this.p[i] ^ (seed & 255) : this.p[i] ^ ((seed >> 8) & 255)
+      const v = i & 1 ? this.p[i] ^ (seed & 255) : this.p[i] ^ ((seed >> 8) & 255)
       this.perm[i] = this.perm[i + 256] = v
       this.gradP[i] = this.gradP[i + 256] = this.grad3[v % 12]
     }
   }
-  fade(t) {
+  
+  fade(t: number): number {
     return t * t * t * (t * (t * 6 - 15) + 10)
   }
-  lerp(a, b, t) {
+  
+  lerp(a: number, b: number, t: number): number {
     return (1 - t) * a + t * b
   }
-  perlin2(x, y) {
-    let X = Math.floor(x),
-      Y = Math.floor(y)
-    x -= X
-    y -= Y
-    X &= 255
-    Y &= 255
-    const n00 = this.gradP[X + this.perm[Y]].dot2(x, y)
-    const n01 = this.gradP[X + this.perm[Y + 1]].dot2(x, y - 1)
-    const n10 = this.gradP[X + 1 + this.perm[Y]].dot2(x - 1, y)
-    const n11 = this.gradP[X + 1 + this.perm[Y + 1]].dot2(x - 1, y - 1)
-    const u = this.fade(x)
+  perlin2(x: number, y: number): number {
+    let X = Math.floor(x);
+    let Y = Math.floor(y);
+    x -= X;
+    y -= Y;
+    X &= 255;
+    Y &= 255;
+    const n00 = this.gradP[X + this.perm[Y]].dot2(x, y);
+    const n01 = this.gradP[X + this.perm[Y + 1]].dot2(x, y - 1);
+    const n10 = this.gradP[X + 1 + this.perm[Y]].dot2(x - 1, y);
+    const n11 = this.gradP[X + 1 + this.perm[Y + 1]].dot2(x - 1, y - 1);
+    const u = this.fade(x);
     return this.lerp(
       this.lerp(n00, n10, u),
       this.lerp(n01, n11, u),
-      this.fade(y),
-    )
+      this.fade(y)
+    );
   }
 }
 
