@@ -128,4 +128,25 @@ def setup_logger(name: str = 'agentpress') -> logging.Logger:
     return logger
 
 # Create default logger instance
-logger = setup_logger() 
+logger = setup_logger()
+
+# Funções de conveniência para acesso direto ao módulo
+def debug(msg, *args, **kwargs):
+    """Wrapper para logger.debug"""
+    return logger.debug(msg, *args, **kwargs)
+
+def info(msg, *args, **kwargs):
+    """Wrapper para logger.info"""
+    return logger.info(msg, *args, **kwargs)
+
+def warning(msg, *args, **kwargs):
+    """Wrapper para logger.warning"""
+    return logger.warning(msg, *args, **kwargs)
+
+def error(msg, *args, **kwargs):
+    """Wrapper para logger.error"""
+    return logger.error(msg, *args, **kwargs)
+
+def critical(msg, *args, **kwargs):
+    """Wrapper para logger.critical"""
+    return logger.critical(msg, *args, **kwargs)
