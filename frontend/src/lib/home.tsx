@@ -49,9 +49,9 @@ export interface PricingTier {
 }
 
 export const siteConfig = {
-  name: "Agent0",
+  name: "InventuAI",
   description: "O Agente de IA Generalista que pode agir em seu nome.",
-  cta: "Contratar Agent0",
+  cta: "Contratar InventuAI",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   keywords: [
     "Agente de IA",
@@ -60,11 +60,11 @@ export const siteConfig = {
     "Agente Autônomo",
   ],
   links: {
-    email: "support@Agent0.so",
-    twitter: "https://x.com/Agent0",
-    discord: "https://discord.gg/Agent0",
-    github: "https://github.com/Agent0/Agent0",
-    instagram: "https://instagram.com/Agent0",
+    email: "support@inventu.ai",
+    twitter: "https://x.com/InventuAI",
+    discord: "https://discord.gg/InventuAI",
+    github: "https://github.com/inventuai/inventuai",
+    instagram: "https://instagram.com/InventuAI",
   },
   nav: {
     links: [
@@ -90,17 +90,17 @@ export const siteConfig = {
       </svg>
     ),
     badge: "100% CÓDIGO ABERTO",
-    githubUrl: "https://github.com/Agent0/Agent0",
-    title: "Agent0, a IA multitarefa a seu serviço. ",
-    description: "Agent0 – é um Agente de IA generalista que age em seu nome.",
-    inputPlaceholder: "Peça ao Agent0 para...",
+    githubUrl: "https://github.com/inventuai/inventuai",
+    title: "InventuAI, a IA multitarefa a seu serviço. ",
+    description: "InventuAI – é um Agente de IA generalista que age em seu nome.",
+    inputPlaceholder: "Peça ao InventuAI para...",
   },
   cloudPricingItems: [
     {
       name: "Grátis",
       price: "$0",
       description: "Comece com",
-      buttonText: "Contratar Agent0",
+      buttonText: "Contratar InventuAI",
       buttonColor: "bg-secondary text-white",
       isPopular: false,
       hours: "10 min",
@@ -114,7 +114,7 @@ export const siteConfig = {
       name: "Pro",
       price: "$20",
       description: "Tudo do Grátis, mais:",
-      buttonText: "Contratar Agent0",
+      buttonText: "Contratar InventuAI",
       buttonColor: "bg-primary text-white dark:text-black",
       isPopular: true,
       hours: "2 hours",
@@ -130,7 +130,7 @@ export const siteConfig = {
       name: "Personalizado",
       price: "$50",
       description: "Tudo do Pro, mais:",
-      buttonText: "Contratar Agent0",
+      buttonText: "Contratar InventuAI",
       buttonColor: "bg-secondary text-white",
       isPopular: false,
       hours: "6 horas",
@@ -350,15 +350,15 @@ export const siteConfig = {
     ],
   },
   featureSection: {
-    title: "How Agent0 Works",
+    title: "How InventuAI Works",
     description:
-      "Discover how Agent0 transforms your commands into action in four easy steps",
+      "Discover how InventuAI transforms your commands into action in four easy steps",
     items: [
       {
         id: 1,
         title: "Request an Action",
         content:
-          "Speak or type your command—let Agent0 capture your intent. Your request instantly sets the process in motion.",
+          "Speak or type your command—let InventuAI capture your intent. Your request instantly sets the process in motion.",
         image:
           "https://images.unsplash.com/photo-1720371300677-ba4838fa0678?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
@@ -366,7 +366,7 @@ export const siteConfig = {
         id: 2,
         title: "AI Understanding & Planning",
         content:
-          "Agent0 analyzes your request, understands the context, and develops a structured plan to complete the task efficiently.",
+          "InventuAI analyzes your request, understands the context, and develops a structured plan to complete the task efficiently.",
         image:
           "https://images.unsplash.com/photo-1686170287433-c95faf6d3608?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzfHx8ZW58MHx8fHx8fA%3D%3D",
       },
@@ -374,7 +374,7 @@ export const siteConfig = {
         id: 3,
         title: "Autonomous Execution",
         content:
-          "Using its capabilities and integrations, Agent0 executes the task independently, handling any complexities along the way.",
+          "Using its capabilities and integrations, InventuAI executes the task independently, handling any complexities along the way.",
         image:
           "https://images.unsplash.com/photo-1720378042271-60aff1e1c538?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMHx8fGVufDB8fHx8fA%3D%3D",
       },
@@ -382,30 +382,30 @@ export const siteConfig = {
         id: 4,
         title: "Results & Learning",
         content:
-          "Agent0 delivers results and learns from each interaction, continuously improving its performance to better serve your needs.",
+          "InventuAI delivers results and learns from each interaction, continuously improving its performance to better serve your needs.",
         image:
           "https://images.unsplash.com/photo-1666882990322-e7f3b8df4f75?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDF8fHxlbnwwfHx8fHw%3D",
       },
     ],
   },
   bentoSection: {
-    title: "Empower Your Workflow with Agent0",
+    title: "Empower Your Workflow with InventuAI",
     description:
-      "Let Agent0 act on your behalf with advanced AI capabilities, seamless integrations, and autonomous task execution.",
+      "Let InventuAI act on your behalf with advanced AI capabilities, seamless integrations, and autonomous task execution.",
     items: [
       {
         id: 1,
         content: <FirstBentoAnimation />,
         title: "Autonomous Task Execution",
         description:
-          "Experience true automation with Agent0. Ask your AI Agent to complete tasks, research information, and handle complex workflows with minimal supervision.",
+          "Experience true automation with AgentZERO. Ask your AI Agent to complete tasks, research information, and handle complex workflows with minimal supervision.",
       },
       {
         id: 2,
         content: <SecondBentoAnimation />,
         title: "Seamless Integrations",
         description:
-          "Connect Agent0 to your existing tools for a unified workflow. Boost productivity through AI-powered interconnected systems.",
+          "Connect AgentZERO to your existing tools for a unified workflow. Boost productivity through AI-powered interconnected systems.",
       },
       {
         id: 3,
@@ -419,21 +419,21 @@ export const siteConfig = {
         ),
         title: "Intelligent Data Analysis",
         description:
-          "Transform raw data into actionable insights in seconds. Make better decisions with Agent0's real-time, adaptive intelligence.",
+          "Transform raw data into actionable insights in seconds. Make better decisions with AgentZERO's real-time, adaptive intelligence.",
       },
       {
         id: 4,
         content: <FourthBentoAnimation once={false} />,
         title: "Complete Customization",
         description:
-          "Tailor Agent0 to your specific needs. As an open source solution, you have full control over its capabilities, integrations, and implementation.",
+          "Tailor AgentZERO to your specific needs. As an open source solution, you have full control over its capabilities, integrations, and implementation.",
       },
     ],
   },
   benefits: [
     {
       id: 1,
-      text: "Automate everyday tasks with Agent0's powerful AI capabilities.",
+      text: "Automate everyday tasks with AgentZERO's powerful AI capabilities.",
       image: "/Device-6.png",
     },
     {
@@ -443,7 +443,7 @@ export const siteConfig = {
     },
     {
       id: 3,
-      text: "Improve focus on high-value work as Agent0 handles the routine.",
+      text: "Improve focus on high-value work as AgentZERO handles the routine.",
       image: "/Device-8.png",
     },
     {
@@ -749,13 +749,13 @@ export const siteConfig = {
 
         title: "Community Powered",
         description:
-          "Join a thriving community of developers and users continuously enhancing and expanding Agent0's capabilities.",
+          "Join a thriving community of developers and users continuously enhancing and expanding AgentZERO's capabilities.",
       },
     ],
   },
   quoteSection: {
     quote:
-      "Agent0 has transformed how we approach everyday tasks. The level of automation it provides, combined with its open source nature, makes it an invaluable tool for our entire organization.",
+      "AgentZERO has transformed how we approach everyday tasks. The level of automation it provides, combined with its open source nature, makes it an invaluable tool for our entire organization.",
     author: {
       name: "Alex Johnson",
       role: "CTO, Innovatech",
@@ -765,7 +765,7 @@ export const siteConfig = {
   pricing: {
     title: "Open Source & Free Forever",
     description:
-      "Agent0 is 100% open source and free to use. No hidden fees, no premium features locked behind paywalls.",
+      "AgentZERO is 100% open source and free to use. No hidden fees, no premium features locked behind paywalls.",
     pricingItems: [
       {
         name: "Community",
@@ -780,7 +780,7 @@ export const siteConfig = {
           "Community support",
         ],
         description: "Perfect for individual users and developers",
-        buttonText: "Hire Agent0",
+        buttonText: "Hire AgentZERO",
         buttonColor: "bg-accent text-primary",
         isPopular: false,
       },
@@ -1030,7 +1030,7 @@ export const siteConfig = {
   faqSection: {
     title: "Perguntas Frequentes",
     description:
-      "Respostas para perguntas comuns sobre o Agent0 e suas capacidades. Se você tiver outras dúvidas, não hesite em entrar em contato conosco.",
+      "Respostas para perguntas comuns sobre o AgentZERO e suas capacidades. Se você tiver outras dúvidas, não hesite em entrar em contato conosco.",
     faQitems: [
       {
         id: 1,
@@ -1040,69 +1040,69 @@ export const siteConfig = {
       },
       {
         id: 2,
-        question: "Como funciona o Agent0?",
+        question: "Como funciona o AgentZERO?",
         answer:
-          "O Agent0 funciona analisando seus requisitos, aproveitando algoritmos avançados de IA para entender o contexto e executando tarefas com base em suas instruções. Ele pode se integrar ao seu fluxo de trabalho, aprender com feedback e melhorar continuamente seu desempenho.",
+          "O AgentZERO funciona analisando seus requisitos, aproveitando algoritmos avançados de IA para entender o contexto e executando tarefas com base em suas instruções. Ele pode se integrar ao seu fluxo de trabalho, aprender com feedback e melhorar continuamente seu desempenho.",
       },
       {
         id: 3,
-        question: "O Agent0 é realmente gratuito?",
+        question: "O AgentZERO é realmente gratuito?",
         answer:
-          "Sim, o Agent0 é completamente gratuito e de código aberto. Acreditamos na democratização da tecnologia de IA e em torná-la acessível a todos. Você pode usá-lo, modificá-lo e contribuir para seu desenvolvimento sem nenhum custo.",
+          "Sim, o AgentZERO é completamente gratuito e de código aberto. Acreditamos na democratização da tecnologia de IA e em torná-la acessível a todos. Você pode usá-lo, modificá-lo e contribuir para seu desenvolvimento sem nenhum custo.",
       },
       {
         id: 4,
-        question: "Posso integrar o Agent0 com minhas ferramentas existentes?",
+        question: "Posso integrar o AgentZERO com minhas ferramentas existentes?",
         answer:
-          "Sim, o Agent0 foi projetado para ser altamente compatível com ferramentas e plataformas populares. Oferecemos APIs e integrações pré-construídas para conexão perfeita com suas ferramentas e sistemas de fluxo de trabalho existentes.",
+          "Sim, o AgentZERO foi projetado para ser altamente compatível com ferramentas e plataformas populares. Oferecemos APIs e integrações pré-construídas para conexão perfeita com suas ferramentas e sistemas de fluxo de trabalho existentes.",
       },
       {
         id: 5,
-        question: "Como posso contribuir para o Agent0?",
+        question: "Como posso contribuir para o AgentZERO?",
         answer:
-          "Você pode contribuir para o Agent0 enviando pull requests no GitHub, relatando bugs, sugerindo novos recursos ou ajudando com a documentação. Junte-se à nossa comunidade no Discord para se conectar com outros colaboradores e contratar o Agent0.",
+          "Você pode contribuir para o AgentZERO enviando pull requests no GitHub, relatando bugs, sugerindo novos recursos ou ajudando com a documentação. Junte-se à nossa comunidade no Discord para se conectar com outros colaboradores e contratar o AgentZERO.",
       },
       {
         id: 6,
-        question: "Como o Agent0 economiza meu tempo?",
+        question: "Como o AgentZERO economiza meu tempo?",
         answer:
-          "O Agent0 automatiza tarefas repetitivas, otimiza fluxos de trabalho e fornece soluções rápidas para desafios comuns. Essa automação e eficiência podem economizar horas de trabalho manual, permitindo que você se concentre em atividades mais estratégicas.",
+          "O AgentZERO automatiza tarefas repetitivas, otimiza fluxos de trabalho e fornece soluções rápidas para desafios comuns. Essa automação e eficiência podem economizar horas de trabalho manual, permitindo que você se concentre em atividades mais estratégicas.",
       },
     ],
   },
   ctaSection: {
     id: "cta",
-    title: "Comece a usar o Agent0 hoje",
+    title: "Comece a usar o AgentZERO hoje",
     backgroundImage: "/holo.png",
     cta: {
-      text: "Contrate o Agent0 hoje",
+      text: "Contrate o AgentZERO hoje",
       href: "/auth",
     },
     subtext: "O Agente de IA generalista que age em seu nome",
   },
   footerLinks: [
     {
-      title: "Agent0",
+      title: "AgentZERO",
       links: [
-        { id: 1, title: "Sobre", url: "https://Agent0.so" },
-        { id: 3, title: "Contato", url: "mailto:hey@Agent0.so" },
-        { id: 4, title: "Carreiras", url: "https://Agent0.so/careers" },
+        { id: 1, title: "Sobre", url: "https://AgentZERO.so" },
+        { id: 3, title: "Contato", url: "mailto:hey@AgentZERO.so" },
+        { id: 4, title: "Carreiras", url: "https://AgentZERO.so/careers" },
       ],
     },
     {
       title: "Recursos",
       links: [
-        { id: 5, title: "Documentação", url: "https://github.com/Agent0/Agent0" },
+        { id: 5, title: "Documentação", url: "https://github.com/AgentZERO/AgentZERO" },
         { id: 7, title: "Discord", url: "https://discord.gg/Py6pCBUUPw" },
-        { id: 8, title: "GitHub", url: "https://github.com/Agent0/Agent0" },
+        { id: 8, title: "GitHub", url: "https://github.com/AgentZERO/AgentZERO" },
       ],
     },
     {
       title: "Jurídico",
       links: [
-        { id: 9, title: "Política de Privacidade", url: "https://Agent0.so/legal?tab=privacy" },
-        { id: 10, title: "Termos de Serviço", url: "https://Agent0.so/legal?tab=terms" },
-        { id: 11, title: "Licença Apache 2.0", url: "https://github.com/Agent0/Agent0/blob/main/LICENSE" },
+        { id: 9, title: "Política de Privacidade", url: "https://AgentZERO.so/legal?tab=privacy" },
+        { id: 10, title: "Termos de Serviço", url: "https://AgentZERO.so/legal?tab=terms" },
+        { id: 11, title: "Licença Apache 2.0", url: "https://github.com/AgentZERO/AgentZERO/blob/main/LICENSE" },
       ],
     },
   ],
@@ -1121,7 +1121,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/5ee791ac-e19c-4986-a61c-6d0659d0e5bc"
+      url: "https://www.AgentZERO.so/share/5ee791ac-e19c-4986-a61c-6d0659d0e5bc"
     },
     {
       id: "vc-list",
@@ -1136,7 +1136,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/804d20a3-cf1c-4adb-83bb-0e77cc6adeac"
+      url: "https://www.AgentZERO.so/share/804d20a3-cf1c-4adb-83bb-0e77cc6adeac"
     },
     {
       id: "candidate-search",
@@ -1152,7 +1152,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/3ae581b0-2db8-4c63-b324-3b8d29762e74"
+      url: "https://www.AgentZERO.so/share/3ae581b0-2db8-4c63-b324-3b8d29762e74"
     },
     {
       id: "company-trip",
@@ -1169,7 +1169,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/725e64a0-f1e2-4bb6-8a1f-703c2833fd72"
+      url: "https://www.AgentZERO.so/share/725e64a0-f1e2-4bb6-8a1f-703c2833fd72"
     },
     {
       id: "excel-spreadsheet",
@@ -1185,7 +1185,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/128f23a4-51cd-42a6-97a0-0b458b32010e"
+      url: "https://www.AgentZERO.so/share/128f23a4-51cd-42a6-97a0-0b458b32010e"
     },
     {
       id: "speaker-prospecting",
@@ -1201,7 +1201,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/7a7592ea-ed44-4c69-bcb5-5f9bb88c188c"
+      url: "https://www.AgentZERO.so/share/7a7592ea-ed44-4c69-bcb5-5f9bb88c188c"
     },
     {
       id: "scientific-papers",
@@ -1217,7 +1217,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/c2081b3c-786e-4e7c-9bf4-46e9b23bb662"
+      url: "https://www.AgentZERO.so/share/c2081b3c-786e-4e7c-9bf4-46e9b23bb662"
     },
     {
       id: "lead-generation",
@@ -1233,12 +1233,12 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/6b6296a6-8683-49e5-9ad0-a32952d12c44"
+      url: "https://www.AgentZERO.so/share/6b6296a6-8683-49e5-9ad0-a32952d12c44"
     },
     {
       id: "seo-analysis",
       title: "SEO Analysis",
-      description: "Based on my website Agent0.so, generate an SEO report analysis, find top-ranking pages by keyword clusters, and identify topics I'm missing.",
+      description: "Based on my website AgentZERO.so, generate an SEO report analysis, find top-ranking pages by keyword clusters, and identify topics I'm missing.",
       category: "marketing",
       featured: true,
       icon: (
@@ -1250,7 +1250,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/43491cb0-cd6c-45f0-880c-66ddc8c4b842"
+      url: "https://www.AgentZERO.so/share/43491cb0-cd6c-45f0-880c-66ddc8c4b842"
     },
     {
       id: "personal-trip",
@@ -1267,7 +1267,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/37b31907-8349-4f63-b0e5-27ca597ed02a"
+      url: "https://www.AgentZERO.so/share/37b31907-8349-4f63-b0e5-27ca597ed02a"
     },
     {
       id: "funded-startups",
@@ -1282,7 +1282,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1444653614773-995cb1ef9efa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/8b2a897e-985a-4d5e-867b-15239274f764"
+      url: "https://www.AgentZERO.so/share/8b2a897e-985a-4d5e-867b-15239274f764"
     },
     {
       id: "scrape-forums",
@@ -1298,7 +1298,7 @@ export const siteConfig = {
         </svg>
       ),
       image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2400&q=80",
-      url: "https://www.Agent0.so/share/7d7a5d93-a20d-48b0-82cc-e9a876e9fd04"
+      url: "https://www.AgentZERO.so/share/7d7a5d93-a20d-48b0-82cc-e9a876e9fd04"
     }
   ],
 };

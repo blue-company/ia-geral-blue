@@ -6,10 +6,10 @@ import { FooterSection } from "@/components/home/sections/footer-section";
 export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen w-full">
-      <div className="w-full divide-y divide-border">
+      <div className="w-full">
         <HeroSection />
         <FooterSection />
       </div>
     </main>
   );
-} 
+}

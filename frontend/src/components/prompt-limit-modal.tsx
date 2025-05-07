@@ -94,7 +94,7 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
             {showSuccess 
-              ? 'Seu amigo receberá um e-mail com o convite para o Agent0.'
+              ? 'Seu amigo receberá um e-mail com o convite para o AgentZERO.'
               : `Você atingiu o limite de ${maxPrompts} prompts diários.`
             }
           </DialogDescription>
@@ -120,7 +120,7 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
           
           {showSuccess && (
             <p className="text-center text-sm text-muted-foreground mb-4">
-              Por compartilhar o Agent0, você ganhará {extraPrompts} prompt extra.
+              Por compartilhar o AgentZERO, você ganhará {extraPrompts} prompt extra.
             </p>
           )}
           
@@ -145,7 +145,7 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
                 </Button>
               </div>
               <p className="text-center text-xs text-muted-foreground mt-2">
-                Compartilhe este link com seu amigo para que ele ganhe acesso ao Agent0.
+                Compartilhe este link com seu amigo para que ele ganhe acesso ao AgentZERO.
               </p>
             </div>
           ) : (

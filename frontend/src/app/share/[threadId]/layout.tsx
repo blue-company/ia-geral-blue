@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   description: 'Visualize uma conversa de IA compartilhada',
   openGraph: {
     title: 'Conversa de IA Compartilhada',
-    description: 'Visualize uma conversa de IA compartilhada do Agent0',
-    images: ['/kortix-logo.png'],
+    description: 'Visualize uma conversa de IA compartilhada do AgentZERO',
+    images: ['/meta.png'],
   },
 };
 
@@ -16,4 +16,4 @@ export default function ThreadLayout({
   children: React.ReactNode;
 }) {
   return <>{children}</>;
-} 
+}

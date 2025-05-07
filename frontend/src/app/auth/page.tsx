@@ -210,24 +210,15 @@ function LoginContent() {
   // Registration success view
   if (registrationSuccess) {
     return (
-      <main className="flex flex-col items-center justify-center min-h-screen w-full">
-        <div className="w-full divide-y divide-border">
+      <main className="flex flex-col items-center justify-center min-h-screen w-full bg-black">
+        <div className="w-full">
           <section className="w-full relative overflow-hidden">
             <div className="relative flex flex-col items-center w-full px-6">
-              {/* Background elements from the original view */}
-              <div className="absolute left-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background z-10" />
-                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-                <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-              </div>
+              {/* Background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-blue-900 -z-10"></div>
               
-              <div className="absolute right-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background z-10" />
-                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-                <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-              </div>
-              
-              <div className="absolute inset-x-1/4 top-0 h-[600px] md:h-[800px] -z-20 bg-background rounded-b-xl"></div>
+              {/* Radial glow effect */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.3)_0%,_rgba(0,0,0,0)_70%)] -z-10"></div>
               
               {/* Success content */}
               <div className="relative z-10 pt-24 pb-8 max-w-xl mx-auto h-full w-full flex flex-col gap-2 items-center justify-center">
@@ -236,7 +227,7 @@ function LoginContent() {
                     <MailCheck className="h-12 w-12 text-green-500 dark:text-green-400" />
                   </div>
                   
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance text-primary mb-4">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text mb-4">
                     Verifique seu e-mail
                   </h1>
                   
@@ -278,59 +269,16 @@ function LoginContent() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen w-full">
-      <div className="w-full divide-y divide-border">
+    <main className="flex flex-col items-center justify-center min-h-screen w-full bg-black">
+      <div className="w-full">
         {/* Hero-like header with flickering grid */}
         <section className="w-full relative overflow-hidden">
           <div className="relative flex flex-col items-center w-full px-6">
-            {/* Left side flickering grid with gradient fades */}
-            <div className="absolute left-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-              {/* Horizontal fade from left to right */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background z-10" />
-              
-              {/* Vertical fade from top */}
-              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-              
-              {/* Vertical fade to bottom */}
-              <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-              
-              <div className="h-full w-full">
-                <FlickeringGrid
-                  className="h-full w-full"
-                  squareSize={mounted && tablet ? 2 : 2.5}
-                  gridGap={mounted && tablet ? 2 : 2.5}
-                  color="var(--secondary)"
-                  maxOpacity={0.4}
-                  flickerChance={isScrolling ? 0.01 : 0.03}
-                />
-              </div>
-            </div>
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-blue-900 -z-10"></div>
             
-            {/* Right side flickering grid with gradient fades */}
-            <div className="absolute right-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-              {/* Horizontal fade from right to left */}
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background z-10" />
-              
-              {/* Vertical fade from top */}
-              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-              
-              {/* Vertical fade to bottom */}
-              <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-              
-              <div className="h-full w-full">
-                <FlickeringGrid
-                  className="h-full w-full"
-                  squareSize={mounted && tablet ? 2 : 2.5}
-                  gridGap={mounted && tablet ? 2 : 2.5}
-                  color="var(--secondary)"
-                  maxOpacity={0.4}
-                  flickerChance={isScrolling ? 0.01 : 0.03}
-                />
-              </div>
-            </div>
-            
-            {/* Center content background with rounded bottom */}
-            <div className="absolute inset-x-1/4 top-0 h-[600px] md:h-[800px] -z-20 bg-background rounded-b-xl"></div>
+            {/* Radial glow effect */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.3)_0%,_rgba(0,0,0,0)_70%)] -z-10"></div>
             
             {/* Header content */}
             <div className="relative z-10 pt-24 pb-8 max-w-md mx-auto h-full w-full flex flex-col gap-2 items-center justify-center">
@@ -342,8 +290,8 @@ function LoginContent() {
                 <span className="font-medium text-muted-foreground text-xs tracking-wide">Voltar para a página inicial</span>
               </Link>
               
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance text-primary">
-                {isSignUp ? "Junte-se ao Agent0" : "Bem-vindo de volta"}
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">
+                {isSignUp ? "Junte-se ao AgentZERO" : "Bem-vindo de volta"}
               </h1>
               <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight mt-2 mb-6">
                 {isSignUp ? "Crie sua conta e comece a construir com IA" : "Entre na sua conta para continuar"}
@@ -373,7 +321,7 @@ function LoginContent() {
                       name="email"
                       type="email"
                       placeholder="Endereço de e-mail"
-                      className="h-12 rounded-full bg-background border-border"
+                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
                       required
                     />
                   </div>
@@ -385,7 +333,7 @@ function LoginContent() {
                       name="password"
                       type="password"
                       placeholder="Senha"
-                      className="h-12 rounded-full bg-background border-border"
+                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
                       required
                     />
                   </div>
@@ -398,7 +346,7 @@ function LoginContent() {
                         name="confirmPassword"
                         type="password"
                         placeholder="Confirme a senha"
-                        className="h-12 rounded-full bg-background border-border"
+                        className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
                         required
                       />
                     </div>
@@ -497,10 +445,10 @@ function LoginContent() {
       
       {/* Forgot Password Dialog */}
       <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
-        <DialogContent className="sm:max-w-md rounded-xl bg-[#F3F4F6] dark:bg-[#F9FAFB]/[0.02] border border-border">
+        <DialogContent className="sm:max-w-md rounded-xl bg-black border border-blue-900/30 text-white">
           <DialogHeader>
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-xl font-medium">Redefinir Senha</DialogTitle>
+              <DialogTitle className="text-xl font-medium bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">Redefinir Senha</DialogTitle>
               <button 
                 onClick={() => setForgotPasswordOpen(false)}
                 className="rounded-full p-1 hover:bg-muted transition-colors"
@@ -520,7 +468,7 @@ function LoginContent() {
               placeholder="Endereço de e-mail"
               value={forgotPasswordEmail}
               onChange={(e) => setForgotPasswordEmail(e.target.value)}
-              className="h-12 rounded-full bg-background border-border"
+              className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
               required
             />
             

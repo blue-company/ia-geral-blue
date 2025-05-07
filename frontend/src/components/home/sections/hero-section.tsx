@@ -36,7 +36,7 @@ const BlurredDialogOverlay = () => (
 );
 
 // Constant for localStorage key to ensure consistency
-const PENDING_PROMPT_KEY = 'pendingAgentPrompt';
+const PENDING_PROMPT_KEY = 'pendingInventuPrompt';
 
 export function HeroSection() {
   const { hero } = siteConfig;
@@ -212,99 +212,51 @@ export function HeroSection() {
   };
 
   return (
-    <section id="hero" className="w-full relative overflow-hidden pb-16">
-      <div className="relative flex flex-col items-center w-full px-6">
-        {/* Left side flickering grid with gradient fades */}
-        <div className="absolute left-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-          {/* Horizontal fade from left to right */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background z-10" />
-          
-          {/* Vertical fade from top */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-          
-          {/* Vertical fade to bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-          
-          <FlickeringGrid
-            className="h-full w-full"
-            squareSize={mounted && tablet ? 2 : 2.5}
-            gridGap={mounted && tablet ? 2 : 2.5}
-            color="var(--secondary)"
-            maxOpacity={0.4}
-            flickerChance={isScrolling ? 0.01 : 0.03} // Low flickering when not scrolling
-          />
+    <section id="hero" className="w-full min-h-screen flex items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-blue-900 -z-10"></div>
+      
+      {/* Radial glow effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.3)_0%,_rgba(0,0,0,0)_70%)] -z-10"></div>
+      
+      <div className="container mx-auto px-4 text-center">
+        <div className="inline-block px-4 py-1.5 mb-4 text-xs font-medium bg-gradient-to-r from-blue-300 via-blue-400 to-blue-600 text-transparent bg-clip-text border border-blue-400/50 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]">
+          Beta
         </div>
         
-        {/* Right side flickering grid with gradient fades */}
-        <div className="absolute right-0 top-0 h-[600px] md:h-[800px] w-1/3 -z-10 overflow-hidden">
-          {/* Horizontal fade from right to left */}
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background z-10" />
-          
-          {/* Vertical fade from top */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background via-background/90 to-transparent z-10" />
-          
-          {/* Vertical fade to bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/90 to-transparent z-10" />
-          
-          <FlickeringGrid
-            className="h-full w-full"
-            squareSize={mounted && tablet ? 2 : 2.5}
-            gridGap={mounted && tablet ? 2 : 2.5}
-            color="var(--secondary)"
-            maxOpacity={0.4}
-            flickerChance={isScrolling ? 0.01 : 0.03} // Low flickering when not scrolling
-          />
-        </div>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-br from-blue-200 via-blue-400 to-blue-600 text-transparent bg-clip-text drop-shadow-sm">
+          Conheça o<br />AgentZERO
+        </h1>
         
-        {/* Center content background with rounded bottom */}
-        <div className="absolute inset-x-1/4 top-0 h-[600px] md:h-[800px] -z-20 bg-background rounded-b-xl"></div>
+        <p className="mb-8 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">
+          Agent ZERO is in early beta. Learn more <a href="#" className="underline hover:opacity-80">here</a>.
+        </p>
         
-        <div className="relative z-10 pt-32 max-w-3xl mx-auto h-full w-full flex flex-col gap-10 items-center justify-center">
-          <div className="flex flex-col items-center justify-center gap-5">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium tracking-tighter text-balance text-center">
-              <span className="text-secondary">Agent0</span><span className="text-primary">, a IA multitarefa a seu serviço.</span>
-            </h1>
-            <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight">
-              {hero.description}
-            </p>
+        <form onSubmit={handleSubmit} className="max-w-xl w-full mx-auto mt-8">
+          <div className="relative">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Pergunte qualquer coisa ao Agent ZERO..."
+              className="w-full px-6 py-4 bg-transparent border border-blue-400/30 rounded-full text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] transition-all"
+            />
+            <button 
+              type="submit"
+              disabled={!inputValue.trim() || isSubmitting}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-400 to-blue-600 text-white p-3 rounded-full hover:from-blue-500 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Enviar"
+            >
+              {isSubmitting ? (
+                <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
           </div>
-          <div className="flex items-center w-full max-w-xl gap-2 flex-wrap justify-center">
-            <form className="w-full relative" onSubmit={handleSubmit}>
-              {/* ChatGPT-like input with glow effect */}
-              <div className="relative z-10">
-                <div className="flex items-center rounded-full border border-border bg-background/80 backdrop-blur px-4 shadow-lg transition-all duration-200 hover:border-secondary/50 focus-within:border-secondary/50 focus-within:shadow-[0_0_15px_rgba(var(--secondary),0.3)]">
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={hero.inputPlaceholder}
-                    className="flex-1 h-12 md:h-14 rounded-full px-2 bg-transparent focus:outline-none text-sm md:text-base py-2"
-                    disabled={isSubmitting}
-                  />
-                  <button 
-                    type="submit"
-                    className={`rounded-full p-2 md:p-3 transition-all duration-200 ${
-                      inputValue.trim() 
-                        ? "bg-secondary text-secondary-foreground hover:bg-secondary/80" 
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                    disabled={!inputValue.trim() || isSubmitting}
-                    aria-label="Submit"
-                  >
-                    {isSubmitting ? (
-                      <div className="h-4 md:h-5 w-4 md:w-5 border-2 border-secondary-foreground border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <ArrowRight className="size-4 md:size-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-              {/* Subtle glow effect */}
-              <div className="absolute -bottom-4 inset-x-0 h-6 bg-secondary/20 blur-xl rounded-full -z-10 opacity-70"></div>
-            </form>
-          </div>
-        </div>
+        </form>
       </div>
 
       {/* Auth Dialog */}
@@ -322,7 +274,7 @@ export function HeroSection() {
               </button> */}
             </div>
             <DialogDescription className="text-muted-foreground">
-              Sign in or create an account to talk with Agent0
+              Sign in or create an account to talk with InventuAI
             </DialogDescription>
           </DialogHeader>
           

@@ -104,85 +104,27 @@ export function Navbar() {
     (resolvedTheme === "dark" ? "/agent0-logo-white.png" : "/agent0-logo.png");
 
   return (
-    <header
-      className={cn(
-        "sticky z-50 mx-4 flex justify-center transition-all duration-300 md:mx-0",
-        hasScrolled ? "top-6" : "top-4 mx-0",
-      )}
-    >
-      <motion.div
-        initial={{ width: INITIAL_WIDTH }}
-        animate={{ width: hasScrolled ? MAX_WIDTH : INITIAL_WIDTH }}
-        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-      >
-        <div
-          className={cn(
-            "mx-auto max-w-7xl rounded-2xl transition-all duration-300  xl:px-0",
-            hasScrolled
-              ? "px-2 border border-border backdrop-blur-lg bg-background/75"
-              : "shadow-none px-7",
-          )}
-        >
-          <div className="flex h-[56px] items-center justify-between p-4">
-            <Link href="/" className="flex items-center gap-3">
-              <Image 
-                src={logoSrc} 
-                alt="Agent0 Logo" 
-                width={140} 
-                height={22} 
-                priority
-                unoptimized
-              />
-            </Link>
+    <header className="sticky top-0 z-50 w-full bg-black/50 backdrop-blur-sm">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <Link href="/" className="flex items-center ml-[-25px]">
+          <img src="/agent-circles-logo-new.png" alt="Agent ZERO Logo" className="h-14 w-14" />
+        </Link>
 
-            <NavMenu />
-
-            <div className="flex flex-row items-center gap-1 md:gap-3 shrink-0">
-              <div className="flex items-center space-x-3">
-                {!user ? (
-                  <div className="flex space-x-2">
-                  </div>
-                ) : null}
-                {/* <Link
-                  href="https://github.com/kortix-ai/suna"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden md:flex items-center justify-center h-8 px-3 text-sm font-normal tracking-wide rounded-full text-primary hover:text-primary/80 transition-colors"
-                  aria-label="GitHub"
-                >
-                  <Github className="size-[18px]" />
-                </Link> */}
-                {user ? (
-                  <Link
-                    className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
-                    href="/dashboard"
-                  >
-                    Dashboard
-                  </Link>
-                ) : (
-                  <Link
-                    className="bg-secondary h-8 hidden md:flex items-center justify-center text-sm font-normal tracking-wide rounded-full text-primary-foreground dark:text-secondary-foreground w-fit px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12]"
-                    href="/auth"
-                  >
-                    Login / Criar conta
-                  </Link>
-                )}
-              </div>
-              <ThemeToggle />
-              <button
-                className="md:hidden border border-border size-8 rounded-md cursor-pointer flex items-center justify-center"
-                onClick={toggleDrawer}
-              >
-                {isDrawerOpen ? (
-                  <X className="size-5" />
-                ) : (
-                  <Menu className="size-5" />
-                )}
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/auth"
+            className="px-4 py-1.5 text-sm font-medium text-blue-400 border border-blue-400 rounded-md hover:bg-blue-400/10 transition-colors"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/auth?mode=signup"
+            className="px-4 py-1.5 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+          >
+            Sign up
+          </Link>
         </div>
-      </motion.div>
+      </div>
 
       {/* Mobile Drawer */}
       <AnimatePresence>
@@ -208,16 +150,8 @@ export function Navbar() {
               {/* Mobile menu content */}
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <Link href="/" className="flex items-center gap-3">
-                    <Image 
-                      src={logoSrc} 
-                      alt="Agent0 Logo" 
-                      width={120} 
-                      height={22} 
-                      priority
-                      unoptimized
-                    />
-                    <span className="font-medium text-primary text-sm">/ Agent0</span>
+                  <Link href="/" className="flex items-center ml-[-15px]">
+                    <img src="/agent-circles-logo-new.png" alt="Agent ZERO Logo" className="h-14 w-14" />
                   </Link>
                   <button
                     onClick={toggleDrawer}

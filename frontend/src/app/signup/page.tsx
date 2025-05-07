@@ -102,7 +102,7 @@ function SignupForm() {
           <CardTitle className="text-2xl font-bold">Criar conta</CardTitle>
           <CardDescription>
             {inviteCode 
-              ? 'Você foi convidado! Crie sua conta para começar a usar o Agent0.' 
+              ? 'Você foi convidado! Crie sua conta para começar a usar o AgentZERO.'
               : 'Preencha os campos abaixo para criar sua conta.'}
           </CardDescription>
         </CardHeader>

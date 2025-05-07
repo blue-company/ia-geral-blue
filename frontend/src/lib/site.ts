@@ -1,11 +1,11 @@
 export const siteConfig = {
-  name: "Agent0",
-  url: "https://Agent0.so/",
-  description: "Agent0",
+  name: "InventuAI",
+  url: "https://inventu.ai/",
+  description: "InventuAI",
   links: {
-    twitter: "https://x.com/Agent0",
-    github: "https://github.com/Agent0/",
-    linkedin: "https://www.linkedin.com/company/Agent0/",
+    twitter: "https://x.com/InventuAI",
+    github: "https://github.com/inventuai/",
+    linkedin: "https://www.linkedin.com/company/inventuai/",
   },
 };
 
