@@ -190,3 +190,4 @@ supabase/.temp/storage-version
 **/__pycache__/
 
 .idea/
+senhaSupabase.txt

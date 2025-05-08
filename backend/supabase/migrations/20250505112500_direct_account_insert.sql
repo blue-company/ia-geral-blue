@@ -1,7 +1,9 @@
 -- Script para inserir diretamente uma conta para um usuário de teste
 -- Este script é para ser executado diretamente no console SQL do Supabase
+-- Comentado para evitar erro de violação de chave estrangeira, já que o usuário de teste
+-- provavelmente não existe no banco de dados de homologação
 
--- Definir o ID do usuário para o qual queremos criar uma conta
+/*
 DO $$
 DECLARE
   test_user_id UUID := 'f772ae59-462d-4c66-8b93-0add181e0177'::uuid;
@@ -48,3 +50,7 @@ BEGIN
   -- Verificar se a conta foi criada
   RAISE NOTICE 'Account created for user %', test_user_id;
 END $$;
+*/
+
+-- Versão vazia para não causar erros durante a migração
+DO $$ BEGIN NULL; END $$;

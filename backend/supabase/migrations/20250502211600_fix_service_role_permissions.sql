@@ -25,9 +25,12 @@ BEGIN
   END LOOP;
 END $$;
 
--- Garantir que o service_role tenha acesso às tabelas do sistema
-ALTER TABLE IF EXISTS auth.users ENABLE ROW LEVEL SECURITY;
+-- Comentando as operações que exigem permissões de owner do banco de dados
+-- Essas operações precisam ser executadas por um usuário com permissões de superuser
+-- ou diretamente pelo dashboard do Supabase
 
-DROP POLICY IF EXISTS "Service role can access all users" ON auth.users;
-CREATE POLICY "Service role can access all users" ON auth.users
-  USING (auth.jwt() ->> 'role' = 'service_role');
+-- ALTER TABLE IF EXISTS auth.users ENABLE ROW LEVEL SECURITY;
+
+-- DROP POLICY IF EXISTS "Service role can access all users" ON auth.users;
+-- CREATE POLICY "Service role can access all users" ON auth.users
+--   USING (auth.jwt() ->> 'role' = 'service_role');
