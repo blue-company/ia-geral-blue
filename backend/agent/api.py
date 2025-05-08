@@ -43,7 +43,7 @@ MODEL_NAME_ALIASES = {
 }
 
 class AgentStartRequest(BaseModel):
-    model_name: Optional[str] = "anthropic/claude-3-7-sonnet-latest"
+    model_name: Optional[str] = "openrouter/google/gemini-2.5-flash-preview"
     enable_thinking: Optional[bool] = False
     reasoning_effort: Optional[str] = 'low'
     stream: Optional[bool] = True

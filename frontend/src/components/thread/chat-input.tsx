@@ -29,7 +29,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
 // Local storage keys
 const STORAGE_KEY_MODEL = 'inventu-preferred-model';
-const DEFAULT_MODEL_ID = "sonnet-3.7"; // Define default model ID
+const DEFAULT_MODEL_ID = "gemini-flash-2.5"; // Define default model ID
 
 interface ChatInputProps {
   onSubmit: (message: string, options?: { model_name?: string; enable_thinking?: boolean }) => void;
