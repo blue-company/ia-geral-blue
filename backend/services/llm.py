@@ -20,6 +20,7 @@ from utils.logger import logger
 from utils.config import config
 from datetime import datetime
 import traceback
+import tiktoken
 
 # litellm.set_verbose=True
 litellm.modify_params=True
@@ -28,6 +29,7 @@ litellm.modify_params=True
 MAX_RETRIES = 3
 RATE_LIMIT_DELAY = 30
 RETRY_DELAY = 5
+CLAUDE_MAX_TOKENS = 200000
 
 class LLMError(Exception):
     """Base exception for LLM-related errors."""
@@ -299,15 +301,79 @@ async def make_llm_api_call(
         reasoning_effort=reasoning_effort
     )
     last_error = None
+    context_window_exceeded = False
+    original_messages = messages.copy()
+    
     for attempt in range(MAX_RETRIES):
         try:
             logger.debug(f"Attempt {attempt + 1}/{MAX_RETRIES}")
             # logger.debug(f"API request parameters: {json.dumps(params, indent=2)}")
             
+            # Se houve um erro de limite de tokens na tentativa anterior, aplicar truncamento mais agressivo
+            if context_window_exceeded and ("claude" in model_name.lower() or "anthropic" in model_name.lower()):
+                logger.warning(f"Aplicando truncamento mais agressivo após erro de limite de tokens")
+                
+                try:
+                    # Usar o codificador cl100k_base que é compatível com o Claude
+                    enc = tiktoken.get_encoding("cl100k_base")
+                     
+                    # Separar a mensagem do sistema, se existir
+                    system_msg = None
+                    user_messages = original_messages.copy()
+                    if user_messages and user_messages[0].get("role") == "system":
+                        system_msg = user_messages[0]
+                        user_messages = user_messages[1:]
+                     
+                    # Manter apenas as últimas 3 mensagens para truncamento extremo
+                    if len(user_messages) > 3:
+                        user_messages = user_messages[-3:]
+                     
+                    # Reconstruir a lista de mensagens com a mensagem do sistema
+                    truncated_messages = user_messages
+                    if system_msg:
+                        truncated_messages.insert(0, system_msg)
+                     
+                    # Definir um limite mais restritivo
+                    TARGET_INPUT_TOKENS = CLAUDE_MAX_TOKENS - 10000  # Reservar 10.000 tokens para garantir
+                     
+                    # Calcular tokens totais
+                    total_tokens = 0
+                    for msg in truncated_messages:
+                        content = msg.get("content", "")
+                        if isinstance(content, str):
+                            total_tokens += len(enc.encode(content))
+                     
+                    # Se ainda exceder o limite, truncar a última mensagem do usuário
+                    if total_tokens > TARGET_INPUT_TOKENS and truncated_messages:
+                        for i in range(len(truncated_messages) - 1, -1, -1):
+                            if truncated_messages[i].get("role") == "user":
+                                content = truncated_messages[i].get("content", "")
+                                if isinstance(content, str):
+                                    # Truncar para 50% do tamanho original
+                                    truncated_messages[i]["content"] = content[:len(content)//2] + "\n[Conteúdo truncado devido ao limite de tokens]"
+                                break
+                     
+                    # Atualizar as mensagens nos parâmetros
+                    params["messages"] = truncated_messages
+                    logger.warning(f"Mensagens truncadas agressivamente para {len(truncated_messages)} mensagens")
+                     
+                except Exception as trunc_error:
+                    logger.error(f"Erro ao aplicar truncamento agressivo: {str(trunc_error)}")
+            
             response = await litellm.acompletion(**params)
             logger.debug(f"Successfully received API response from {model_name}")
             logger.debug(f"Response: {response}")
             return response
+            
+        except litellm.ContextWindowExceededError as e:
+            # Tratar especificamente o erro de limite de tokens
+            last_error = e
+            context_window_exceeded = True
+            logger.warning(f"Context window exceeded error: {str(e)}")
+            
+            # Se for a última tentativa, não esperar
+            if attempt < MAX_RETRIES - 1:
+                await asyncio.sleep(RETRY_DELAY)
             
         except (litellm.exceptions.RateLimitError, OpenAIError, json.JSONDecodeError) as e:
             last_error = e
