@@ -48,17 +48,17 @@ def setup_api_keys() -> None:
             logger.debug(f"API key set for provider: {provider}")
         else:
             logger.warning(f"No API key found for provider: {provider}")
-    
+
     # Set up OpenRouter API base if not already set
     if config.OPENROUTER_API_KEY and config.OPENROUTER_API_BASE:
         os.environ['OPENROUTER_API_BASE'] = config.OPENROUTER_API_BASE
         logger.debug(f"Set OPENROUTER_API_BASE to {config.OPENROUTER_API_BASE}")
-    
+
     # Set up AWS Bedrock credentials
     aws_access_key = config.AWS_ACCESS_KEY_ID
     aws_secret_key = config.AWS_SECRET_ACCESS_KEY
     aws_region = config.AWS_REGION_NAME
-    
+
     if aws_access_key and aws_secret_key and aws_region:
         logger.debug(f"AWS credentials set for Bedrock in region: {aws_region}")
         # Configure LiteLLM to use AWS credentials
@@ -134,11 +134,11 @@ def prepare_params(
             "anthropic-beta": "output-128k-2025-02-19"
         }
         logger.debug("Added Claude-specific headers")
-    
+
     # Add OpenRouter-specific parameters
     if model_name.startswith("openrouter/"):
         logger.debug(f"Preparing OpenRouter parameters for model: {model_name}")
-        
+
         # Add optional site URL and app name from config
         site_url = config.OR_SITE_URL
         app_name = config.OR_APP_NAME
@@ -150,11 +150,11 @@ def prepare_params(
                 extra_headers["X-Title"] = app_name
             params["extra_headers"] = extra_headers
             logger.debug(f"Added OpenRouter site URL and app name to headers")
-    
+
     # Add Bedrock-specific parameters
     if model_name.startswith("bedrock/"):
         logger.debug(f"Preparing AWS Bedrock parameters for model: {model_name}")
-        
+
         if not model_id and "anthropic.claude-3-7-sonnet" in model_name:
             params["model_id"] = "arn:aws:bedrock:us-west-2:935064898258:inference-profile/us.anthropic.claude-3-7-sonnet-20250219-v1:0"
             logger.debug(f"Auto-set model_id for Claude 3.7 Sonnet: {params['model_id']}")
@@ -258,7 +258,7 @@ async def make_llm_api_call(
 ) -> Union[Dict[str, Any], AsyncGenerator]:
     """
     Make an API call to a language model using LiteLLM.
-    
+
     Args:
         messages: List of message dictionaries for the conversation
         model_name: Name of the model to use (e.g., "gpt-4", "claude-3", "openrouter/openai/gpt-4", "bedrock/anthropic.claude-3-sonnet-20240229-v1:0")
@@ -274,16 +274,17 @@ async def make_llm_api_call(
         model_id: Optional ARN for Bedrock inference profiles
         enable_thinking: Whether to enable thinking
         reasoning_effort: Level of reasoning effort
-        
+
     Returns:
         Union[Dict[str, Any], AsyncGenerator]: API response or stream
-        
+
     Raises:
         LLMRetryError: If API call fails after retries
         LLMError: For other API-related errors
     """
-    # debug <timestamp>.json messages 
-    logger.debug(f"Making LLM API call to model: {model_name} (Thinking: {enable_thinking}, Effort: {reasoning_effort})")
+    # debug <timestamp>.json messages
+    logger.info(f"Making LLM API call to model: {model_name} (Thinking: {enable_thinking}, Effort: {reasoning_effort})")
+    logger.info(f"📡 API Call: Using model {model_name}")
     params = prepare_params(
         messages=messages,
         model_name=model_name,
@@ -343,19 +344,81 @@ async def make_llm_api_call(
                         if isinstance(content, str):
                             total_tokens += len(enc.encode(content))
                      
-                    # Se ainda exceder o limite, truncar a última mensagem do usuário
+                    # Se ainda exceder o limite, truncar as mensagens de forma mais agressiva
                     if total_tokens > TARGET_INPUT_TOKENS and truncated_messages:
+                        logger.warning(f"Ainda excedendo o limite após truncamento inicial. Tokens: {total_tokens}/{TARGET_INPUT_TOKENS}")
+                        
+                        # Primeiro, tentar truncar a última mensagem do usuário para 25% do tamanho original
                         for i in range(len(truncated_messages) - 1, -1, -1):
                             if truncated_messages[i].get("role") == "user":
                                 content = truncated_messages[i].get("content", "")
                                 if isinstance(content, str):
-                                    # Truncar para 50% do tamanho original
-                                    truncated_messages[i]["content"] = content[:len(content)//2] + "\n[Conteúdo truncado devido ao limite de tokens]"
-                                break
+                                    # Truncar para 25% do tamanho original
+                                    truncated_messages[i]["content"] = content[:len(content)//4] + "\n[Conteúdo truncado devido ao limite de tokens]"
+                                    logger.warning(f"Truncando mensagem do usuário para 25% do tamanho original")
+                                    break
+                        
+                        # Recalcular tokens após truncamento da mensagem do usuário
+                        user_truncated_tokens = 0
+                        for msg in truncated_messages:
+                            content = msg.get("content", "")
+                            if isinstance(content, str):
+                                user_truncated_tokens += len(enc.encode(content))
+                        
+                        # Se ainda exceder o limite, manter apenas a última mensagem + sistema
+                        if user_truncated_tokens > TARGET_INPUT_TOKENS:
+                            logger.warning(f"Ainda excedendo o limite após truncar mensagem do usuário. Tokens: {user_truncated_tokens}/{TARGET_INPUT_TOKENS}")
+                            
+                            # Manter apenas a mensagem do sistema (se existir) e a última mensagem
+                            if len(truncated_messages) > 1:
+                                if truncated_messages[0].get("role") == "system":
+                                    # Manter sistema + última mensagem
+                                    system_msg = truncated_messages[0]
+                                    last_msg = truncated_messages[-1]
+                                    truncated_messages = [system_msg, last_msg]
+                                else:
+                                    # Manter apenas a última mensagem
+                                    truncated_messages = [truncated_messages[-1]]
+                                
+                                logger.warning(f"Truncamento extremo: mantendo apenas {len(truncated_messages)} mensagens")
                      
+                    # Recalcular tokens totais após todos os truncamentos
+                    final_tokens = 0
+                    for msg in truncated_messages:
+                        content = msg.get("content", "")
+                        if isinstance(content, str):
+                            final_tokens += len(enc.encode(content))
+                    
+                    # Verificar se ainda excede o limite
+                    if final_tokens > TARGET_INPUT_TOKENS:
+                        logger.error(f"ALERTA: Mesmo após truncamento extremo, ainda excedendo o limite. Tokens: {final_tokens}/{TARGET_INPUT_TOKENS}")
+                        
+                        # Último recurso: se for uma mensagem do usuário, cortar para um tamanho fixo pequeno
+                        for i in range(len(truncated_messages)):
+                            if truncated_messages[i].get("role") == "user":
+                                truncated_messages[i]["content"] = "Por favor, continue a partir do ponto anterior. [Mensagem original truncada devido ao limite de tokens]"
+                    
                     # Atualizar as mensagens nos parâmetros
                     params["messages"] = truncated_messages
-                    logger.warning(f"Mensagens truncadas agressivamente para {len(truncated_messages)} mensagens")
+                    logger.warning(f"Mensagens truncadas agressivamente para {len(truncated_messages)} mensagens. Tokens antes: {total_tokens}, Tokens depois: {final_tokens}")
+                    logger.info(f"Tokens após truncamento agressivo: {final_tokens}/{TARGET_INPUT_TOKENS} ({(final_tokens/TARGET_INPUT_TOKENS)*100:.1f}% do limite)")
+                    
+                    # Verificar se o truncamento realmente reduziu os tokens
+                    if final_tokens >= total_tokens:
+                        logger.error(f"ERRO: O truncamento não reduziu os tokens! Antes: {total_tokens}, Depois: {final_tokens}")
+                        # Forçar uma redução dramática como último recurso
+                        if truncated_messages and len(truncated_messages) > 0:
+                            if truncated_messages[0].get("role") == "system":
+                                system_content = truncated_messages[0].get("content", "")
+                                truncated_messages = [
+                                    {"role": "system", "content": system_content},
+                                    {"role": "user", "content": "Continue a partir do ponto anterior. [Mensagem truncada devido ao limite de tokens]"}
+                                ]
+                            else:
+                                truncated_messages = [{"role": "user", "content": "Continue a partir do ponto anterior. [Mensagem truncada devido ao limite de tokens]"}]
+                            
+                            params["messages"] = truncated_messages
+                            logger.warning("Aplicado truncamento de emergência: reduzindo para mensagem mínima")
                      
                 except Exception as trunc_error:
                     logger.error(f"Erro ao aplicar truncamento agressivo: {str(trunc_error)}")
@@ -378,11 +441,11 @@ async def make_llm_api_call(
         except (litellm.exceptions.RateLimitError, OpenAIError, json.JSONDecodeError) as e:
             last_error = e
             await handle_error(e, attempt, MAX_RETRIES)
-            
+
         except Exception as e:
             logger.error(f"Unexpected error during API call: {str(e)}", exc_info=True)
             raise LLMError(f"API call failed: {str(e)}")
-    
+
     error_msg = f"Failed to make API call after {MAX_RETRIES} attempts"
     if last_error:
         error_msg += f". Last error: {str(last_error)}"
@@ -398,7 +461,7 @@ async def test_openrouter():
     test_messages = [
         {"role": "user", "content": "Hello, can you give me a quick test response?"}
     ]
-    
+
     try:
         # Test with standard OpenRouter model
         print("\n--- Testing standard OpenRouter model ---")
@@ -409,7 +472,7 @@ async def test_openrouter():
             max_tokens=100
         )
         print(f"Response: {response.choices[0].message.content}")
-        
+
         # Test with deepseek model
         print("\n--- Testing deepseek model ---")
         response = await make_llm_api_call(
@@ -420,7 +483,7 @@ async def test_openrouter():
         )
         print(f"Response: {response.choices[0].message.content}")
         print(f"Model used: {response.model}")
-        
+
         # Test with Mistral model
         print("\n--- Testing Mistral model ---")
         response = await make_llm_api_call(
@@ -431,7 +494,7 @@ async def test_openrouter():
         )
         print(f"Response: {response.choices[0].message.content}")
         print(f"Model used: {response.model}")
-        
+
         return True
     except Exception as e:
         print(f"Error testing OpenRouter: {str(e)}")
@@ -442,8 +505,8 @@ async def test_bedrock():
     test_messages = [
         {"role": "user", "content": "Hello, can you give me a quick test response?"}
     ]
-    
-    try:    
+
+    try:
         response = await make_llm_api_call(
             model_name="bedrock/anthropic.claude-3-7-sonnet-20250219-v1:0",
             model_id="arn:aws:bedrock:us-west-2:935064898258:inference-profile/us.anthropic.claude-3-7-sonnet-20250219-v1:0",
@@ -454,7 +517,7 @@ async def test_bedrock():
         )
         print(f"Response: {response.choices[0].message.content}")
         print(f"Model used: {response.model}")
-        
+
         return True
     except Exception as e:
         print(f"Error testing Bedrock: {str(e)}")
@@ -462,9 +525,9 @@ async def test_bedrock():
 
 if __name__ == "__main__":
     import asyncio
-        
+
     test_success = asyncio.run(test_bedrock())
-    
+
     if test_success:
         print("\n✅ integration test completed successfully!")
     else:
