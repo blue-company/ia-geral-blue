@@ -1095,7 +1095,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
       
       const metaDescription = document.querySelector('meta[name="description"]');
       if (metaDescription) {
-        metaDescription.setAttribute('content', `${projectName} - Public AI conversation shared from Kortix AgentZERO`);
+        metaDescription.setAttribute('content', `${projectName} - Public AI conversation shared from InventuAI AgentZERO`);
       }
       
       const ogTitle = document.querySelector('meta[property="og:title"]');

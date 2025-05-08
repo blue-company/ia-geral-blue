@@ -1032,7 +1032,7 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
       // Update OpenGraph tags if they exist
       const ogTitle = document.querySelector('meta[property="og:title"]');
       if (ogTitle) {
-        ogTitle.setAttribute('content', `${projectName} | Kortix AgentZERO`);
+        ogTitle.setAttribute('content', `${projectName} | InventuAI AgentZERO`);
       }
       
       const ogDescription = document.querySelector('meta[property="og:description"]');

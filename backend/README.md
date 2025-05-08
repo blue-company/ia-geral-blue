@@ -1,4 +1,4 @@
-# Suna Backend
+# Agent0 Backend
 
 ## Running the backend
 

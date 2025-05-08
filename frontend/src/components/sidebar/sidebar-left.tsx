@@ -88,7 +88,7 @@ export function SidebarLeft({
           </Link>
           {state !== "collapsed" && (
             <div className="ml-2 transition-all duration-200 ease-in-out whitespace-nowrap">
-              {/* <span className="font-semibold"> SUNA</span> */}
+              {/* <span className="font-semibold"> Agent0</span> */}
             </div>
           )}
           <div className="ml-auto flex items-center gap-2">
