@@ -153,7 +153,7 @@ class SandboxShellTool(SandboxToolsBase):
         command: str, 
         folder: Optional[str] = None,
         session_name: str = "default",
-        timeout: int = 60
+        timeout: int = 265
     ) -> ToolResult:
         try:
             # Ensure sandbox is initialized

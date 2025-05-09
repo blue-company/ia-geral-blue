@@ -273,7 +273,7 @@ class WebSearchTool(Tool):
                     "https://api.firecrawl.dev/v1/scrape",
                     json=payload,
                     headers=headers,
-                    timeout=60,
+                    timeout=265,
                 )
                 response.raise_for_status()
                 data = response.json()

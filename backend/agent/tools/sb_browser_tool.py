@@ -45,7 +45,7 @@ class SandboxBrowserTool(SandboxToolsBase):
             logger.debug("\033[95mExecuting curl command:\033[0m")
             logger.debug(f"{curl_cmd}")
             
-            response = self.sandbox.process.exec(curl_cmd, timeout=30)
+            response = self.sandbox.process.exec(curl_cmd, timeout=265)
             
             if response.exit_code == 0:
                 try:
