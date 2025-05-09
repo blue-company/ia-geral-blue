@@ -66,5 +66,42 @@ class DBConnection:
             logger.error("Database client is None after initialization")
             raise RuntimeError("Database not initialized")
         return self._client
+        
+    async def get_client_with_timeout(self, timeout: float = 30.0) -> AsyncClient:
+        """Get a Supabase client with a custom timeout.
+        
+        Args:
+            timeout: Timeout in seconds for HTTP requests
+            
+        Returns:
+            AsyncClient: Supabase client with custom timeout
+        """
+        # Primeiro, obter o cliente padrão para garantir que estamos inicializados
+        default_client = await self.client
+        
+        # Criar um novo cliente com o mesmo URL e chave, mas com timeout personalizado
+        supabase_url = config.SUPABASE_URL
+        supabase_key = config.SUPABASE_SERVICE_ROLE_KEY or config.SUPABASE_ANON_KEY
+        
+        try:
+            # Criar um cliente HTTP personalizado com timeout ajustado
+            from httpx import AsyncClient as HttpxAsyncClient, Timeout
+            http_client = HttpxAsyncClient(timeout=Timeout(timeout))
+            
+            # Criar um novo cliente Supabase com o cliente HTTP personalizado
+            custom_client = await create_async_client(
+                supabase_url, 
+                supabase_key,
+                options={
+                    "http_client": http_client
+                }
+            )
+            
+            logger.debug(f"Created Supabase client with custom timeout of {timeout}s")
+            return custom_client
+        except Exception as e:
+            logger.error(f"Failed to create custom timeout client: {e}")
+            # Fallback para o cliente padrão
+            return default_client
 
 

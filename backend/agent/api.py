@@ -248,9 +248,38 @@ async def _cleanup_redis_response_list(agent_run_id: str):
 async def restore_running_agent_runs():
     """Mark agent runs that were still 'running' in the database as failed and clean up Redis resources."""
     logger.info("Restoring running agent runs after server restart")
-    client = await db.client
-    running_agent_runs = await client.table('agent_runs').select('id').eq("status", "running").execute()
-
+    
+    # Implementar retry com backoff exponencial
+    max_retries = 5
+    base_delay = 2  # segundos
+    running_agent_runs = None
+    
+    for attempt in range(max_retries):
+        try:
+            # Aumentar o timeout para esta operação específica
+            timeout = 30.0 * (attempt + 1)  # Aumentar o timeout a cada tentativa
+            logger.info(f"Tentativa {attempt+1}/{max_retries} de recuperar agent runs com timeout de {timeout}s")
+            
+            # Usar cliente com timeout personalizado
+            custom_client = await db.get_client_with_timeout(timeout)
+            running_agent_runs = await custom_client.table('agent_runs').select('id').eq("status", "running").execute()
+            
+            # Se chegou aqui, a operação foi bem-sucedida
+            logger.info(f"Recuperados {len(running_agent_runs.data)} agent runs com status 'running'")
+            break
+            
+        except Exception as e:
+            delay = base_delay * (2 ** attempt)  # Backoff exponencial
+            logger.warning(f"Erro ao recuperar agent runs: {str(e)}. Tentando novamente em {delay}s...")
+            
+            if attempt < max_retries - 1:
+                await asyncio.sleep(delay)
+            else:
+                logger.error(f"Falha ao recuperar agent runs após {max_retries} tentativas. Último erro: {str(e)}")
+                # Inicializar com lista vazia para evitar erros
+                running_agent_runs = type('obj', (object,), {'data': []})
+    
+    # Processar os agent runs encontrados
     for run in running_agent_runs.data:
         agent_run_id = run['id']
         logger.warning(f"Found running agent run {agent_run_id} from before server restart")
