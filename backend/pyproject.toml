@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "Agent0"
 version = "1.0"
-description = "open source generalist AI Agent"
+description = "agente de ia geral agent0"
 authors = ["marko-kraemer <mail@markokraemer.com>"]
 readme = "README.md"
 license = "MIT"
