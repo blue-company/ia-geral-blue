@@ -164,24 +164,24 @@ class ContextManager:
         # Create system message with summarization instructions
         system_message = {
             "role": "system",
-            "content": f"""You are a specialized summarization assistant. Your task is to create a concise but comprehensive summary of the conversation history.
+            "content": f"""Você é um assistente especializado em resumos. Sua tarefa é criar um resumo conciso, mas abrangente, do histórico da conversa.
 
-The summary should:
-1. Preserve all key information including decisions, conclusions, and important context
-2. Include any tools that were used and their results
-3. Maintain chronological order of events
-4. Be presented as a narrated list of key points with section headers
-5. Include only factual information from the conversation (no new information)
-6. Be concise but detailed enough that the conversation can continue with this summary as context
+O resumo deve:
+1. Preservar todas as informações-chave, incluindo decisões, conclusões e contexto importante
+2. Incluir todas as ferramentas que foram utilizadas e seus resultados
+3. Manter a ordem cronológica dos eventos
+4. Ser apresentado como uma lista narrada de pontos-chave com cabeçalhos de seção
+5. Incluir apenas informações factuais da conversa (sem adicionar novas informações)
+6. Ser conciso, mas detalhado o suficiente para que a conversa possa continuar com este resumo como contexto
 
-VERY IMPORTANT: This summary will replace older parts of the conversation in the LLM's context window, so ensure it contains ALL key information and LATEST STATE OF THE CONVERSATION - SO WE WILL KNOW HOW TO PICK UP WHERE WE LEFT OFF.
+MUITO IMPORTANTE: Este resumo substituirá partes mais antigas da conversa na janela de contexto do LLM, então certifique-se de que ele contenha TODAS as informações-chave e o ESTADO MAIS RECENTE DA CONVERSA - PARA QUE POSSAMOS SABER COMO CONTINUAR DE ONDE PARAMOS.
 
 
-THE CONVERSATION HISTORY TO SUMMARIZE IS AS FOLLOWS:
+O HISTÓRICO DA CONVERSA A SER RESUMIDO É O SEGUINTE:
 ===============================================================
-==================== CONVERSATION HISTORY ====================
+==================== HISTÓRICO DA CONVERSA ====================
 {messages}
-==================== END OF CONVERSATION HISTORY ====================
+==================== FIM DO HISTÓRICO DA CONVERSA ====================
 ===============================================================
 """
         }
@@ -190,7 +190,7 @@ THE CONVERSATION HISTORY TO SUMMARIZE IS AS FOLLOWS:
             # Call LLM to generate summary
             response = await make_llm_api_call(
                 model_name=model,
-                messages=[system_message, {"role": "user", "content": "PLEASE PROVIDE THE SUMMARY NOW."}],
+                messages=[system_message, {"role": "user", "content": "POR FAVOR, FORNEÇA O RESUMO AGORA."}],
                 temperature=0,
                 max_tokens=SUMMARY_TARGET_TOKENS,
                 stream=False
@@ -209,13 +209,13 @@ THE CONVERSATION HISTORY TO SUMMARIZE IS AS FOLLOWS:
                 
                 # Format the summary message with clear beginning and end markers
                 formatted_summary = f"""
-======== CONVERSATION HISTORY SUMMARY ========
+======== RESUMO DO HISTÓRICO DA CONVERSA ========
 
 {summary_content}
 
-======== END OF SUMMARY ========
+======== FIM DO RESUMO ========
 
-The above is a summary of the conversation history. The conversation continues below.
+O texto acima é um resumo do histórico da conversa. A conversa continua abaixo.
 """
                 
                 # Format the summary message
