@@ -123,7 +123,7 @@ class Configuration:
     AWS_REGION_NAME: Optional[str] = None
     
     # Model configuration
-    MODEL_TO_USE: Optional[str] = "xai/grok-3-fast-latest"
+    MODEL_TO_USE: Optional[str] = "gpt-4.1"
     
     # Supabase configuration
     SUPABASE_URL: str
