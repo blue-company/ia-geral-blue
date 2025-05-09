@@ -15,6 +15,7 @@ class SandboxFilesTool(SandboxToolsBase):
         super().__init__(project_id, thread_manager)
         self.SNIPPET_LINES = 4  # Number of context lines to show around edits
         self.workspace_path = "/workspace"  # Ensure we're always operating in /workspace
+        self._sandbox_url = None  # Inicialização do atributo para compatibilidade com SDK atualizado
 
     def clean_path(self, path: str) -> str:
         """Clean and normalize a path to be relative to /workspace"""
@@ -70,8 +71,10 @@ class SandboxFilesTool(SandboxToolsBase):
 
     def _get_preview_url(self, file_path: str) -> Optional[str]:
         """Get the preview URL for a file if it's an HTML file."""
-        if file_path.lower().endswith('.html') and self._sandbox_url:
-            return f"{self._sandbox_url}/{(file_path.replace('/workspace/', ''))}"
+        # Verificar se o atributo _sandbox_url existe
+        sandbox_url = getattr(self, '_sandbox_url', None)
+        if file_path.lower().endswith('.html') and sandbox_url:
+            return f"{sandbox_url}/{(file_path.replace('/workspace/', ''))}"
         return None
 
     @openapi_schema({
