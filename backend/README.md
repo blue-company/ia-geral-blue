@@ -1,4 +1,4 @@
-# Agent0 Backend
+# AgentZero Backend
 
 ## Running the backend
 

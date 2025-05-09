@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "Agent0"
+name = "AgentZero"
 version = "1.0"
-description = "agente de ia geral agent0"
+description = "agente de ia geral AgentZero"
 authors = ["marko-kraemer <mail@markokraemer.com>"]
 readme = "README.md"
 license = "MIT"
-homepage = "https://www.Agent0.so/"
-repository = "https://github.com/InventuAI-ai/Agent0"
+homepage = "https://www.AgentZero.so/"
+repository = "https://github.com/InventuAI-ai/AgentZero"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

@@ -36,7 +36,7 @@ export function PromptLimitModal({ isOpen, onClose, userId }: PromptLimitModalPr
     
     try {
       // Gerar link de convite com email genérico
-      const emailPlaceholder = `convite-${Date.now()}@agent0.app`;
+      const emailPlaceholder = `convite-${Date.now()}@AgentZero.app`;
       const link = await generateInviteLink(userId, emailPlaceholder);
       
       if (link) {

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 
-export function Agent0ProcessModal() {
+export function AgentZeroProcessModal() {
   return (
     <Button 
       variant="default" 
