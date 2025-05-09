@@ -16,8 +16,8 @@ charset-normalizer==3.4.1
 click==8.1.7
 colorama==0.4.6
 constantly==23.10.4
-daytona_api_client==0.18.0
-daytona_sdk==0.16.1
+daytona_api_client==0.18.1
+daytona_sdk==0.17.0
 Deprecated==1.2.18
 deprecation==2.1.0
 distro==1.9.0
