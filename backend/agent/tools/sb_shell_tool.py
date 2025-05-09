@@ -1,10 +1,8 @@
 from typing import Optional, Dict, List
 from uuid import uuid4
-import asyncio
 from agentpress.tool import ToolResult, openapi_schema, xml_schema
 from sandbox.sandbox import SandboxToolsBase, Sandbox
 from agentpress.thread_manager import ThreadManager
-from utils.logger import logger
 
 class SandboxShellTool(SandboxToolsBase):
     """Tool for executing tasks in a Daytona sandbox with browser-use capabilities. 
@@ -17,78 +15,14 @@ class SandboxShellTool(SandboxToolsBase):
 
     async def _ensure_session(self, session_name: str = "default") -> str:
         """Ensure a session exists and return its ID."""
-        logger.info(f"Verificando sessão '{session_name}'")
-        
         if session_name not in self._sessions:
             session_id = str(uuid4())
-            logger.info(f"Criando nova sessão '{session_name}' com ID: {session_id}")
-            logger.info(f"Sandbox ID: {self._sandbox_id if hasattr(self, '_sandbox_id') else 'N/A'}")
-            
-            # Registra informações do sandbox para diagnóstico
-            if hasattr(self, '_sandbox') and self._sandbox is not None:
-                sandbox_info = {
-                    'id': getattr(self._sandbox, 'id', 'N/A'),
-                    'instance_id': getattr(getattr(self._sandbox, 'instance', {}), 'id', 'N/A'),
-                    'state': getattr(getattr(self._sandbox, 'instance', {}), 'state', 'N/A'),
-                }
-                logger.info(f"Informações do sandbox: {sandbox_info}")
-            
-            max_attempts = 3
-            last_error = None
-            
-            for attempt in range(max_attempts):
-                try:
-                    logger.info(f"Tentativa {attempt+1}/{max_attempts} de criar sessão '{session_name}' com ID {session_id}")
-                    await self._ensure_sandbox()  # Ensure sandbox is initialized
-                    
-                    # Log detalhado antes da chamada que causa o erro
-                    logger.info(f"Chamando create_session com session_id={session_id}")
-                    try:
-                        # Tenta obter mais informações sobre o método
-                        import inspect
-                        if hasattr(self.sandbox.process, 'create_session') and hasattr(inspect, 'signature'):
-                            sig = inspect.signature(self.sandbox.process.create_session)
-                            logger.info(f"Assinatura do método create_session: {sig}")
-                    except Exception as inspect_error:
-                        logger.warning(f"Não foi possível inspecionar o método: {str(inspect_error)}")
-                    
-                    # Chamada que pode gerar o erro
-                    self.sandbox.process.create_session(session_id)
-                    
-                    # Se chegou aqui, a sessão foi criada com sucesso
-                    self._sessions[session_name] = session_id
-                    logger.info(f"Sessão '{session_name}' criada com sucesso (ID: {session_id})")
-                    return self._sessions[session_name]  # Sucesso, retorna imediatamente
-                    
-                except Exception as e:
-                    last_error = e
-                    error_str = str(e)
-                    error_type = type(e).__name__
-                    logger.warning(f"Erro na tentativa {attempt+1}/{max_attempts} de criar sessão '{session_name}': {error_type}: {error_str}")
-                    
-                    # Tenta extrair mais informações do erro
-                    error_info = {
-                        'type': error_type,
-                        'message': error_str,
-                        'args': getattr(e, 'args', []),
-                        'traceback': getattr(e, '__traceback__', None),
-                    }
-                    logger.info(f"Detalhes do erro: {error_info}")
-                    
-                    # Se for o erro específico de pathToRegexpError, tenta novamente após uma pausa
-                    if "pathToRegexpError" in error_str:
-                        logger.info(f"Detectado erro de pathToRegexpError para sessão '{session_name}' (ID: {session_id}), tentando novamente após breve pausa")
-                        await asyncio.sleep(1)  # Pausa de 1 segundo antes da próxima tentativa
-                    else:
-                        # Se for outro tipo de erro, não faz retry
-                        logger.warning(f"Erro não é do tipo pathToRegexpError, não será feito retry para sessão '{session_name}' (ID: {session_id})")
-                        break
-            
-            # Se chegou aqui, todas as tentativas falharam
-            logger.error(f"Todas as {max_attempts} tentativas de criar sessão '{session_name}' (ID: {session_id}) falharam")
-            raise RuntimeError(f"Failed to create session '{session_name}' (ID: {session_id}): {str(last_error)}")
-        
-        logger.info(f"Usando sessão existente '{session_name}' com ID: {self._sessions[session_name]}")
+            try:
+                await self._ensure_sandbox()  # Ensure sandbox is initialized
+                self.sandbox.process.create_session(session_id)
+                self._sessions[session_name] = session_id
+            except Exception as e:
+                raise RuntimeError(f"Failed to create session: {str(e)}")
         return self._sessions[session_name]
 
     async def _cleanup_session(self, session_name: str):
