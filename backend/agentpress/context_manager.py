@@ -175,6 +175,7 @@ O resumo deve:
 6. Ser conciso, mas detalhado o suficiente para que a conversa possa continuar com este resumo como contexto
 
 MUITO IMPORTANTE: Este resumo substituirá partes mais antigas da conversa na janela de contexto do LLM, então certifique-se de que ele contenha TODAS as informações-chave e o ESTADO MAIS RECENTE DA CONVERSA - PARA QUE POSSAMOS SABER COMO CONTINUAR DE ONDE PARAMOS.
+TAMBÉM MANTENHA SEMPRE O CONTEÚDO DO TODO, E SEMPRE LEMBRE-SE DE COMPLETAR SUAS TAREFAS E DAR O CHECK APÓS CADA TAREFA, MANTENDO A INSTRUÇÃO DE COMO REALIZAR ESSA AÇÃO.
 
 
 O HISTÓRICO DA CONVERSA A SER RESUMIDO É O SEGUINTE:
