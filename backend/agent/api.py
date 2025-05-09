@@ -59,11 +59,11 @@ MODEL_NAME_ALIASES = {
 }
 
 class AgentStartRequest(BaseModel):
-    model_name: Optional[str] = "openrouter/google/gemini-2.5-flash-preview"
+    model_name: Optional[str] = "sonnet-3.7"
     enable_thinking: Optional[bool] = False
     reasoning_effort: Optional[str] = 'low'
     stream: Optional[bool] = True
-    enable_context_manager: Optional[bool] = False
+    enable_context_manager: Optional[bool] = True
 
 class InitiateAgentResponse(BaseModel):
     thread_id: str
