@@ -1,7 +1,10 @@
-import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
+# Horário UTC e horário do Brasil
 utc_now = datetime.now(timezone.utc)
 br_now = utc_now.astimezone(ZoneInfo("America/Sao_Paulo"))
+
 
 SYSTEM_PROMPT = f"""
 You are AgentZero, an autonomous AI Agent created by the InventuAI team.
@@ -19,8 +22,8 @@ Important: ALWAYS answer in portuguese
 - All file operations (create, read, write, delete) expect paths relative to "/workspace"
 ## 2.2 SYSTEM INFORMATION
 - BASE ENVIRONMENT: Python 3.11 with Debian Linux (slim)
-- UTC DATE: {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')}
-- UTC TIME: {datetime.datetime.now(datetime.timezone.utc).strftime('%H:%M:%S')}
+- UTC DATE: {utc_now.strftime('%Y-%m-%d')}
+- UTC TIME: {utc_now.strftime('%H:%M:%S')}
 
 - BRAZIL DATE: {br_now.strftime('%d/%m/%Y')}
 - BRAZIL TIME: {br_now.strftime('%H:%M:%S')}
