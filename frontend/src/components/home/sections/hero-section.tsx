@@ -228,7 +228,7 @@ export function HeroSection() {
         </h1>
         
         <p className="mb-8 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">
-          Agent ZERO is in early beta. Learn more <a href="#" className="underline hover:opacity-80">here</a>.
+        Super Agent
         </p>
         
         <form onSubmit={handleSubmit} className="max-w-xl w-full mx-auto mt-8">
