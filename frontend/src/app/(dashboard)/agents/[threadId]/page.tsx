@@ -1397,8 +1397,8 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                       return (
                         <div key={group.key} ref={groupIndex === groupedMessages.length - 1 ? latestMessageRef : null}>
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 w-20 h-20 mt-2 rounded-md flex items-center justify-center overflow-hidden ml-auto mr-2">
-                              <Image src="/agent_eye_buddy.png" alt="Agent ZERO" width={80} height={80} className="object-contain opacity-70" priority unoptimized />
+                            <div className="flex-shrink-0 w-10 h-10 mt-2 rounded-md flex items-center justify-center overflow-hidden ml-auto mr-2">
+                              <Image src="/agent_eye_buddy.png" alt="Agent ZERO" width={30} height={30} className="object-contain opacity-70" priority unoptimized />
                             </div>
                             <div className="flex-1">
                               <div className="inline-flex max-w-[90%] rounded-lg bg-muted/5 px-4 py-3 text-sm">
@@ -1524,8 +1524,8 @@ export default function ThreadPage({ params }: { params: Promise<ThreadParams> }
                   (messages.length === 0 || messages[messages.length - 1].type === 'user') && (
                     <div ref={latestMessageRef}>
                       <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-20 h-20 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                          <Image src="/agent_eye_buddy.png" alt="Agent ZERO" width={80} height={80} className="object-contain"/>
+                        <div className="flex-shrink-0 w-10 h-10 mt-2 rounded-md flex items-center justify-center overflow-hidden ml-auto mr-2">
+                          <Image src="/agent_eye_buddy.png" alt="Agent ZERO" width={30} height={30} className="object-contain opacity-70" priority unoptimized />
                         </div>
                         <div className="flex-1 space-y-2">
                           <div className="max-w-[90%] px-4 py-3 text-sm">
