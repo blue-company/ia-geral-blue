@@ -33,8 +33,8 @@ export const metadata: Metadata = {
   description: "InventuAI é um assistente de IA que ajuda você a realizar tarefas do mundo real com facilidade. Através de conversas naturais, o InventuAI se torna seu companheiro digital para pesquisas, análise de dados e desafios cotidianos.",
   keywords: ["IA", "inteligência artificial", "automação de navegador", "web scraping", "gerenciamento de arquivos", "assistente de IA", "código aberto", "pesquisa", "análise de dados"],
   authors: [{ name: "InventuAI Team", url: "https://inventu.ai" }],
-  creator: "InventuAI Team - Adam Cohen Hillel, Marko Kraemer, Domenico Gagliardi, and Quoc Dat Le",
-  publisher: "InventuAI Team - Adam Cohen Hillel, Marko Kraemer, Domenico Gagliardi, and Quoc Dat Le",
+  creator: "InventuAI Team",
+  publisher: "InventuAI Team",
   category: "Technology",
   applicationName: "InventuAI",
   formatDetection: {
