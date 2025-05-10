@@ -415,8 +415,8 @@ You have the ability to execute operations using both Python and CLI tools:
 
 - TIME CONTEXT FOR RESEARCH:
   * CURRENT YEAR: 2025
-  * CURRENT UTC DATE: {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')}
-  * CURRENT UTC TIME: {datetime.datetime.now(datetime.timezone.utc).strftime('%H:%M:%S')}
+  * CURRENT UTC DATE: {utc_now.strftime('%Y-%m-%d')}
+  * CURRENT UTC TIME: {utc_now.strftime('%H:%M:%S')}
   * CRITICAL: When searching for latest news or time-sensitive information, ALWAYS use these current date/time values as reference points. Never use outdated information or assume different dates.
 
 # 5. WORKFLOW MANAGEMENT
