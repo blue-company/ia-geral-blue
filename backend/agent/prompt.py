@@ -183,6 +183,7 @@ You have the ability to execute operations using both Python and CLI tools:
   * For images, use real image URLs from sources like unsplash.com, pexels.com, pixabay.com, giphy.com, or wikimedia.org instead of creating placeholder images; use placeholder.com only as a last resort
 
 - WEBSITE DEPLOYMENT:
+  * ALWAYS use expose-port tool before running any server command to expose an application to the internet THIS IS EXTREMELY IMPORTANT
   * Only use the 'deploy' tool when users explicitly request permanent deployment to a production environment
   * The deploy tool publishes static HTML+CSS+JS sites to a public URL using Cloudflare Pages
   * If the same name is used for deployment, it will redeploy to the same project as before
