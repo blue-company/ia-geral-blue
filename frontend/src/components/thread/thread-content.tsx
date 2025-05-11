@@ -1,4 +1,5 @@
 import React, { useRef, useState, useCallback } from 'react';
+import './animation-delays.css';
 import Image from 'next/image';
 import { ArrowDown, CircleDashed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -270,8 +271,18 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                     {displayMessages.length === 0 && !streamingTextContent && !streamingToolCall &&
                         !streamingText && !currentToolCall && agentStatus === 'idle' ? (
                         <div className="flex h-full items-center justify-center">
-                            <div className="text-center text-muted-foreground">
-                                {readOnly ? "No messages to display." : "AgentZero está gerando a resposta do século..."}
+                            <div className="flex flex-col items-center gap-3 text-center">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center overflow-hidden">
+                                    <Image src="/agent_eye_buddy.png" alt="AgentZero" width={40} height={40} className="object-contain opacity-70" priority unoptimized />
+                                </div>
+                                <div className="flex items-center gap-1 text-primary/80">
+                                    <span className="animate-pulse">•</span>
+                                    <span className="animate-pulse animation-delay-200">•</span>
+                                    <span className="animate-pulse animation-delay-400">•</span>
+                                </div>
+                                <div className="text-muted-foreground mt-2">
+                                    {readOnly ? "No messages to display." : "AgentZero está prestes a te surpreender..."}
+                                </div>
                             </div>
                         </div>
                     ) : (

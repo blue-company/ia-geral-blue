@@ -63,6 +63,7 @@ export function LoadingThread({ message = '' }: LoadingThreadProps) {
                       <Loader2 className="h-4 w-4 animate-spin text-primary" />
                       <p className="text-sm font-medium">Inicializando o agente, por favor aguarde...</p>
                     </div>
+                    <p className="text-sm text-primary/80 italic mt-2">AgentZero está prestes a te surpreender...</p>
                     <div className="mt-4 space-y-3">
                       <Skeleton className="h-4 w-full" style={{ width: `${Math.max(30, Math.min(75, 75 - (progress % 40)))}%` }} />
                       <Skeleton className="h-4" style={{ width: `${Math.max(20, Math.min(90, 50 + (progress % 40)))}%` }} />
@@ -81,7 +82,7 @@ export function LoadingThread({ message = '' }: LoadingThreadProps) {
             <div className="relative">
               <div className="flex items-center gap-2 border rounded-lg p-2 bg-background shadow-sm">
                 <div className="flex-1 flex items-center min-h-[40px]">
-                  <p className="text-sm text-muted-foreground">Aguardando inicialização do agente...</p>
+                  <p className="text-sm text-muted-foreground">AgentZero está prestes a te surpreender...</p>
                 </div>
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 rounded-md flex items-center justify-center bg-muted/30">
