@@ -123,7 +123,7 @@ class Configuration:
     AWS_REGION_NAME: Optional[str] = None
     
     # Model configuration
-    MODEL_TO_USE: Optional[str] = "sonnet-3.7"
+    MODEL_TO_USE: Optional[str] = "gemini-flash-2.5"
     
     # Supabase configuration
     SUPABASE_URL: str

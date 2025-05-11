@@ -59,7 +59,7 @@ MODEL_NAME_ALIASES = {
 }
 
 class AgentStartRequest(BaseModel):
-    model_name: Optional[str] = "sonnet-3.7"
+    model_name: Optional[str] = "gemini-flash-2.5"
     enable_thinking: Optional[bool] = False
     reasoning_effort: Optional[str] = 'low'
     stream: Optional[bool] = True
