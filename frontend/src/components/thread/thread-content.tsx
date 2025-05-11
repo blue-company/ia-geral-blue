@@ -3,6 +3,7 @@ import './animation-delays.css';
 import Image from 'next/image';
 import { ArrowDown, CircleDashed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getToolIcon, extractPrimaryParam } from '@/components/thread/utils';
 import { Markdown } from '@/components/ui/markdown';
 import { UnifiedMessage, ParsedContent, ParsedMetadata } from '@/components/thread/types';
 import { safeJsonParse } from '@/components/thread/utils';
@@ -139,8 +140,7 @@ export function renderMarkdownContent(
                 </div>
             );
         } else {
-            // Import dynamically to avoid circular dependencies
-            const { getToolIcon, extractPrimaryParam } = require('@/components/thread/utils');
+            // Usar as funções importadas no topo do arquivo
             const IconComponent = getToolIcon(toolName);
             const paramDisplay = extractPrimaryParam(toolName, rawXml);
 
@@ -535,8 +535,7 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                                                                                     {streamingToolCall && !detectedTag && (
                                                                                         <div className="mt-2 mb-1">
                                                                                             {(() => {
-                                                                                                // Import dynamically to avoid circular dependencies
-                                                                                                const { getToolIcon, extractPrimaryParam } = require('@/components/thread/utils');
+                                                                                                // Usar as funções importadas no topo do arquivo
                                                                                                 const toolName = streamingToolCall.name || streamingToolCall.xml_tag_name || 'Tool';
                                                                                                 const IconComponent = getToolIcon(toolName);
                                                                                                 const paramDisplay = extractPrimaryParam(toolName, streamingToolCall.arguments || '');
