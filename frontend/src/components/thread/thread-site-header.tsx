@@ -26,6 +26,7 @@ interface ThreadSiteHeaderProps {
   onToggleSidePanel: () => void
   onProjectRenamed?: (newName: string) => void
   isMobileView?: boolean
+  debugMode?: boolean
 }
 
 export function SiteHeader({ 

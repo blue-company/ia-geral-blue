@@ -469,6 +469,12 @@ export const addUserMessage = async (threadId: string, content: string): Promise
 export const getMessages = async (threadId: string): Promise<Message[]> => {
   const supabase = createClient();
   
+  // Verificar se é um ID temporário (começa com 'temp-')
+  if (threadId.startsWith('temp-')) {
+    console.log(`[API] Skipping database query for temporary thread ID: ${threadId}`);
+    return []; // Retorna array vazio para threads temporários
+  }
+  
   const { data, error } = await supabase
     .from('messages')
     .select('*')
@@ -687,6 +693,12 @@ export const getAgentStatus = async (agentRunId: string): Promise<AgentRun> => {
 
 export const getAgentRuns = async (threadId: string): Promise<AgentRun[]> => {
   try {
+    // Verificar se é um ID temporário (começa com 'temp-')
+    if (threadId.startsWith('temp-')) {
+      console.log(`[API] Skipping agent runs query for temporary thread ID: ${threadId}`);
+      return []; // Retorna array vazio para threads temporários
+    }
+    
     const supabase = createClient();
     const { data: { session } } = await supabase.auth.getSession();
     

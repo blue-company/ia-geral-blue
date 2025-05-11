@@ -28,7 +28,8 @@ interface FileRendererProps {
       sandbox_url?: string;
       vnc_preview?: string;
       pass?: string;
-    }
+    },
+    id?: string;
   };
   markdownRef?: React.RefObject<HTMLDivElement>;
 }
@@ -167,4 +168,4 @@ export function FileRenderer({
       )}
     </div>
   );
-} 
+}

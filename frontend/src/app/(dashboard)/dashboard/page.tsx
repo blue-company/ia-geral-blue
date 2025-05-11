@@ -68,85 +68,115 @@ function DashboardContent() {
     if ((!message.trim() && !(chatInputRef.current?.getPendingFiles().length)) || isSubmitting) return;
 
     setIsSubmitting(true);
-
+    const files = chatInputRef.current?.getPendingFiles() || [];
+    localStorage.removeItem(PENDING_PROMPT_KEY);
+    
+    // Criar um ID temporário para exibir feedback imediato
+    const tempId = `temp-${Date.now()}`;
+    
     try {
-      const files = chatInputRef.current?.getPendingFiles() || [];
-      localStorage.removeItem(PENDING_PROMPT_KEY);
-
+      // Redirecionar imediatamente para uma página de carregamento com ID temporário
+      // Isso dará feedback visual imediato ao usuário
+      router.push(`/agents/${tempId}?loading=true&message=${encodeURIComponent(message)}`);
+      
+      // Pequeno delay para garantir que o redirecionamento aconteça antes de continuar
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       if (files.length > 0) {
         // ---- Handle submission WITH files ----
         console.log(`Submitting with message: "${message}" and ${files.length} files.`);
+        
+        // Preparar o FormData
         const formData = new FormData();
-
-        // Use 'prompt' key instead of 'message'
         formData.append('prompt', message);
-
+        
         // Append files
-        files.forEach((file, index) => {
+        files.forEach((file) => {
           formData.append('files', file, file.name);
         });
-
-        // Append options individually instead of bundled 'options' field
+        
+        // Append options
         if (options?.model_name) formData.append('model_name', options.model_name);
-        // Default values from backend signature if not provided in options:
         formData.append('enable_thinking', String(options?.enable_thinking ?? false));
         formData.append('reasoning_effort', options?.reasoning_effort ?? 'low');
         formData.append('stream', String(options?.stream ?? true));
         formData.append('enable_context_manager', String(options?.enable_context_manager ?? false));
-
-        console.log('FormData content:', Array.from(formData.entries()));
-
-        const result = await initiateAgent(formData);
-        console.log('Agent initiated with files:', result);
-
-        if (result.thread_id) {
-          router.push(`/agents/${result.thread_id}`);
-        } else {
-          throw new Error("Agent initiation did not return a thread_id.");
+        
+        try {
+          // Processar a requisição de forma assíncrona
+          const result = await initiateAgent(formData);
+          console.log('Agent initiated with files:', result);
+          if (result.thread_id) {
+            // Redirecionar para o thread real quando estiver pronto
+            router.replace(`/agents/${result.thread_id}`);
+            chatInputRef.current?.clearPendingFiles();
+          } else {
+            throw new Error("Agent initiation did not return a thread_id.");
+          }
+        } catch (error) {
+          handleSubmissionError(error);
+          // Redirecionar de volta para o dashboard em caso de erro
+          router.replace('/dashboard');
         }
-        chatInputRef.current?.clearPendingFiles();
-
       } else {
-        // ---- Handle text-only messages (NO CHANGES NEEDED HERE) ----
+        // ---- Handle text-only messages ----
         console.log(`Submitting text-only message: "${message}"`);
-        const projectName = await generateThreadName(message);
-        const newProject = await createProject({ name: projectName, description: "" });
-        const thread = await createThread(newProject.id);
-        await addUserMessage(thread.thread_id, message);
-        await startAgent(thread.thread_id, options); // Pass original options here
-        router.push(`/agents/${thread.thread_id}`);
+        
+        try {
+          // Processar em segundo plano
+          const projectName = await generateThreadName(message);
+          const newProject = await createProject({ name: projectName, description: "" });
+          const thread = await createThread(newProject.id);
+          await addUserMessage(thread.thread_id, message);
+          await startAgent(thread.thread_id, options);
+          
+          // Redirecionar para o thread real quando estiver pronto
+          router.replace(`/agents/${thread.thread_id}`);
+        } catch (error) {
+          handleSubmissionError(error);
+          // Redirecionar de volta para o dashboard em caso de erro
+          router.replace('/dashboard');
+        }
       }
     } catch (error: any) {
-        console.error('Error during submission process:', error);
-        if (error instanceof BillingError) {
-             // Delegate billing error handling
-             console.log("Handling BillingError:", error.detail);
-             handleBillingError({
-                message: error.detail.message || 'Monthly usage limit reached. Please upgrade your plan.',
-                currentUsage: error.detail.currentUsage as number | undefined,
-                limit: error.detail.limit as number | undefined,
-                subscription: error.detail.subscription || {
-                    price_id: config.SUBSCRIPTION_TIERS.FREE.priceId,
-                    plan_name: "Free"
-                }
-             });
-             setIsSubmitting(false);
-             return; // Stop further processing for billing errors
-        } else if (error instanceof PromptLimitExceededError) {
-             // Tratar erro de limite de prompts excedido
-             console.log("Limite de prompts excedido:", error.message);
-             setShowLimitModal(true);
-             setIsSubmitting(false);
-             return; // Parar o processamento para erros de limite de prompts
-        }
+      handleSubmissionError(error);
+      // Garantir que o usuário volte para o dashboard em caso de erro no redirecionamento
+      router.replace('/dashboard');
+    } finally {
+      // Garantir que o estado de submissão seja resetado mesmo em caso de erro
+      setIsSubmitting(false);
+    }
+  };
 
+  // Função para tratar erros de forma consistente
+  const handleSubmissionError = (error: any) => {
+    console.error('Error during submission process:', error);
+    
+    if (error instanceof BillingError) {
+        // Delegate billing error handling
+        console.log("Handling BillingError:", error.detail);
+        handleBillingError({
+            message: error.detail.message || 'Monthly usage limit reached. Please upgrade your plan.',
+            currentUsage: error.detail.currentUsage as number | undefined,
+            limit: error.detail.limit as number | undefined,
+            subscription: error.detail.subscription || {
+                price_id: config.SUBSCRIPTION_TIERS.FREE.priceId,
+                plan_name: "Free"
+            }
+        });
+    } else if (error instanceof PromptLimitExceededError) {
+        // Tratar erro de limite de prompts excedido
+        console.log("Limite de prompts excedido:", error.message);
+        setShowLimitModal(true);
+    } else {
         // Handle other errors
         const isConnectionError = error instanceof TypeError && error.message.includes('Failed to fetch');
         if (!isLocalMode() || isConnectionError) {
-           toast.error(error.message || "An unexpected error occurred");
+            toast.error(error.message || "An unexpected error occurred");
         }
-        setIsSubmitting(false); // Reset submitting state on all errors
     }
+    
+    setIsSubmitting(false); // Reset submitting state on all errors
   };
 
   // Check for pending prompt in localStorage on mount
@@ -174,64 +204,73 @@ function DashboardContent() {
       
       return () => clearTimeout(timer);
     }
-  }, [autoSubmit, inputValue, isSubmitting]);
+  }, [autoSubmit, inputValue, isSubmitting, handleSubmit]);
+
+  // Handle mobile menu button click
+  const handleMenuClick = () => {
+    setOpenMobile(true);
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full">
-      {isMobile && (
-        <div className="absolute top-4 left-4 z-10">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-8 w-8" 
-                onClick={() => setOpenMobile(true)}
-              >
-                <Menu className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Open menu</TooltipContent>
-          </Tooltip>
-        </div>
-      )}
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col">
+        <div className="flex flex-col items-center justify-center h-full w-full">
+          {isMobile && (
+            <div className="absolute top-4 left-4 z-10">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-8 w-8" 
+                    onClick={handleMenuClick}
+                  >
+                    <Menu className="h-4 w-4" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Open menu</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
 
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[560px] max-w-[90%]">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-medium text-foreground mb-2">Olá! </h1>
-          <h2 className="text-2xl text-muted-foreground">O que você gostaria que o AgentZero fizesse hoje?</h2>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[560px] max-w-[90%]">
+            <div className="text-center mb-10">
+              <h1 className="text-4xl font-medium text-foreground mb-2">Olá! </h1>
+              <h2 className="text-2xl text-muted-foreground">O que você gostaria que o AgentZero fizesse hoje?</h2>
+            </div>
+            
+            <ChatInput 
+              ref={chatInputRef}
+              onSubmit={handleSubmit} 
+              loading={isSubmitting}
+              placeholder="Descreva com o que você precisa de ajuda..."
+              value={inputValue}
+              onChange={setInputValue}
+              hideAttachments={false}
+            />
+          </div>
+          
+          {/* Billing Error Alert */}
+          <BillingErrorAlert
+            message={billingError?.message}
+            currentUsage={billingError?.currentUsage}
+            limit={billingError?.limit}
+            accountId={personalAccount?.account_id}
+            onDismiss={clearBillingError}
+            isOpen={!!billingError}
+          />
+          
+          {/* Prompt Limit Modal */}
+          {user && (
+            <PromptLimitModal
+              isOpen={showLimitModal}
+              onClose={() => setShowLimitModal(false)}
+              userId={user.id}
+            />
+          )}
         </div>
-        
-        <ChatInput 
-          ref={chatInputRef}
-          onSubmit={handleSubmit} 
-          loading={isSubmitting}
-          placeholder="Descreva com o que você precisa de ajuda..."
-          value={inputValue}
-          onChange={setInputValue}
-          hideAttachments={false}
-        />
       </div>
-      
-      {/* Billing Error Alert */}
-      <BillingErrorAlert
-        message={billingError?.message}
-        currentUsage={billingError?.currentUsage}
-        limit={billingError?.limit}
-        accountId={personalAccount?.account_id}
-        onDismiss={clearBillingError}
-        isOpen={!!billingError}
-      />
-      
-      {/* Prompt Limit Modal */}
-      {user && (
-        <PromptLimitModal
-          isOpen={showLimitModal}
-          onClose={() => setShowLimitModal(false)}
-          userId={user.id}
-        />
-      )}
     </div>
   );
 }

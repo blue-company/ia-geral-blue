@@ -211,6 +211,7 @@ interface ToolCallSidePanelProps {
   project?: Project;
   renderAssistantMessage?: (assistantContent?: string, toolContent?: string) => React.ReactNode;
   renderToolResult?: (toolContent?: string, isSuccess?: boolean) => React.ReactNode;
+  isLoading?: boolean;
 }
 
 export function ToolCallSidePanel({
