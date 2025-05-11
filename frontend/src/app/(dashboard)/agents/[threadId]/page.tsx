@@ -89,10 +89,14 @@ export default function ThreadPage({
   const threadId = unwrappedParams.threadId;
   const isMobile = useIsMobile();
   const searchParams = useSearchParams();
+  
+  // Processar parâmetros de consulta para a página temporária de carregamento
+  const isLoadingPage = searchParams.get('loading') === 'true';
+  const initialMessage = searchParams.get('message') || '';
 
   const router = useRouter();
   const [messages, setMessages] = useState<UnifiedMessage[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState(initialMessage); // Usar o valor do parâmetro message da URL
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -373,6 +377,38 @@ export default function ThreadPage({
           // Just set initial state and continue
           setIsLoading(false);
           initialLoadCompleted.current = true;
+          
+          // Se estamos na página temporária de carregamento, adicionar mensagens temporárias
+          if (isLoadingPage && initialMessage) {
+            // Adicionar mensagem do usuário com o texto do prompt
+            const optimisticUserMessage: UnifiedMessage = {
+              message_id: `temp-user-${Date.now()}`,
+              thread_id: threadId,
+              type: 'user',
+              is_llm_message: false,
+              content: initialMessage,
+              metadata: '{}',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            
+            // Adicionar mensagem temporária do assistente para mostrar o indicador de carregamento
+            const loadingAssistantMessage: UnifiedMessage = {
+              message_id: `temp-loading-${Date.now()}`,
+              thread_id: threadId,
+              type: 'assistant',
+              is_llm_message: true,
+              content: '',
+              metadata: '{"isLoading": true}',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            
+            // Adicionar ambas as mensagens ao estado
+            setMessages([optimisticUserMessage, loadingAssistantMessage]);
+            setIsSending(true); // Indicar que estamos enviando uma mensagem
+          }
+          
           return;
         }
 
@@ -476,7 +512,8 @@ export default function ThreadPage({
     ) => {
       if (!message.trim()) return;
       setIsSending(true);
-
+      
+      // Criar uma mensagem temporária do usuário com o texto do prompt
       const optimisticUserMessage: UnifiedMessage = {
         message_id: `temp-${Date.now()}`,
         thread_id: threadId,
@@ -487,9 +524,24 @@ export default function ThreadPage({
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-
-      setMessages((prev) => [...prev, optimisticUserMessage]);
-      setNewMessage('');
+      
+      // Adicionar a mensagem temporária do assistente para mostrar o indicador de carregamento
+      const loadingAssistantMessage: UnifiedMessage = {
+        message_id: `temp-loading-${Date.now()}`,
+        thread_id: threadId,
+        type: 'assistant',
+        is_llm_message: true,
+        content: '',
+        metadata: '{"isLoading": true}',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      
+      // Adicionar ambas as mensagens ao estado
+      setMessages((prev) => [...prev, optimisticUserMessage, loadingAssistantMessage]);
+      
+      // Não limpar o campo de entrada ainda para manter a impressão de responsividade
+      // O texto será mantido no input até que a resposta seja recebida
       scrollToBottom('smooth');
 
       try {
@@ -532,9 +584,15 @@ export default function ThreadPage({
           throw new Error(`Failed to start agent: ${error?.message || error}`);
         }
 
-        // If agent started successfully
+        // Se o agente foi iniciado com sucesso
         const agentResult = results[1].value;
         setAgentRunId(agentResult.agent_run_id);
+        
+        // Remover a mensagem de carregamento temporária quando o agente começar a responder
+        setMessages((prev) => prev.filter(m => !m.message_id?.includes('temp-loading')));
+        
+        // Agora que a resposta foi recebida com sucesso, podemos limpar o campo de entrada
+        setNewMessage('');
       } catch (err) {
         // Catch errors from addUserMessage or non-BillingError agent start errors
         console.error('Error sending message or starting agent:', err);
@@ -542,10 +600,16 @@ export default function ThreadPage({
         if (!(err instanceof BillingError)) {
           toast.error(err instanceof Error ? err.message : 'Operation failed');
         }
-        // Ensure optimistic message is removed on any error during submit
+        // Remover as mensagens temporárias em caso de erro
         setMessages((prev) =>
-          prev.filter((m) => m.message_id !== optimisticUserMessage.message_id),
+          prev.filter((m) => 
+            m.message_id !== optimisticUserMessage.message_id && 
+            !m.message_id?.includes('temp-loading')
+          ),
         );
+        
+        // Limpar o campo de entrada em caso de erro
+        setNewMessage('');
       } finally {
         setIsSending(false);
       }
@@ -1188,19 +1252,39 @@ export default function ThreadPage({
               "mx-auto",
               isMobile ? "w-full px-4" : "max-w-3xl"
             )}>
-              <ChatInput
-                value={newMessage}
-                onChange={setNewMessage}
-                onSubmit={handleSubmitMessage}
-                placeholder="Dê uma tarefa para o AgentZERO trabalhar..."
-                loading={isSending}
-                disabled={isSending || agentStatus === 'running' || agentStatus === 'connecting'}
-                isAgentRunning={agentStatus === 'running' || agentStatus === 'connecting'}
-                onStopAgent={handleStopAgent}
-                autoFocus={!isLoading}
-                onFileBrowse={handleOpenFileViewer}
-                sandboxId={sandboxId || undefined}
-              />
+              <div className="relative">
+                {/* Indicador de carregamento circular à frente do prompt na página temporária */}
+                {isLoadingPage && initialMessage && (
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                    <div className="animate-spin h-5 w-5 text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+                
+                <ChatInput
+                  value={newMessage} // Manter o valor do input durante o carregamento
+                  onChange={setNewMessage}
+                  onSubmit={(message, options) => {
+                    // Salvar o texto do prompt antes de chamar handleSubmitMessage
+                    const promptText = message;
+                    
+                    // Chamar a função original de envio
+                    handleSubmitMessage(message, options);
+                  }}
+                  placeholder="Dê uma tarefa para o AgentZERO trabalhar..."
+                  loading={isSending}
+                  disabled={isSending || agentStatus === 'running' || agentStatus === 'connecting'}
+                  isAgentRunning={agentStatus === 'running' || agentStatus === 'connecting'}
+                  onStopAgent={handleStopAgent}
+                  autoFocus={!isLoading}
+                  onFileBrowse={handleOpenFileViewer}
+                  sandboxId={sandboxId || undefined}
+                  className={isLoadingPage && initialMessage ? "pl-10" : ""} // Adicionar padding à esquerda quando o indicador estiver visivel
+                />
+              </div>
             </div>
           </div>
         </div>

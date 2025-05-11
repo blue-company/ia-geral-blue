@@ -373,7 +373,7 @@ export function FileAttachment({
         <div className="flex items-center gap-2 w-full">
           {getFileIcon(fileType, 'text-muted-foreground')}
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium truncate">{displayName}</div>
+            <div className="text-sm font-medium truncate max-w-[300px] w-full">{displayName}</div>
             {formattedSize && (
               <div className="text-xs text-muted-foreground">{formattedSize}</div>
             )}
@@ -420,7 +420,7 @@ export function FileAttachment({
       )}
       
       <div className="p-2 border-t bg-background/50">
-        <div className="text-sm font-medium truncate">{displayName}</div>
+        <div className="text-sm font-medium truncate max-w-[300px] w-full">{displayName}</div>
         {formattedSize && (
           <div className="text-xs text-muted-foreground">{formattedSize}</div>
         )}

@@ -52,6 +52,7 @@ export interface ChatInputProps {
   sandboxId?: string;
   hideAttachments?: boolean;
   project?: Project;
+  className?: string; // Adicionar propriedade className para estilização personalizada
 }
 
 export interface UploadedFile {
@@ -82,7 +83,8 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
   onFileBrowse,
   sandboxId,
   hideAttachments = false,
-  project
+  project,
+  className = "" // Valor padrão para className
 }, ref) => {
   const isControlled = controlledValue !== undefined && controlledOnChange !== undefined;
   
@@ -367,7 +369,7 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
         <Textarea
           ref={textareaRef}
           placeholder={placeholder}
-          className="min-h-[40px] border-0 focus-visible:ring-0 resize-none p-2 shadow-none"
+          className={`min-h-[40px] border-0 focus-visible:ring-0 resize-none p-2 shadow-none ${className}`}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

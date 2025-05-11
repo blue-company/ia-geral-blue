@@ -271,7 +271,7 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                         !streamingText && !currentToolCall && agentStatus === 'idle' ? (
                         <div className="flex h-full items-center justify-center">
                             <div className="text-center text-muted-foreground">
-                                {readOnly ? "No messages to display." : "Send a message to start."}
+                                {readOnly ? "No messages to display." : "AgentZero está gerando a resposta do século..."}
                             </div>
                         </div>
                     ) : (
@@ -379,6 +379,26 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                                                         <div className="inline-flex max-w-[90%] rounded-lg bg-muted/5 px-4 py-3 text-sm">
                                                             <div className="space-y-2">
                                                                 {(() => {
+                                                                    // Verificar se é uma mensagem de carregamento
+                                                                    const isLoadingMessage = group.messages.some(msg => {
+                                                                        try {
+                                                                            const metadata = JSON.parse(msg.metadata || '{}');
+                                                                            return metadata.isLoading === true;
+                                                                        } catch (e) {
+                                                                            return false;
+                                                                        }
+                                                                    });
+                                                                    
+                                                                    if (isLoadingMessage) {
+                                                                        return (
+                                                                            <div className="flex items-center gap-1.5 py-1">
+                                                                                <div className="h-1.5 w-1.5 rounded-full bg-primary/50 animate-pulse" />
+                                                                                <div className="h-1.5 w-1.5 rounded-full bg-primary/50 animate-pulse delay-150" />
+                                                                                <div className="h-1.5 w-1.5 rounded-full bg-primary/50 animate-pulse delay-300" />
+                                                                            </div>
+                                                                        );
+                                                                    }
+                                                                    
                                                                     // In debug mode, just show raw messages content
                                                                     if (debugMode) {
                                                                         return group.messages.map((message, msgIndex) => {

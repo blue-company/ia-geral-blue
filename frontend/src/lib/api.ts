@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/client';
-import { canMakePrompt, incrementPromptCount, PromptLimitExceededError } from './prompt-limiter';
+import { canMakePrompt, PromptLimitExceededError } from './prompt-limiter';
 
 // Re-export PromptLimitExceededError para uso em outros componentes
 export { PromptLimitExceededError } from './prompt-limiter';
@@ -522,8 +522,8 @@ export const startAgent = async (
       throw new PromptLimitExceededError('Você atingiu o limite diário de prompts.');
     }
     
-    // Incrementar a contagem de prompts do usuário
-    incrementPromptCount(userId);
+    // O incremento da contagem de prompts agora é feito apenas no backend
+    // Removida a chamada a incrementPromptCount(userId) para evitar duplicação
 
     console.log(`[API] Starting agent for thread ${threadId} using ${API_URL}/thread/${threadId}/agent/start`);
     
