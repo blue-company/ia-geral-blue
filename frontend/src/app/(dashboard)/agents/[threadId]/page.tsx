@@ -11,7 +11,6 @@ import { ThreadSkeleton } from '@/components/thread/thread-skeleton';
 import ThreadContent from '@/components/thread/thread-content';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
 import {
   ArrowDown,
   CheckCircle,
