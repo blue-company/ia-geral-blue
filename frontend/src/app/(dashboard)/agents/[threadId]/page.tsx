@@ -11,6 +11,7 @@ import { ThreadSkeleton } from '@/components/thread/thread-skeleton';
 import ThreadContent from '@/components/thread/thread-content';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import {
   ArrowDown,
   CheckCircle,
@@ -520,11 +521,10 @@ export default function ThreadPage({
             console.log("Caught BillingError:", error.detail);
             // Extract billing details
             setBillingData({
-              // Note: currentUsage and limit might not be in the detail from the backend yet
               currentUsage: error.detail.currentUsage as number | undefined,
               limit: error.detail.limit as number | undefined,
-              message: error.detail.message || 'Monthly usage limit reached. Please upgrade.', // Use message from error detail
-              accountId: project?.account_id || null // Pass account ID
+              message: error.detail.message || 'Monthly usage limit reached. Please upgrade.',
+              accountId: project?.account_id || null
             });
             setShowBillingAlert(true);
 
@@ -533,6 +533,52 @@ export default function ThreadPage({
               m.message_id !== optimisticUserMessage.message_id && 
               !m.message_id?.includes('temp-loading')
             ));
+            return; // Stop further execution in this case
+          }
+
+          // Check if it's a prompt limit exceeded error
+          if (error && typeof error === 'object' && 
+              ((error.name === 'PromptLimitExceededError') || 
+               ('detail' in error && error.detail && 
+                typeof error.detail === 'object' && 
+                'error' in error.detail && 
+                error.detail.error === 'prompt_limit_exceeded'))) {
+            
+            console.log("Caught PromptLimitExceededError:", error);
+            
+            // Import the PromptLimitModal
+            import('@/components/prompt-limit-modal').then(async ({ PromptLimitModal }) => {
+              // Get the current user's ID
+              const supabase = createClient();
+              const { data } = await supabase.auth.getUser();
+              const userId = data.user?.id;
+              
+              if (userId) {
+                // Create a modal element
+                const modalRoot = document.createElement('div');
+                modalRoot.id = 'prompt-limit-modal-root';
+                document.body.appendChild(modalRoot);
+                
+                // Use React's createRoot API to render the modal
+                const { createRoot } = await import('react-dom/client');
+                const root = createRoot(modalRoot);
+                
+                // Render the PromptLimitModal
+                root.render(
+                  <PromptLimitModal 
+                    isOpen={true} 
+                    onClose={() => {
+                      root.unmount();
+                      document.body.removeChild(modalRoot);
+                    }} 
+                    userId={userId} 
+                  />
+                );
+              }
+            });
+            
+            // Remove the optimistic message since the agent couldn't start
+            setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
             return; // Stop further execution in this case
           }
 
