@@ -502,6 +502,15 @@ export default function ThreadPage({
           // Verificar se é um erro de limite de prompts (PromptLimitExceededError)
           if (error instanceof PromptLimitExceededError || (error && error.status === 402)) {
             console.log("Limite de prompts excedido:", error.message || (error.detail && error.detail.message));
+            
+            // Se estamos em uma página temporária, redirecionar para o dashboard com parâmetro de erro
+            if (threadId.startsWith('temp-')) {
+              // Redirecionar para o dashboard com parâmetro indicando erro de limite de prompts
+              router.push(`/dashboard?promptLimitExceeded=true`);
+              return;
+            }
+            
+            // Se não estamos em uma página temporária, mostrar o modal diretamente
             setShowLimitModal(true);
             
             // Remover as mensagens temporárias já que o agente não pôde ser iniciado

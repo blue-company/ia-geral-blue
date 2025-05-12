@@ -179,15 +179,32 @@ function DashboardContent() {
     setIsSubmitting(false); // Reset submitting state on all errors
   };
 
-  // Check for pending prompt in localStorage on mount
+  // Check for pending prompt in localStorage on mount and URL parameters
   useEffect(() => {
     // Use a small delay to ensure we're fully mounted
     const timer = setTimeout(() => {
+      // Verificar se há um prompt pendente no localStorage
       const pendingPrompt = localStorage.getItem(PENDING_PROMPT_KEY);
       
       if (pendingPrompt) {
         setInputValue(pendingPrompt);
         setAutoSubmit(true); // Flag to auto-submit after mounting
+      }
+      
+      // Verificar se há o parâmetro promptLimitExceeded na URL
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const promptLimitExceeded = urlParams.get('promptLimitExceeded');
+        
+        if (promptLimitExceeded === 'true') {
+          // Mostrar o modal de limite de prompts
+          setShowLimitModal(true);
+          
+          // Limpar o parâmetro da URL para evitar que o modal seja mostrado novamente após atualização
+          const url = new URL(window.location.href);
+          url.searchParams.delete('promptLimitExceeded');
+          window.history.replaceState({}, '', url.toString());
+        }
       }
     }, 200);
     
