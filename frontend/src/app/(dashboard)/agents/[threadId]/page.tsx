@@ -492,36 +492,19 @@ export default function ThreadPage({
         // Verificar se estamos em uma página temporária (com ID começando com "temp-")
         // Se sim, não devemos enviar o ID temporário para a API
         if (threadId.startsWith('temp-')) {
-          try {
-            // Verificar diretamente se o usuário pode fazer mais prompts
-            // Chamar a API diretamente para verificar o limite
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/thread/temp-check/agent/start`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-              body: JSON.stringify({}),
-            });
-            
-            // Se receber um erro 402, significa que o usuário atingiu o limite de prompts
-            if (response.status === 402) {
-              console.log("Limite de prompts excedido na verificação prévia");
-              // Redirecionar diretamente para a dashboard com o parâmetro de erro
-              window.location.href = `/dashboard?promptLimitExceeded=true`;
-              return;
-            }
-            
-            // Se não houver erro, continuar com o fluxo normal
-            console.log("Usuário pode fazer mais prompts, redirecionando para dashboard");
-            router.push(`/dashboard?message=${encodeURIComponent(message)}`);
-            return;
-          } catch (error) {
-            console.error("Erro ao verificar limite de prompts:", error);
-            // Em caso de erro na verificação, continuar com o fluxo normal
-            router.push(`/dashboard?message=${encodeURIComponent(message)}`);
-            return;
+          // Para páginas temporárias, redirecionamos diretamente para a página de dashboard
+          // com a mensagem como parâmetro
+          console.log("Redirecionando da página temporária para dashboard com mensagem");
+          
+          // Salvar a mensagem no localStorage para ser recuperada na página de dashboard
+          // em vez de usar parâmetros de URL
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('PENDING_PROMPT_KEY', message);
           }
+          
+          // Redirecionar para a dashboard sem parâmetros adicionais
+          router.push('/dashboard');
+          return;
         }
         
         // Para threads normais (não temporários), continuar com o fluxo normal
@@ -546,37 +529,31 @@ export default function ThreadPage({
           // Verificamos todas as possíveis formas que o erro pode vir
           const isPromptLimitError = 
             error instanceof PromptLimitExceededError || 
-            (error && error.status === 402) || 
+            (error && (error as any).status === 402) || 
             (error && typeof error === 'object' && 'detail' in error && 
-             error.detail && typeof error.detail === 'object' && 
-             'error' in error.detail && error.detail.error === 'prompt_limit_exceeded');
+             (error as any).detail && typeof (error as any).detail === 'object' && 
+             'error' in (error as any).detail && (error as any).detail.error === 'prompt_limit_exceeded');
           
           if (isPromptLimitError) {
             console.log("Limite de prompts excedido:", 
-              error.message || 
-              (error.detail && error.detail.message) || 
+              (error as any).message || 
+              ((error as any).detail && (error as any).detail.message) || 
               "Você atingiu o limite diário de prompts");
             
             // Se estamos em uma página temporária, redirecionar para o dashboard com parâmetro de erro
             if (threadId.startsWith('temp-')) {
-              console.log("Erro 402 detectado em página temporária. Detalhes:", JSON.stringify(error));
-              console.log("Redirecionando para dashboard com parâmetro promptLimitExceeded=true");
+              console.log("Erro 402 detectado em página temporária.");
               
-              // Usar uma abordagem mais robusta para o redirecionamento
-              try {
-                // Primeiro, tentar com router.push
-                router.push(`/dashboard?promptLimitExceeded=true`);
-                
-                // Como backup, usar setTimeout com window.location.href
-                setTimeout(() => {
-                  console.log("Usando window.location.href como backup");
-                  window.location.href = `/dashboard?promptLimitExceeded=true`;
-                }, 100);
-              } catch (redirectError) {
-                console.error("Erro ao redirecionar:", redirectError);
-                // Garantir que o redirecionamento aconteça mesmo com erro
-                window.location.href = `/dashboard?promptLimitExceeded=true`;
+              // Usar uma abordagem extremamente direta
+              // Definir uma flag no localStorage para indicar que o modal deve ser exibido
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('SHOW_PROMPT_LIMIT_MODAL', 'true');
+                console.log("Flag SHOW_PROMPT_LIMIT_MODAL definida no localStorage");
               }
+              
+              // Redirecionar diretamente para a dashboard sem parâmetros
+              console.log("Redirecionando para /dashboard");
+              window.location.replace('/dashboard');
               return;
             }
             

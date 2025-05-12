@@ -183,15 +183,27 @@ function DashboardContent() {
   useEffect(() => {
     console.log("Verificando parâmetros na URL e localStorage");
     
-    // Verificar imediatamente se há o parâmetro promptLimitExceeded na URL
     if (typeof window !== 'undefined') {
+      // Verificar se há uma flag no localStorage indicando que o modal deve ser exibido
+      const showLimitModal = localStorage.getItem('SHOW_PROMPT_LIMIT_MODAL');
+      console.log("Flag SHOW_PROMPT_LIMIT_MODAL no localStorage:", showLimitModal);
+      
+      if (showLimitModal === 'true') {
+        console.log("Exibindo modal de limite de prompts a partir do localStorage");
+        setShowLimitModal(true);
+        
+        // Limpar a flag do localStorage
+        localStorage.removeItem('SHOW_PROMPT_LIMIT_MODAL');
+      }
+      
+      // Verificar também se há o parâmetro promptLimitExceeded na URL
       const urlParams = new URLSearchParams(window.location.search);
       const promptLimitExceeded = urlParams.get('promptLimitExceeded');
       
-      console.log("Parâmetro promptLimitExceeded na URL:", promptLimitExceeded);
+      console.log("Parâmetro promptLimitExceeded na URL:", promptLimitExceeded, "URL completa:", window.location.href);
       
       if (promptLimitExceeded === 'true') {
-        console.log("Exibindo modal de limite de prompts");
+        console.log("Exibindo modal de limite de prompts a partir do parâmetro URL");
         // Mostrar o modal de limite de prompts imediatamente
         setShowLimitModal(true);
         
