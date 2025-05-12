@@ -472,6 +472,46 @@ export default function ThreadPage({
       scrollToBottom('smooth');
 
       try {
+        // Verificar se estamos em uma página temporária (com ID começando com "temp-")
+        // Se sim, não devemos enviar o ID temporário para a API
+        if (threadId.startsWith('temp-')) {
+          // Para páginas temporárias, verificamos primeiro se o usuário atingiu o limite de prompts
+          try {
+            // Verificar se o usuário pode fazer mais prompts
+            const canMakePromptResult = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/check_prompt_limit`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+            });
+            
+            const promptLimitData = await canMakePromptResult.json();
+            
+            if (!canMakePromptResult.ok || !promptLimitData.can_make_prompt) {
+              // Usuário atingiu o limite de prompts
+              console.log("Limite de prompts excedido:", promptLimitData.message || "Você atingiu o limite diário de prompts.");
+              setShowLimitModal(true);
+              
+              // Remover as mensagens temporárias já que o agente não pôde ser iniciado
+              setMessages(prev => prev.filter(m => 
+                m.message_id !== optimisticUserMessage.message_id && 
+                !m.message_id?.includes('temp-loading')
+              ));
+              return; // Parar a execução neste caso
+            }
+            
+            // Se chegou aqui, o usuário pode fazer mais prompts
+            // Redirecionar para a página de dashboard para criar um novo thread real
+            router.push(`/dashboard?message=${encodeURIComponent(message)}`);
+            return;
+          } catch (error) {
+            console.error("Erro ao verificar limite de prompts:", error);
+            // Em caso de erro, tentamos prosseguir normalmente
+          }
+        }
+        
+        // Para threads normais (não temporários), continuar com o fluxo normal
         const results = await Promise.allSettled([
           addUserMessage(threadId, message),
           startAgent(threadId, options),
