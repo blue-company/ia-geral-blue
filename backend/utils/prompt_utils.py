@@ -9,7 +9,7 @@ from typing import Tuple, Optional
 logger = logging.getLogger(__name__)
 
 # Número máximo de prompts permitidos por dia
-MAX_PROMPTS_PER_DAY = 3
+MAX_PROMPTS_PER_DAY = 9999999
 
 # Número de prompts extras por convite
 EXTRA_PROMPTS_PER_INVITE = 1
