@@ -418,9 +418,26 @@ export default function ThreadPage({
 
   useEffect(() => {
     if (isLoadingPage && initialMessage) {
+      console.log("Página de carregamento temporária detectada com mensagem inicial:", initialMessage);
+      
       // Se estamos na página de carregamento temporária e temos uma mensagem inicial,
       // vamos enviar automaticamente essa mensagem
-      handleSubmitMessage(initialMessage);
+      try {
+        handleSubmitMessage(initialMessage);
+      } catch (error) {
+        console.error("Erro ao enviar mensagem inicial:", error);
+        
+        // Se ocorrer qualquer erro, verificar se é um erro de limite de prompts
+        if (error instanceof PromptLimitExceededError || 
+            (error && (error as any).status === 402) ||
+            (error && typeof error === 'object' && 'detail' in error && 
+             (error as any).detail && typeof (error as any).detail === 'object' && 
+             'error' in (error as any).detail && (error as any).detail.error === 'prompt_limit_exceeded')) {
+          
+          console.log("Erro de limite de prompts detectado, redirecionando para dashboard");
+          window.location.href = `/dashboard?promptLimitExceeded=true`;
+        }
+      }
       
       // Limpar os parâmetros de consulta da URL para não reenviar a mensagem em recargas
       if (typeof window !== 'undefined') {
@@ -475,10 +492,36 @@ export default function ThreadPage({
         // Verificar se estamos em uma página temporária (com ID começando com "temp-")
         // Se sim, não devemos enviar o ID temporário para a API
         if (threadId.startsWith('temp-')) {
-          // Para páginas temporárias, redirecionamos diretamente para a página de dashboard
-          // O limite de prompts será verificado quando o agente for iniciado
-          router.push(`/dashboard?message=${encodeURIComponent(message)}`);
-          return;
+          try {
+            // Verificar diretamente se o usuário pode fazer mais prompts
+            // Chamar a API diretamente para verificar o limite
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/thread/temp-check/agent/start`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({}),
+            });
+            
+            // Se receber um erro 402, significa que o usuário atingiu o limite de prompts
+            if (response.status === 402) {
+              console.log("Limite de prompts excedido na verificação prévia");
+              // Redirecionar diretamente para a dashboard com o parâmetro de erro
+              window.location.href = `/dashboard?promptLimitExceeded=true`;
+              return;
+            }
+            
+            // Se não houver erro, continuar com o fluxo normal
+            console.log("Usuário pode fazer mais prompts, redirecionando para dashboard");
+            router.push(`/dashboard?message=${encodeURIComponent(message)}`);
+            return;
+          } catch (error) {
+            console.error("Erro ao verificar limite de prompts:", error);
+            // Em caso de erro na verificação, continuar com o fluxo normal
+            router.push(`/dashboard?message=${encodeURIComponent(message)}`);
+            return;
+          }
         }
         
         // Para threads normais (não temporários), continuar com o fluxo normal
