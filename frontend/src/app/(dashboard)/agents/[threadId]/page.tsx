@@ -500,13 +500,40 @@ export default function ThreadPage({
           console.error("Failed to start agent:", error);
 
           // Verificar se é um erro de limite de prompts (PromptLimitExceededError)
-          if (error instanceof PromptLimitExceededError || (error && error.status === 402)) {
-            console.log("Limite de prompts excedido:", error.message || (error.detail && error.detail.message));
+          // Verificamos todas as possíveis formas que o erro pode vir
+          const isPromptLimitError = 
+            error instanceof PromptLimitExceededError || 
+            (error && error.status === 402) || 
+            (error && typeof error === 'object' && 'detail' in error && 
+             error.detail && typeof error.detail === 'object' && 
+             'error' in error.detail && error.detail.error === 'prompt_limit_exceeded');
+          
+          if (isPromptLimitError) {
+            console.log("Limite de prompts excedido:", 
+              error.message || 
+              (error.detail && error.detail.message) || 
+              "Você atingiu o limite diário de prompts");
             
             // Se estamos em uma página temporária, redirecionar para o dashboard com parâmetro de erro
             if (threadId.startsWith('temp-')) {
-              // Redirecionar para o dashboard com parâmetro indicando erro de limite de prompts
-              router.push(`/dashboard?promptLimitExceeded=true`);
+              console.log("Erro 402 detectado em página temporária. Detalhes:", JSON.stringify(error));
+              console.log("Redirecionando para dashboard com parâmetro promptLimitExceeded=true");
+              
+              // Usar uma abordagem mais robusta para o redirecionamento
+              try {
+                // Primeiro, tentar com router.push
+                router.push(`/dashboard?promptLimitExceeded=true`);
+                
+                // Como backup, usar setTimeout com window.location.href
+                setTimeout(() => {
+                  console.log("Usando window.location.href como backup");
+                  window.location.href = `/dashboard?promptLimitExceeded=true`;
+                }, 100);
+              } catch (redirectError) {
+                console.error("Erro ao redirecionar:", redirectError);
+                // Garantir que o redirecionamento aconteça mesmo com erro
+                window.location.href = `/dashboard?promptLimitExceeded=true`;
+              }
               return;
             }
             
