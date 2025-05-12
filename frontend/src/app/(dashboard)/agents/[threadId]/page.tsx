@@ -32,6 +32,7 @@ import {
   Project,
   Message as BaseApiMessageType,
   BillingError,
+  PromptLimitExceededError,
   checkBillingStatus,
 } from '@/lib/api';
 import { toast } from 'sonner';
@@ -49,7 +50,9 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { BillingErrorAlert } from '@/components/billing/usage-limit-alert';
 import { isLocalMode } from '@/lib/config';
+import { createClient } from '@/lib/supabase/client';
 import { LoadingThread } from '@/components/thread/loading-thread';
+import { PromptLimitHandler } from '@/components/prompt-limit-handler';
 
 import {
   UnifiedMessage,
@@ -59,7 +62,6 @@ import {
 import {
   safeJsonParse,
 } from '@/components/thread/utils';
-
 
 // Extend the base Message type with the expected database fields
 interface ApiMessageType extends BaseApiMessageType {
@@ -119,6 +121,10 @@ export default function ThreadPage({
     message?: string;
     accountId?: string | null;
   }>({});
+  
+  // Prompt limit modal state
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -374,136 +380,57 @@ export default function ThreadPage({
         // Check if this is a temporary thread ID (starts with 'temp-')
         if (threadId.startsWith('temp-')) {
           // For temporary threads, we don't need to fetch from the database
-          // Just set initial state and continue
-          setIsLoading(false);
-          initialLoadCompleted.current = true;
-          
-          // Se estamos na página temporária de carregamento, adicionar mensagens temporárias
-          if (isLoadingPage && initialMessage) {
-            // Adicionar mensagem do usuário com o texto do prompt
-            const optimisticUserMessage: UnifiedMessage = {
-              message_id: `temp-user-${Date.now()}`,
-              thread_id: threadId,
-              type: 'user',
-              is_llm_message: false,
-              content: initialMessage,
-              metadata: '{}',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            };
-            
-            // Adicionar mensagem temporária do assistente para mostrar o indicador de carregamento
-            const loadingAssistantMessage: UnifiedMessage = {
-              message_id: `temp-loading-${Date.now()}`,
-              thread_id: threadId,
-              type: 'assistant',
-              is_llm_message: true,
-              content: '',
-              metadata: '{"isLoading": true}',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            };
-            
-            // Adicionar ambas as mensagens ao estado
-            setMessages([optimisticUserMessage, loadingAssistantMessage]);
-            setIsSending(true); // Indicar que estamos enviando uma mensagem
-          }
-          
-          return;
         }
-
-        const threadData = await getThread(threadId).catch((err) => {
-          throw new Error('Failed to load thread data: ' + err.message);
-        });
-
-        if (!isMounted) return;
-
-        if (threadData?.project_id) {
-          const projectData = await getProject(threadData.project_id);
-          if (isMounted && projectData) {
-            // Set project data
-            setProject(projectData);
-
-            // Make sure sandbox ID is set correctly
-            if (typeof projectData.sandbox === 'string') {
-              setSandboxId(projectData.sandbox);
-            } else if (projectData.sandbox?.id) {
-              setSandboxId(projectData.sandbox.id);
-            }
-
-            setProjectName(projectData.name || '');
-          }
-        }
-
-        if (!messagesLoadedRef.current) {
-          const messagesData = await getMessages(threadId);
-          if (isMounted) {
-            // Map API message type to UnifiedMessage type
-            const unifiedMessages = (messagesData || [])
-              .filter((msg) => msg.type !== 'status')
-              .map((msg: ApiMessageType) => ({
-                message_id: msg.message_id || null,
-                thread_id: msg.thread_id || threadId,
-                type: (msg.type || 'system') as UnifiedMessage['type'],
-                is_llm_message: Boolean(msg.is_llm_message),
-                content: msg.content || '',
-                metadata: msg.metadata || '{}',
-                created_at: msg.created_at || new Date().toISOString(),
-                updated_at: msg.updated_at || new Date().toISOString(),
-              }));
-
-            setMessages(unifiedMessages);
-            console.log('[PAGE] Loaded Messages (excluding status, keeping browser_state):', unifiedMessages.length);
-            messagesLoadedRef.current = true;
-
-            if (!hasInitiallyScrolled.current) {
-              scrollToBottom('auto');
-              hasInitiallyScrolled.current = true;
-            }
-          }
-        }
-
-        if (!agentRunsCheckedRef.current && isMounted) {
-          try {
-            console.log('[PAGE] Checking for active agent runs...');
-            const agentRuns = await getAgentRuns(threadId);
-            agentRunsCheckedRef.current = true;
-
-            const activeRun = agentRuns.find((run) => run.status === 'running');
-            if (activeRun && isMounted) {
-              console.log('[PAGE] Found active run on load:', activeRun.id);
-              setAgentRunId(activeRun.id);
-            } else {
-              console.log('[PAGE] No active agent runs found');
-              if (isMounted) setAgentStatus('idle');
-            }
-          } catch (err) {
-            console.error('[PAGE] Error checking for active runs:', err);
-            agentRunsCheckedRef.current = true;
-            if (isMounted) setAgentStatus('idle');
-          }
-        }
-
-        initialLoadCompleted.current = true;
-      } catch (err) {
-        console.error('Error loading thread data:', err);
-        if (isMounted) {
-          const errorMessage =
-            err instanceof Error ? err.message : 'Failed to load thread';
-          setError(errorMessage);
-          toast.error(errorMessage);
-        }
-      } finally {
-        if (isMounted) setIsLoading(false);
+      } catch (error) {
+        console.error('Erro ao carregar thread:', error);
       }
-    }
+    };
 
-    loadData();
+    const supabase = createClient();
+    
+    const getUser = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          console.error('Erro ao obter usuário:', error);
+        } else {
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error('Erro ao obter usuário:', error);
+      }
+    };
+
+    getUser();
+
+    const authListener = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
 
     return () => {
-      isMounted = false;
+      if (authListener && authListener.data && authListener.data.subscription) {
+        authListener.data.subscription.unsubscribe();
+      }
     };
-  }, [threadId]);
+  }, []);
+
+  useEffect(() => {
+    if (isLoadingPage && initialMessage) {
+      // Se estamos na página de carregamento temporária e temos uma mensagem inicial,
+      // vamos enviar automaticamente essa mensagem
+      handleSubmitMessage(initialMessage);
+      
+      // Limpar os parâmetros de consulta da URL para não reenviar a mensagem em recargas
+      if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('loading');
+        url.searchParams.delete('message');
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+  }, [isLoadingPage, initialMessage]);
 
   const handleSubmitMessage = useCallback(
     async (
@@ -562,6 +489,32 @@ export default function ThreadPage({
           const error = results[1].reason;
           console.error("Failed to start agent:", error);
 
+          // Verificar se é um erro de limite de prompts (PromptLimitExceededError)
+          if (error instanceof PromptLimitExceededError) {
+            console.log("Limite de prompts excedido:", error.message);
+            setShowLimitModal(true);
+            
+            // Remover as mensagens temporárias já que o agente não pôde ser iniciado
+            setMessages(prev => prev.filter(m => 
+              m.message_id !== optimisticUserMessage.message_id && 
+              !m.message_id?.includes('temp-loading')
+            ));
+            return; // Parar a execução neste caso
+          }
+
+          // Verificar se é um erro de limite de prompts (PromptLimitExceededError)
+          if (error instanceof PromptLimitExceededError) {
+            console.log("Limite de prompts excedido:", error.message);
+            setShowLimitModal(true);
+            
+            // Remover as mensagens temporárias já que o agente não pôde ser iniciado
+            setMessages(prev => prev.filter(m => 
+              m.message_id !== optimisticUserMessage.message_id && 
+              !m.message_id?.includes('temp-loading')
+            ));
+            return; // Parar a execução neste caso
+          }
+          
           // Check if it's our custom BillingError (402)
           if (error instanceof BillingError) {
             console.log("Caught BillingError:", error.detail);
@@ -576,7 +529,10 @@ export default function ThreadPage({
             setShowBillingAlert(true);
 
             // Remove the optimistic message since the agent couldn't start
-            setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
+            setMessages(prev => prev.filter(m => 
+              m.message_id !== optimisticUserMessage.message_id && 
+              !m.message_id?.includes('temp-loading')
+            ));
             return; // Stop further execution in this case
           }
 
@@ -596,10 +552,22 @@ export default function ThreadPage({
       } catch (err) {
         // Catch errors from addUserMessage or non-BillingError agent start errors
         console.error('Error sending message or starting agent:', err);
-        // Don't show billing alert here, only for specific BillingError
-        if (!(err instanceof BillingError)) {
+        
+        // Verificar se é um erro de limite de prompts
+        if (err instanceof PromptLimitExceededError) {
+          console.log('Limite de prompts excedido:', err.message);
+          setShowLimitModal(true);
+        }
+        // Tratar erros de faturamento
+        else if (err instanceof BillingError) {
+          // Já tratado acima, mas por segurança mantemos aqui também
+          console.log("Caught BillingError:", err.detail);
+        } 
+        else {
+          // Tratar outros erros
           toast.error(err instanceof Error ? err.message : 'Operation failed');
         }
+        
         // Remover as mensagens temporárias em caso de erro
         setMessages((prev) =>
           prev.filter((m) => 
