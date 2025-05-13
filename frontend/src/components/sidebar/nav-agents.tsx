@@ -9,6 +9,12 @@ import {
   Plus,
   MessagesSquare,
   Loader2,
+  Code,
+  Search,
+  PenTool,
+  Globe,
+  Image,
+  FileText
 } from "lucide-react"
 import { toast } from "sonner"
 import { usePathname, useRouter } from "next/navigation"
@@ -44,7 +50,71 @@ type ThreadWithProject = {
   projectName: string;
   url: string;
   updatedAt: string;
+  promptType?: 'code' | 'search' | 'writing' | 'website' | 'image' | 'document';
 }
+
+// Função para determinar o tipo de prompt com base no nome e conteúdo
+const determinePromptType = (projectName: string, threadContent?: string): 'code' | 'search' | 'writing' | 'website' | 'image' | 'document' => {
+  const content = ((projectName || '') + ' ' + (threadContent || '')).toLowerCase();
+  
+  // Detecção para código
+  if (content.includes('código') || content.includes('code') || content.includes('programação') || 
+      content.includes('função') || content.includes('function') || content.includes('algoritmo') ||
+      content.includes('desenvolver') || content.includes('desenvolva') || content.includes('script') ||
+      content.includes('implemente') || content.includes('codifique') || content.includes('programe') ||
+      content.includes('crie uma função') || content.includes('crie um código') || content.includes('crie um script') ||
+      content.includes('escreva um código') || content.includes('escreva um programa') || content.includes('debugue')) {
+    return 'code';
+  } 
+  
+  // Detecção para pesquisa
+  if (content.includes('pesquisa') || content.includes('search') || content.includes('encontrar') || 
+      content.includes('buscar') || content.includes('procurar') || content.includes('investigar') || 
+      content.includes('research') || content.includes('pesquise') || content.includes('busque') ||
+      content.includes('encontre') || content.includes('procure') || content.includes('investigue') ||
+      content.includes('analise') || content.includes('descubra') || content.includes('explore') ||
+      content.includes('estude') || content.includes('identifique') || content.includes('ache')) {
+    return 'search';
+  } 
+  
+  // Detecção para website
+  if (content.includes('site') || content.includes('website') || content.includes('página') || 
+      content.includes('web') || content.includes('html') || content.includes('css') || 
+      content.includes('layout') || content.includes('crie um site') || content.includes('desenvolva um site') ||
+      content.includes('construa um site') || content.includes('faça um site') || content.includes('implemente um site') ||
+      content.includes('frontend') || content.includes('front-end') || content.includes('design de site')) {
+    return 'website';
+  } 
+  
+  // Detecção para imagem
+  if (content.includes('imagem') || content.includes('image') || content.includes('gerar imagem') || 
+      content.includes('foto') || content.includes('picture') || content.includes('desenho') || 
+      content.includes('ilustração') || content.includes('crie uma imagem') || content.includes('gere uma imagem') ||
+      content.includes('desenhe') || content.includes('ilustre') || content.includes('visualize') ||
+      content.includes('renderize') || content.includes('faça uma imagem') || content.includes('produza uma imagem')) {
+    return 'image';
+  }
+  
+  // Detecção para documento
+  if (content.includes('documento') || content.includes('document') || content.includes('relatório') || 
+      content.includes('report') || content.includes('pdf') || content.includes('doc') || 
+      content.includes('planilha') || content.includes('spreadsheet') || content.includes('prepare um documento') ||
+      content.includes('redija um relatório') || content.includes('escreva um relatório') || content.includes('elabore um documento') ||
+      content.includes('crie um documento') || content.includes('formate um documento') || content.includes('organize um documento')) {
+    return 'document';
+  }
+  
+  // Detecção para escrita (writing)
+  if (content.includes('escreva') || content.includes('redija') || content.includes('compose') ||
+      content.includes('elabore um texto') || content.includes('crie um texto') || content.includes('escreva um texto') ||
+      content.includes('redação') || content.includes('artigo') || content.includes('resumo') ||
+      content.includes('redija um email') || content.includes('escreva uma carta') || content.includes('conte uma história')) {
+    return 'writing';
+  }
+  
+  // Por padrão, assumimos que é um texto
+  return 'writing';
+};
 
 export function NavAgents() {
   const { isMobile, state } = useSidebar()
@@ -105,13 +175,18 @@ export function NavAgents() {
         
         console.log(`✅ Thread ${thread.thread_id} matched with project "${project.name}" (${projectId})`);
         
+        // Determinar o tipo de prompt com base no nome do projeto e possivelmente o conteúdo do thread
+        const promptContent = thread.content || project.description || '';
+        const promptType = determinePromptType(project.name || 'Unnamed Project', promptContent);
+        
         // Add to our list
         threadsWithProjects.push({
           threadId: thread.thread_id,
           projectId: projectId,
           projectName: project.name || 'Unnamed Project',
           url: `/agents/${thread.thread_id}`,
-          updatedAt: thread.updated_at || project.updated_at || new Date().toISOString()
+          updatedAt: thread.updated_at || project.updated_at || new Date().toISOString(),
+          promptType: promptType
         });
       }
       
@@ -246,7 +321,15 @@ export function NavAgents() {
                             {isThreadLoading ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                              <MessagesSquare className="h-4 w-4" />
+                              <>
+                                {thread.promptType === 'code' && <Code className="h-4 w-4" />}
+                                {thread.promptType === 'search' && <Search className="h-4 w-4" />}
+                                {thread.promptType === 'writing' && <MessagesSquare className="h-4 w-4" />}
+                                {thread.promptType === 'website' && <Globe className="h-4 w-4" />}
+                                {thread.promptType === 'image' && <Image className="h-4 w-4" />}
+                                {thread.promptType === 'document' && <FileText className="h-4 w-4" />}
+                                {!thread.promptType && <MessagesSquare className="h-4 w-4" />}
+                              </>
                             )}
                             <span>{thread.projectName}</span>
                           </Link>
@@ -257,12 +340,20 @@ export function NavAgents() {
                   ) : (
                     <SidebarMenuButton asChild className={isActive ? "bg-accent text-accent-foreground font-medium" : ""}>
                       <Link href={thread.url} onClick={(e) => handleThreadClick(e, thread.threadId, thread.url)}>
-                        {isThreadLoading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <MessagesSquare className="h-4 w-4" />
-                        )}
-                        <span>{thread.projectName}</span>
+                            {isThreadLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                {thread.promptType === 'code' && <Code className="h-4 w-4" />}
+                                {thread.promptType === 'search' && <Search className="h-4 w-4" />}
+                                {thread.promptType === 'writing' && <MessagesSquare className="h-4 w-4" />}
+                                {thread.promptType === 'website' && <Globe className="h-4 w-4" />}
+                                {thread.promptType === 'image' && <Image className="h-4 w-4" />}
+                                {thread.promptType === 'document' && <FileText className="h-4 w-4" />}
+                                {!thread.promptType && <MessagesSquare className="h-4 w-4" />}
+                              </>
+                            )}
+                            <span>{thread.projectName}</span>
                       </Link>
                     </SidebarMenuButton>
                   )}
