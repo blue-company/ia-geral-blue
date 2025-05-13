@@ -32,8 +32,8 @@ import {
   Project,
   Message as BaseApiMessageType,
   BillingError,
-  PromptLimitExceededError,
   checkBillingStatus,
+  PromptLimitExceededError,
 } from '@/lib/api';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -49,10 +49,10 @@ import { useAgentStream } from '@/hooks/useAgentStream';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { BillingErrorAlert } from '@/components/billing/usage-limit-alert';
+import { PromptLimitModal } from '@/components/prompt-limit-modal';
 import { isLocalMode } from '@/lib/config';
 import { createClient } from '@/lib/supabase/client';
 import { LoadingThread } from '@/components/thread/loading-thread';
-import { PromptLimitHandler } from '@/components/prompt-limit-handler';
 
 import {
   UnifiedMessage,
@@ -124,7 +124,7 @@ export default function ThreadPage({
   
   // Prompt limit modal state
   const [showLimitModal, setShowLimitModal] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -380,74 +380,149 @@ export default function ThreadPage({
         // Check if this is a temporary thread ID (starts with 'temp-')
         if (threadId.startsWith('temp-')) {
           // For temporary threads, we don't need to fetch from the database
+          // Just set initial state and continue
+          setIsLoading(false);
+          initialLoadCompleted.current = true;
+          
+          // Se estamos na página temporária de carregamento, adicionar mensagens temporárias
+          if (isLoadingPage && initialMessage) {
+            // Adicionar mensagem do usuário com o texto do prompt
+            const optimisticUserMessage: UnifiedMessage = {
+              message_id: `temp-user-${Date.now()}`,
+              thread_id: threadId,
+              type: 'user',
+              is_llm_message: false,
+              content: initialMessage,
+              metadata: '{}',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            
+            // Adicionar mensagem temporária do assistente para mostrar o indicador de carregamento
+            const loadingAssistantMessage: UnifiedMessage = {
+              message_id: `temp-loading-${Date.now()}`,
+              thread_id: threadId,
+              type: 'assistant',
+              is_llm_message: true,
+              content: '',
+              metadata: '{"isLoading": true}',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            
+            // Adicionar ambas as mensagens ao estado
+            setMessages([optimisticUserMessage, loadingAssistantMessage]);
+            setIsSending(true); // Indicar que estamos enviando uma mensagem
+          }
+          
+          return;
         }
-      } catch (error) {
-        console.error('Erro ao carregar thread:', error);
-      }
-    };
 
-    const supabase = createClient();
-    
-    const getUser = async () => {
+        const threadData = await getThread(threadId).catch((err) => {
+          throw new Error('Failed to load thread data: ' + err.message);
+        });
+
+        if (!isMounted) return;
+
+        if (threadData?.project_id) {
+          const projectData = await getProject(threadData.project_id);
+          if (isMounted && projectData) {
+            // Set project data
+            setProject(projectData);
+
+            // Make sure sandbox ID is set correctly
+            if (typeof projectData.sandbox === 'string') {
+              setSandboxId(projectData.sandbox);
+            } else if (projectData.sandbox?.id) {
+              setSandboxId(projectData.sandbox.id);
+            }
+
+            setProjectName(projectData.name || '');
+          }
+        }
+
+        if (!messagesLoadedRef.current) {
+          const messagesData = await getMessages(threadId);
+          if (isMounted) {
+            // Map API message type to UnifiedMessage type
+            const unifiedMessages = (messagesData || [])
+              .filter((msg) => msg.type !== 'status')
+              .map((msg: ApiMessageType) => ({
+                message_id: msg.message_id || null,
+                thread_id: msg.thread_id || threadId,
+                type: (msg.type || 'system') as UnifiedMessage['type'],
+                is_llm_message: Boolean(msg.is_llm_message),
+                content: msg.content || '',
+                metadata: msg.metadata || '{}',
+                created_at: msg.created_at || new Date().toISOString(),
+                updated_at: msg.updated_at || new Date().toISOString(),
+              }));
+
+            setMessages(unifiedMessages);
+            console.log('[PAGE] Loaded Messages (excluding status, keeping browser_state):', unifiedMessages.length);
+            messagesLoadedRef.current = true;
+
+            if (!hasInitiallyScrolled.current) {
+              scrollToBottom('auto');
+              hasInitiallyScrolled.current = true;
+            }
+          }
+        }
+
+        if (!agentRunsCheckedRef.current && isMounted) {
+          try {
+            console.log('[PAGE] Checking for active agent runs...');
+            const agentRuns = await getAgentRuns(threadId);
+            agentRunsCheckedRef.current = true;
+
+            const activeRun = agentRuns.find((run) => run.status === 'running');
+            if (activeRun && isMounted) {
+              console.log('[PAGE] Found active run on load:', activeRun.id);
+              setAgentRunId(activeRun.id);
+            } else {
+              console.log('[PAGE] No active agent runs found');
+              if (isMounted) setAgentStatus('idle');
+            }
+          } catch (err) {
+            console.error('[PAGE] Error checking for active runs:', err);
+            agentRunsCheckedRef.current = true;
+            if (isMounted) setAgentStatus('idle');
+          }
+        }
+
+        initialLoadCompleted.current = true;
+      } catch (err) {
+        console.error('Error loading thread data:', err);
+        if (isMounted) {
+          const errorMessage =
+            err instanceof Error ? err.message : 'Failed to load thread';
+          setError(errorMessage);
+          toast.error(errorMessage);
+        }
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    const fetchUser = async () => {
       try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-          console.error('Erro ao obter usuário:', error);
-        } else {
-          setUser(data.user);
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && isMounted) {
+          setUserId(user.id);
         }
       } catch (error) {
         console.error('Erro ao obter usuário:', error);
       }
     };
 
-    getUser();
-
-    const authListener = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
+    fetchUser();
+    loadData();
 
     return () => {
-      if (authListener && authListener.data && authListener.data.subscription) {
-        authListener.data.subscription.unsubscribe();
-      }
+      isMounted = false;
     };
-  }, []);
-
-  useEffect(() => {
-    if (isLoadingPage && initialMessage) {
-      console.log("Página de carregamento temporária detectada com mensagem inicial:", initialMessage);
-      
-      // Se estamos na página de carregamento temporária e temos uma mensagem inicial,
-      // vamos enviar automaticamente essa mensagem
-      try {
-        handleSubmitMessage(initialMessage);
-      } catch (error) {
-        console.error("Erro ao enviar mensagem inicial:", error);
-        
-        // Se ocorrer qualquer erro, verificar se é um erro de limite de prompts
-        if (error instanceof PromptLimitExceededError || 
-            (error && (error as any).status === 402) ||
-            (error && typeof error === 'object' && 'detail' in error && 
-             (error as any).detail && typeof (error as any).detail === 'object' && 
-             'error' in (error as any).detail && (error as any).detail.error === 'prompt_limit_exceeded')) {
-          
-          console.log("Erro de limite de prompts detectado, redirecionando para dashboard");
-          window.location.href = `/dashboard?promptLimitExceeded=true`;
-        }
-      }
-      
-      // Limpar os parâmetros de consulta da URL para não reenviar a mensagem em recargas
-      if (typeof window !== 'undefined') {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('loading');
-        url.searchParams.delete('message');
-        window.history.replaceState({}, '', url.toString());
-      }
-    }
-  }, [isLoadingPage, initialMessage]);
+  }, [threadId]);
 
   const handleSubmitMessage = useCallback(
     async (
@@ -489,25 +564,6 @@ export default function ThreadPage({
       scrollToBottom('smooth');
 
       try {
-        // Verificar se estamos em uma página temporária (com ID começando com "temp-")
-        // Se sim, não devemos enviar o ID temporário para a API
-        if (threadId.startsWith('temp-')) {
-          // Para páginas temporárias, redirecionamos diretamente para a página de dashboard
-          // com a mensagem como parâmetro
-          console.log("Redirecionando da página temporária para dashboard com mensagem");
-          
-          // Salvar a mensagem no localStorage para ser recuperada na página de dashboard
-          // em vez de usar parâmetros de URL
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('PENDING_PROMPT_KEY', message);
-          }
-          
-          // Redirecionar para a dashboard sem parâmetros adicionais
-          router.push('/dashboard');
-          return;
-        }
-        
-        // Para threads normais (não temporários), continuar com o fluxo normal
         const results = await Promise.allSettled([
           addUserMessage(threadId, message),
           startAgent(threadId, options),
@@ -525,109 +581,32 @@ export default function ThreadPage({
           const error = results[1].reason;
           console.error("Failed to start agent:", error);
 
-          // Verificar se é um erro de limite de prompts (PromptLimitExceededError)
-          // Verificamos todas as possíveis formas que o erro pode vir
-          const isPromptLimitError = 
-            error instanceof PromptLimitExceededError || 
-            (error && (error as any).status === 402) || 
-            (error && typeof error === 'object' && 'detail' in error && 
-             (error as any).detail && typeof (error as any).detail === 'object' && 
-             'error' in (error as any).detail && (error as any).detail.error === 'prompt_limit_exceeded');
-          
-          if (isPromptLimitError) {
-            console.log("Limite de prompts excedido:", 
-              (error as any).message || 
-              ((error as any).detail && (error as any).detail.message) || 
-              "Você atingiu o limite diário de prompts");
-            
-            // Se estamos em uma página temporária, redirecionar para o dashboard com parâmetro de erro
-            if (threadId.startsWith('temp-')) {
-              console.log("Erro 402 detectado em página temporária.");
-              
-              // Usar uma abordagem extremamente direta
-              // Definir uma flag no localStorage para indicar que o modal deve ser exibido
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('SHOW_PROMPT_LIMIT_MODAL', 'true');
-                console.log("Flag SHOW_PROMPT_LIMIT_MODAL definida no localStorage");
-              }
-              
-              // Redirecionar diretamente para a dashboard sem parâmetros
-              console.log("Redirecionando para /dashboard");
-              window.location.replace('/dashboard');
-              return;
-            }
-            
-            // Se não estamos em uma página temporária, mostrar o modal diretamente
-            setShowLimitModal(true);
-            
-            // Remover as mensagens temporárias já que o agente não pôde ser iniciado
-            setMessages(prev => prev.filter(m => 
-              m.message_id !== optimisticUserMessage.message_id && 
-              !m.message_id?.includes('temp-loading')
-            ));
-            return; // Parar a execução neste caso
-          }
-          
           // Check if it's our custom BillingError (402)
           if (error instanceof BillingError) {
             console.log("Caught BillingError:", error.detail);
             // Extract billing details
             setBillingData({
+              // Note: currentUsage and limit might not be in the detail from the backend yet
               currentUsage: error.detail.currentUsage as number | undefined,
               limit: error.detail.limit as number | undefined,
-              message: error.detail.message || 'Monthly usage limit reached. Please upgrade.',
-              accountId: project?.account_id || null
+              message: error.detail.message || 'Monthly usage limit reached. Please upgrade.', // Use message from error detail
+              accountId: project?.account_id || null // Pass account ID
             });
             setShowBillingAlert(true);
 
             // Remove the optimistic message since the agent couldn't start
-            setMessages(prev => prev.filter(m => 
-              m.message_id !== optimisticUserMessage.message_id && 
-              !m.message_id?.includes('temp-loading')
-            ));
+            setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
             return; // Stop further execution in this case
           }
-
-          // Check if it's a prompt limit exceeded error
-          if (error && typeof error === 'object' && 
-              ((error.name === 'PromptLimitExceededError') || 
-               ('detail' in error && error.detail && 
-                typeof error.detail === 'object' && 
-                'error' in error.detail && 
-                error.detail.error === 'prompt_limit_exceeded'))) {
-            
+          
+          // Check if it's a prompt limit exceeded error (402 Payment Required)
+          if (error instanceof PromptLimitExceededError || 
+              (error.status === 402) || 
+              (error.message && error.message.includes('402'))) {
             console.log("Caught PromptLimitExceededError:", error);
             
-            // Import the PromptLimitModal
-            import('@/components/prompt-limit-modal').then(async ({ PromptLimitModal }) => {
-              // Get the current user's ID
-              const supabase = createClient();
-              const { data } = await supabase.auth.getUser();
-              const userId = data.user?.id;
-              
-              if (userId) {
-                // Create a modal element
-                const modalRoot = document.createElement('div');
-                modalRoot.id = 'prompt-limit-modal-root';
-                document.body.appendChild(modalRoot);
-                
-                // Use React's createRoot API to render the modal
-                const { createRoot } = await import('react-dom/client');
-                const root = createRoot(modalRoot);
-                
-                // Render the PromptLimitModal
-                root.render(
-                  <PromptLimitModal 
-                    isOpen={true} 
-                    onClose={() => {
-                      root.unmount();
-                      document.body.removeChild(modalRoot);
-                    }} 
-                    userId={userId} 
-                  />
-                );
-              }
-            });
+            // Show the prompt limit modal
+            setShowLimitModal(true);
             
             // Remove the optimistic message since the agent couldn't start
             setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
@@ -650,22 +629,10 @@ export default function ThreadPage({
       } catch (err) {
         // Catch errors from addUserMessage or non-BillingError agent start errors
         console.error('Error sending message or starting agent:', err);
-        
-        // Verificar se é um erro de limite de prompts
-        if (err instanceof PromptLimitExceededError) {
-          console.log('Limite de prompts excedido:', err.message);
-          setShowLimitModal(true);
-        }
-        // Tratar erros de faturamento
-        else if (err instanceof BillingError) {
-          // Já tratado acima, mas por segurança mantemos aqui também
-          console.log("Caught BillingError:", err.detail);
-        } 
-        else {
-          // Tratar outros erros
+        // Don't show billing alert here, only for specific BillingError
+        if (!(err instanceof BillingError)) {
           toast.error(err instanceof Error ? err.message : 'Operation failed');
         }
-        
         // Remover as mensagens temporárias em caso de erro
         setMessages((prev) =>
           prev.filter((m) => 
@@ -1267,6 +1234,15 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
+        
+        {/* Prompt Limit Modal */}
+        {userId && (
+          <PromptLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            userId={userId}
+          />
+        )}
       </div>
     );
   } else {
@@ -1392,6 +1368,15 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
+        
+        {/* Prompt Limit Modal */}
+        {userId && (
+          <PromptLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            userId={userId}
+          />
+        )}
       </div>
     );
   }
