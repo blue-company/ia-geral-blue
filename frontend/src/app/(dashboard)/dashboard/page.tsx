@@ -116,7 +116,11 @@ function DashboardContent() {
         } catch (error) {
           handleSubmissionError(error);
           // Redirecionar de volta para o dashboard em caso de erro
-          router.replace('/dashboard');
+          if (error?.status === 402 || error instanceof PromptLimitExceededError) {
+            router.replace('/dashboard?promptLimit=true');
+          } else {
+            router.replace('/dashboard');
+          }
         }
       } else {
         // ---- Handle text-only messages ----
@@ -135,13 +139,21 @@ function DashboardContent() {
         } catch (error) {
           handleSubmissionError(error);
           // Redirecionar de volta para o dashboard em caso de erro
-          router.replace('/dashboard');
+          if (error?.status === 402 || error instanceof PromptLimitExceededError) {
+            router.replace('/dashboard?promptLimit=true');
+          } else {
+            router.replace('/dashboard');
+          }
         }
       }
     } catch (error: any) {
       handleSubmissionError(error);
       // Garantir que o usuário volte para o dashboard em caso de erro no redirecionamento
-      router.replace('/dashboard');
+      if (error?.status === 402 || error instanceof PromptLimitExceededError) {
+        router.replace('/dashboard?promptLimit=true');
+      } else {
+        router.replace('/dashboard');
+      }
     } finally {
       // Garantir que o estado de submissão seja resetado mesmo em caso de erro
       setIsSubmitting(false);
@@ -168,6 +180,10 @@ function DashboardContent() {
         // Tratar erro de limite de prompts excedido
         console.log("Limite de prompts excedido:", error.message);
         setShowLimitModal(true);
+    } else if (error?.status === 402 || (error?.message && error.message.includes('402'))) {
+        // Tratar erro 402 Payment Required (limite de prompts no backend)
+        console.log("Erro 402 Payment Required (possível limite de prompts):", error);
+        setShowLimitModal(true);
     } else {
         // Handle other errors
         const isConnectionError = error instanceof TypeError && error.message.includes('Failed to fetch');
@@ -179,7 +195,7 @@ function DashboardContent() {
     setIsSubmitting(false); // Reset submitting state on all errors
   };
 
-  // Check for pending prompt in localStorage on mount
+  // Check for pending prompt in localStorage on mount and URL parameters
   useEffect(() => {
     // Use a small delay to ensure we're fully mounted
     const timer = setTimeout(() => {
@@ -189,10 +205,18 @@ function DashboardContent() {
         setInputValue(pendingPrompt);
         setAutoSubmit(true); // Flag to auto-submit after mounting
       }
+      
+      // Check URL for promptLimit parameter
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('promptLimit') === 'true' && user) {
+          setShowLimitModal(true);
+        }
+      }
     }, 200);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [user]);
 
   // Auto-submit the form if we have a pending prompt
   useEffect(() => {

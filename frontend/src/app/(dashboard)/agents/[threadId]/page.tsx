@@ -33,6 +33,7 @@ import {
   Message as BaseApiMessageType,
   BillingError,
   checkBillingStatus,
+  PromptLimitExceededError,
 } from '@/lib/api';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -48,7 +49,9 @@ import { useAgentStream } from '@/hooks/useAgentStream';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { BillingErrorAlert } from '@/components/billing/usage-limit-alert';
+import { PromptLimitModal } from '@/components/prompt-limit-modal';
 import { isLocalMode } from '@/lib/config';
+import { createClient } from '@/lib/supabase/client';
 import { LoadingThread } from '@/components/thread/loading-thread';
 
 import {
@@ -59,7 +62,6 @@ import {
 import {
   safeJsonParse,
 } from '@/components/thread/utils';
-
 
 // Extend the base Message type with the expected database fields
 interface ApiMessageType extends BaseApiMessageType {
@@ -119,6 +121,10 @@ export default function ThreadPage({
     message?: string;
     accountId?: string | null;
   }>({});
+  
+  // Prompt limit modal state
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -498,6 +504,19 @@ export default function ThreadPage({
       }
     }
 
+    const fetchUser = async () => {
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && isMounted) {
+          setUserId(user.id);
+        }
+      } catch (error) {
+        console.error('Erro ao obter usuário:', error);
+      }
+    };
+
+    fetchUser();
     loadData();
 
     return () => {
@@ -575,6 +594,20 @@ export default function ThreadPage({
             });
             setShowBillingAlert(true);
 
+            // Remove the optimistic message since the agent couldn't start
+            setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
+            return; // Stop further execution in this case
+          }
+          
+          // Check if it's a prompt limit exceeded error (402 Payment Required)
+          if (error instanceof PromptLimitExceededError || 
+              (error.status === 402) || 
+              (error.message && error.message.includes('402'))) {
+            console.log("Caught PromptLimitExceededError:", error);
+            
+            // Show the prompt limit modal
+            setShowLimitModal(true);
+            
             // Remove the optimistic message since the agent couldn't start
             setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
             return; // Stop further execution in this case
@@ -1201,6 +1234,15 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
+        
+        {/* Prompt Limit Modal */}
+        {userId && (
+          <PromptLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            userId={userId}
+          />
+        )}
       </div>
     );
   } else {
@@ -1326,6 +1368,15 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
+        
+        {/* Prompt Limit Modal */}
+        {userId && (
+          <PromptLimitModal
+            isOpen={showLimitModal}
+            onClose={() => setShowLimitModal(false)}
+            userId={userId}
+          />
+        )}
       </div>
     );
   }
