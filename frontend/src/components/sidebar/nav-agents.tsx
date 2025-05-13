@@ -322,13 +322,13 @@ export function NavAgents() {
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <>
-                                {thread.promptType === 'code' && <Code className="h-4 w-4" />}
-                                {thread.promptType === 'search' && <Search className="h-4 w-4" />}
-                                {thread.promptType === 'writing' && <MessagesSquare className="h-4 w-4" />}
-                                {thread.promptType === 'website' && <Globe className="h-4 w-4" />}
-                                {thread.promptType === 'image' && <Image className="h-4 w-4" />}
-                                {thread.promptType === 'document' && <FileText className="h-4 w-4" />}
-                                {!thread.promptType && <MessagesSquare className="h-4 w-4" />}
+                                {thread.promptType === 'code' && <Code className="h-4 w-4 text-blue-500" />}
+                                {thread.promptType === 'search' && <Search className="h-4 w-4 text-amber-500" />}
+                                {thread.promptType === 'writing' && <MessagesSquare className="h-4 w-4 text-green-500" />}
+                                {thread.promptType === 'website' && <Globe className="h-4 w-4 text-cyan-500" />}
+                                {thread.promptType === 'image' && <Image className="h-4 w-4 text-purple-500" />}
+                                {thread.promptType === 'document' && <FileText className="h-4 w-4 text-orange-500" />}
+                                {!thread.promptType && <MessagesSquare className="h-4 w-4 text-indigo-500" />}
                               </>
                             )}
                             <span>{thread.projectName}</span>
@@ -344,13 +344,13 @@ export function NavAgents() {
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                               <>
-                                {thread.promptType === 'code' && <Code className="h-4 w-4" />}
-                                {thread.promptType === 'search' && <Search className="h-4 w-4" />}
-                                {thread.promptType === 'writing' && <MessagesSquare className="h-4 w-4" />}
-                                {thread.promptType === 'website' && <Globe className="h-4 w-4" />}
-                                {thread.promptType === 'image' && <Image className="h-4 w-4" />}
-                                {thread.promptType === 'document' && <FileText className="h-4 w-4" />}
-                                {!thread.promptType && <MessagesSquare className="h-4 w-4" />}
+                                {thread.promptType === 'code' && <Code className="h-4 w-4 text-blue-500" />}
+                                {thread.promptType === 'search' && <Search className="h-4 w-4 text-amber-500" />}
+                                {thread.promptType === 'writing' && <MessagesSquare className="h-4 w-4 text-green-500" />}
+                                {thread.promptType === 'website' && <Globe className="h-4 w-4 text-cyan-500" />}
+                                {thread.promptType === 'image' && <Image className="h-4 w-4 text-purple-500" />}
+                                {thread.promptType === 'document' && <FileText className="h-4 w-4 text-orange-500" />}
+                                {!thread.promptType && <MessagesSquare className="h-4 w-4 text-indigo-500" />}
                               </>
                             )}
                             <span>{thread.projectName}</span>
