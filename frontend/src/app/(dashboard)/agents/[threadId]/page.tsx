@@ -34,7 +34,6 @@ import {
   BillingError,
   PromptLimitExceededError,
   checkBillingStatus,
-  PromptLimitExceededError,
 } from '@/lib/api';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -50,7 +49,6 @@ import { useAgentStream } from '@/hooks/useAgentStream';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { BillingErrorAlert } from '@/components/billing/usage-limit-alert';
-import { PromptLimitModal } from '@/components/prompt-limit-modal';
 import { isLocalMode } from '@/lib/config';
 import { createClient } from '@/lib/supabase/client';
 import { LoadingThread } from '@/components/thread/loading-thread';
@@ -126,7 +124,7 @@ export default function ThreadPage({
   
   // Prompt limit modal state
   const [showLimitModal, setShowLimitModal] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -449,26 +447,7 @@ export default function ThreadPage({
         window.history.replaceState({}, '', url.toString());
       }
     }
-
-    const fetchUser = async () => {
-      try {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user && isMounted) {
-          setUserId(user.id);
-        }
-      } catch (error) {
-        console.error('Erro ao obter usuário:', error);
-      }
-    };
-
-    fetchUser();
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [threadId]);
+  }, [isLoadingPage, initialMessage]);
 
   const handleSubmitMessage = useCallback(
     async (
@@ -602,18 +581,53 @@ export default function ThreadPage({
             setShowBillingAlert(true);
 
             // Remove the optimistic message since the agent couldn't start
-            setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
+            setMessages(prev => prev.filter(m => 
+              m.message_id !== optimisticUserMessage.message_id && 
+              !m.message_id?.includes('temp-loading')
+            ));
             return; // Stop further execution in this case
           }
-          
-          // Check if it's a prompt limit exceeded error (402 Payment Required)
-          if (error instanceof PromptLimitExceededError || 
-              (error.status === 402) || 
-              (error.message && error.message.includes('402'))) {
+
+          // Check if it's a prompt limit exceeded error
+          if (error && typeof error === 'object' && 
+              ((error.name === 'PromptLimitExceededError') || 
+               ('detail' in error && error.detail && 
+                typeof error.detail === 'object' && 
+                'error' in error.detail && 
+                error.detail.error === 'prompt_limit_exceeded'))) {
+            
             console.log("Caught PromptLimitExceededError:", error);
             
-            // Show the prompt limit modal
-            setShowLimitModal(true);
+            // Import the PromptLimitModal
+            import('@/components/prompt-limit-modal').then(async ({ PromptLimitModal }) => {
+              // Get the current user's ID
+              const supabase = createClient();
+              const { data } = await supabase.auth.getUser();
+              const userId = data.user?.id;
+              
+              if (userId) {
+                // Create a modal element
+                const modalRoot = document.createElement('div');
+                modalRoot.id = 'prompt-limit-modal-root';
+                document.body.appendChild(modalRoot);
+                
+                // Use React's createRoot API to render the modal
+                const { createRoot } = await import('react-dom/client');
+                const root = createRoot(modalRoot);
+                
+                // Render the PromptLimitModal
+                root.render(
+                  <PromptLimitModal 
+                    isOpen={true} 
+                    onClose={() => {
+                      root.unmount();
+                      document.body.removeChild(modalRoot);
+                    }} 
+                    userId={userId} 
+                  />
+                );
+              }
+            });
             
             // Remove the optimistic message since the agent couldn't start
             setMessages(prev => prev.filter(m => m.message_id !== optimisticUserMessage.message_id));
@@ -1253,15 +1267,6 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
-        
-        {/* Prompt Limit Modal */}
-        {userId && (
-          <PromptLimitModal
-            isOpen={showLimitModal}
-            onClose={() => setShowLimitModal(false)}
-            userId={userId}
-          />
-        )}
       </div>
     );
   } else {
@@ -1387,15 +1392,6 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
-        
-        {/* Prompt Limit Modal */}
-        {userId && (
-          <PromptLimitModal
-            isOpen={showLimitModal}
-            onClose={() => setShowLimitModal(false)}
-            userId={userId}
-          />
-        )}
       </div>
     );
   }
