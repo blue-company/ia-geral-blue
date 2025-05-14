@@ -14,8 +14,8 @@ from services.llm import make_llm_api_call
 from utils.logger import logger
 
 # Constants for token management
-DEFAULT_TOKEN_THRESHOLD = 800000  # 80k tokens threshold for summarization
-SUMMARY_TARGET_TOKENS = 300000    # Target ~10k tokens for the summary message
+DEFAULT_TOKEN_THRESHOLD = 80000  # 80k tokens threshold for summarization
+SUMMARY_TARGET_TOKENS = 30000    # Target ~10k tokens for the summary message
 RESERVE_TOKENS = 5000            # Reserve tokens for new messages
 
 class ContextManager:
