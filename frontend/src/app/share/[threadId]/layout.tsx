@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Visualize uma conversa de IA compartilhada',
   openGraph: {
     title: 'Conversa de IA Compartilhada',
-    description: 'Visualize uma conversa de IA compartilhada do AgentZERO',
+    description: 'Visualize uma conversa de IA compartilhada do Thanus',
     images: ['/meta.png'],
   },
 };

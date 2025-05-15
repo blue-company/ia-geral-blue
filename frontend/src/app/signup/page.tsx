@@ -121,7 +121,7 @@ function SignupForm() {
           <CardTitle className="text-2xl font-bold">Criar conta</CardTitle>
           <CardDescription>
             {inviteCode 
-              ? 'Você foi convidado! Crie sua conta para começar a usar o AgentZERO.'
+              ? 'Você foi convidado! Crie sua conta para começar a usar o Thanus.'
               : 'Preencha os campos abaixo para criar sua conta.'}
           </CardDescription>
         </CardHeader>

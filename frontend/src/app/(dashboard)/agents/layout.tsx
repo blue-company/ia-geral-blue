@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Conversa com Agente | AgentZERO",
-  description: "Conversa interativa com agente desenvolvida pela AgentZERO",
+  title: "Conversa com Agente | Thanus",
+  description: "Conversa interativa com agente desenvolvida pela Thanus",
   openGraph: {
-    title: "Conversa com Agente | AgentZERO",
-    description: "Conversa interativa com agente desenvolvida pela AgentZERO",
+    title: "Conversa com Agente | Thanus",
+    description: "Conversa interativa com agente desenvolvida pela Thanus",
     type: "website",
   },
 };

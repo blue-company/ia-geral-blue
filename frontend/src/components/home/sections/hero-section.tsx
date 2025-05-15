@@ -224,7 +224,7 @@ export function HeroSection() {
         </div>
         
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-br from-blue-200 via-blue-400 to-blue-600 text-transparent bg-clip-text drop-shadow-sm">
-          Conheça o<br />AgentZERO
+          Conheça o<br />Thanus
         </h1>
         
         <p className="mb-8 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">

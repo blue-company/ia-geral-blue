@@ -29,10 +29,10 @@ export function UseCasesSection() {
     >
       <SectionHeader>
         <h2 className="text-3xl md:text-4xl font-medium tracking-tighter text-center text-balance">
-          Veja o AgentZERO em ação
+          Veja o Thanus em ação
         </h2>
         <p className="text-muted-foreground text-center text-balance font-medium">
-          Explore exemplos reais de como o AgentZERO completa tarefas complexas de forma autônoma
+          Explore exemplos reais de como o Thanus completa tarefas complexas de forma autônoma
         </p>
       </SectionHeader>
 
@@ -63,8 +63,8 @@ export function UseCasesSection() {
                 <div className="w-full h-[160px] bg-accent/10">
                   <div className="relative w-full h-full overflow-hidden">
                     <img 
-                      src={useCase.image || `https://placehold.co/800x400/f5f5f5/666666?text=AgentZERO+${useCase.title.split(' ').join('+')}`}
-                      alt={`AgentZERO ${useCase.title}`}
+                      src={useCase.image || `https://placehold.co/800x400/f5f5f5/666666?text=Thanus+${useCase.title.split(' ').join('+')}`}
+                      alt={`Thanus ${useCase.title}`}
                       className="w-full h-full object-cover"
                     />
                     <a

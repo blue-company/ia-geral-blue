@@ -292,7 +292,7 @@ function LoginContent() {
               </Link>
               
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">
-                {isSignUp ? "Junte-se ao AgentZERO" : "Bem-vindo de volta"}
+                {isSignUp ? "Junte-se ao Thanus" : "Bem-vindo de volta"}
               </h1>
               <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight mt-2 mb-6">
                 {isSignUp ? "Crie sua conta e comece a construir com IA" : "Entre na sua conta para continuar"}

@@ -1316,7 +1316,7 @@ export default function ThreadPage({
                     // Chamar a função original de envio
                     handleSubmitMessage(message, options);
                   }}
-                  placeholder="Dê uma tarefa para o AgentZERO trabalhar..."
+                  placeholder="Dê uma tarefa para o Thanus trabalhar..."
                   loading={isSending}
                   disabled={isSending || agentStatus === 'running' || agentStatus === 'connecting'}
                   isAgentRunning={agentStatus === 'running' || agentStatus === 'connecting'}
