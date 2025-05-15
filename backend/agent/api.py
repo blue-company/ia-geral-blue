@@ -940,6 +940,9 @@ async def generate_and_update_project_name(project_id: str, prompt: str):
         # No need to disconnect DBConnection singleton instance here
         logger.info(f"Finished background naming task for project: {project_id}")
 
+# Constante para o limite de caracteres
+MAX_PROMPT_CHARS = 5000
+
 @router.post("/agent/initiate", response_model=InitiateAgentResponse)
 async def initiate_agent_with_files(
     prompt: str = Form(...),
@@ -955,6 +958,19 @@ async def initiate_agent_with_files(
     global instance_id # Ensure instance_id is accessible
     if not instance_id:
         raise HTTPException(status_code=500, detail="Agent API not initialized with instance ID")
+        
+    # Verificar limite de caracteres no prompt do usuário
+    if len(prompt) > MAX_PROMPT_CHARS:
+        logger.warning(f"Prompt excede o limite de {MAX_PROMPT_CHARS} caracteres: {len(prompt)} caracteres enviados")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "error": "prompt_too_long",
+                "message": f"O prompt excede o limite de {MAX_PROMPT_CHARS} caracteres. Por favor, reduza o tamanho da sua mensagem.",
+                "current_length": len(prompt),
+                "max_length": MAX_PROMPT_CHARS
+            }
+        )
 
     logger.info(f"[\033[91mDEBUG\033[0m] Initiating new agent with prompt and {len(files)} files (Instance: {instance_id}), model: {model_name}, enable_thinking: {enable_thinking}")
     client = await db.client

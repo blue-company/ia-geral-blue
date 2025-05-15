@@ -36,6 +36,7 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
 
 // Local storage keys
 const STORAGE_KEY_MODEL = 'inventu-preferred-model';
+const MAX_CHARS = 5000; // Limite máximo de caracteres
 const DEFAULT_MODEL_ID = "sonnet-3.7"; // Define default model ID
 
 export interface ChatInputProps {
@@ -89,7 +90,13 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
   const isControlled = controlledValue !== undefined && controlledOnChange !== undefined;
   
   const [uncontrolledValue, setUncontrolledValue] = useState('');
+  const [charCount, setCharCount] = useState(0);
   const value = isControlled ? controlledValue : uncontrolledValue;
+  
+  // Atualizar contagem de caracteres quando o valor muda externamente
+  useEffect(() => {
+    setCharCount(value.length);
+  }, [value]);
 
   // Define model options array earlier so it can be used in useEffect
   const modelOptions = [
@@ -193,15 +200,28 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
     setUploadedFiles([]);
   };
   
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    if (isControlled) {
-      controlledOnChange(newValue);
-    } else {
-      setUncontrolledValue(newValue);
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
   };
-  
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    
+    // Verificar se não excede o limite de caracteres
+    if (newValue.length <= MAX_CHARS) {
+      if (isControlled) {
+        controlledOnChange(newValue);
+      } else {
+        setUncontrolledValue(newValue);
+      }
+      setCharCount(newValue.length);
+      adjustTextareaHeight();
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && !loading && !disabled) {
       e.preventDefault();
@@ -366,17 +386,21 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Textarea
-          ref={textareaRef}
-          placeholder={placeholder}
-          className={`min-h-[40px] border-0 focus-visible:ring-0 resize-none p-2 shadow-none ${className}`}
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          disabled={loading || (disabled && !isAgentRunning)}
-          rows={1}
-        />
-        
+        <div className="relative flex-grow w-full">
+          <Textarea
+            ref={textareaRef}
+            placeholder={placeholder}
+            className={`min-h-[40px] border-0 focus-visible:ring-0 resize-none p-2 shadow-none w-full ${className}`}
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            disabled={loading || (disabled && !isAgentRunning)}
+            rows={1}
+          />
+          <div className="absolute right-2 bottom-2 text-xs text-muted-foreground bg-background/80 px-1.5 py-0.5 rounded-md opacity-70 select-none">
+            {charCount}/{MAX_CHARS}
+          </div>
+        </div>
         <div className="flex items-center gap-1.5">
           {/* Model selector - commented out for now
           {!isAgentRunning && (
@@ -493,7 +517,7 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p>{isAgentRunning ? 'Stop agent' : 'Send message'}</p>
+                <p>{isAgentRunning ? 'Parar agente' : 'Enviar mensagem'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

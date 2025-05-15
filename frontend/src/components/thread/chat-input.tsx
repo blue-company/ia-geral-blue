@@ -338,7 +338,7 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
       
     } catch (error) {
       console.error("File upload failed:", error);
-      toast.error(typeof error === 'string' ? error : (error instanceof Error ? error.message : "Failed to upload file"));
+      toast.error(typeof error === 'string' ? error : (error instanceof Error ? error.message : "Falha ao enviar arquivo"));
     } finally {
       setIsUploading(false);
     }
@@ -497,7 +497,7 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p>Attach files</p>
+                  <p>Anexar arquivos</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
