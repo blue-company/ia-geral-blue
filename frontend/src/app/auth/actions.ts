@@ -62,7 +62,7 @@ export async function signUp(prevState: any, formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -73,6 +73,20 @@ export async function signUp(prevState: any, formData: FormData) {
       }
     },
   });
+
+  if (data.user) {
+  
+    // Chame a função RPC para inserir os dados adicionais
+    
+      const { error: profileError } = await supabase.rpc('insert_user_profile', {
+        user_id: data.user.id,
+        nome: nome,
+        celular: celular
+      });
+      if (profileError) {
+        return { message: "Erro ao inserir perfil:" + profileError.message || "Não foi possível criar a conta" };
+      }
+  }
 
   if (error) {
     return { message: error.message || "Não foi possível criar a conta" };

@@ -2528,6 +2528,15 @@ SET email_confirmed_at = NOW()
 WHERE email_confirmed_at IS NULL;
 
 
+
+
+
+
+
+
+
+
+
 create table public.usuario (
     id bigint primary key generated always as identity,
     user_id uuid references auth.users(id) on delete cascade,
@@ -2540,3 +2549,23 @@ alter table public.usuario enable row level security;
 
 -- Create an index on the user_id for better performance
 create index idx_usuario_user_id on public.usuario(user_id);
+
+
+
+create or replace function public.insert_user_profile(user_id uuid, nome text, celular text)
+returns void as $$
+begin
+    insert into public.usuario (user_id, nome, celular)
+    values (user_id, nome, celular);
+end;
+$$ language plpgsql;
+
+grant usage on schema public to authenticated;
+
+GRANT EXECUTE ON FUNCTION public.insert_user_profile(uuid, text, text) TO authenticated;
+GRANT INSERT ON public.usuario TO authenticated;
+CREATE POLICY "Allow authenticated users to insert their own profile"
+ON public.usuario
+FOR INSERT
+TO authenticated
+WITH CHECK (user_id = auth.uid());

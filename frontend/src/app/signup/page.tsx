@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
@@ -64,6 +65,20 @@ function SignupForm() {
         }
       });
       
+      if (data.user) {
+  
+        // Chame a função RPC para inserir os dados adicionais
+        
+          const { error: profileError } = await supabase.rpc('insert_user_profile', {
+            user_id: data.user.id,
+            nome: nome,
+            celular: celular
+          });
+          if (profileError) {
+            console.error('Erro ao inserir perfil:', profileError);
+          }
+      }
+
       if (error) {
         throw error;
       }
@@ -125,15 +140,21 @@ function SignupForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="celular">Celular</Label>
-              <Input
+              <PhoneInput
                 id="celular"
-                type="celular"
+                name="celular"
                 placeholder="Celular"
                 value={celular}
                 onChange={(e) => setCelular(e.target.value)}
                 required
               />
             </div>
+
+            <div className="relative flex items-center my-6">
+              <div className="flex-grow border-t border-border"></div>
+              <div className="flex-grow border-t border-border"></div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

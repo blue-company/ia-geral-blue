@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import GoogleSignIn from "@/components/GoogleSignIn";
 import { FlickeringGrid } from "@/components/home/ui/flickering-grid";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -330,16 +331,21 @@ function LoginContent() {
 
                   {isSignUp && (
                     <div className="space-y-2">
-                    <Input
+                    <PhoneInput
                       id="celular"
                       name="celular"
-                      type="celular"
                       placeholder="Celular"
                       className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
                       required
                     />
                   </div>
                   )}
+
+                  {/* Divider */}
+                  <div className="relative flex items-center my-6">
+                    <div className="flex-grow border-t border-border"></div>
+                    <div className="flex-grow border-t border-border"></div>
+                  </div>
                   
                   {/* Email field */}
                   <div className="space-y-2">

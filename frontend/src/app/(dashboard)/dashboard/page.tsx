@@ -294,8 +294,23 @@ function DashboardContent() {
 
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[560px] max-w-[90%]">
             <div className="text-center mb-10">
-              <h1 className="text-4xl font-medium text-foreground mb-2">Olá! </h1>
-              <h2 className="text-2xl text-muted-foreground">O que você gostaria que o AgentZero fizesse hoje?</h2>
+              <style jsx>{`
+                @keyframes fadeIn {
+                  from { opacity: 0; }
+                  to { opacity: 1; }
+                }
+                .welcome-title {
+                  opacity: 0;
+                  animation: fadeIn 0.5s ease-in-out forwards;
+                  animation-delay: 0.5s;
+                }
+              `}</style>
+              {user && (
+                <h1 className="text-4xl font-medium text-foreground mb-2 welcome-title">
+                  Olá, {user.user_metadata?.nome ? user.user_metadata.nome.split(' ')[0] : ''}!
+                </h1>
+              )}
+              <h2 className="text-2xl text-muted-foreground">O que você gostaria que o AgentZero fizesse hoje?</h2>
             </div>
             
             <ChatInput 
