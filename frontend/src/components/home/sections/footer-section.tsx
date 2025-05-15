@@ -23,17 +23,25 @@ export function FooterSection() {
     (resolvedTheme === "dark" ? "/agent0-logo-white.png" : "/agent0-logo.png");
 
   return (
-    <footer id="footer" className="w-full py-6 border-t border-blue-900/30 bg-black/50 backdrop-blur-sm">
+    <footer id="footer" className="w-full py-6 border-t border-purple-900/30 bg-black/50 backdrop-blur-sm">
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-        <div className="text-blue-400 font-medium text-lg mb-4 md:mb-0">
-          Agent ZERO
+        <div className="text-purple-400 font-medium text-lg mb-4 md:mb-0">
+          Thanus
         </div>
         
-        <div className="flex space-x-6 text-sm text-blue-300">
-          <a href="#" className="hover:text-blue-400 transition-colors">About</a>
-          <a href="#" className="hover:text-blue-400 transition-colors">Terms</a>
-          <a href="#" className="hover:text-blue-400 transition-colors">Privacy</a>
-          <a href="#" className="hover:text-blue-400 transition-colors">Contact</a>
+        <div className="flex space-x-6 text-sm text-purple-300">
+          <Link href="/sobre" className="hover:text-purple-400 transition-colors">
+            Sobre
+          </Link>
+          <Link href="/termos" className="hover:text-purple-400 transition-colors">
+            Termos
+          </Link>
+          <Link href="/privacidade" className="hover:text-purple-400 transition-colors">
+            Privacidade
+          </Link>
+          <Link href="/contato" className="hover:text-purple-400 transition-colors">
+            Contato
+          </Link>
         </div>
       </div>
     </footer>

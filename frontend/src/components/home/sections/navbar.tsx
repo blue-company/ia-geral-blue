@@ -104,8 +104,8 @@ export function Navbar() {
     (resolvedTheme === "dark" ? "/agent0-logo-white.png" : "/agent0-logo.png");
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-transparent">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 bg-transparent">
+    <header className="sticky top-0 z-50 w-full bg-black transition-all duration-300">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center ml-[-25px]">
         <img src="/agent-circles-logo-new.png" alt="THANUS Logo" className="h-14 w-14" />
         </Link>

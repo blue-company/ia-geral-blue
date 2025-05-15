@@ -17,7 +17,7 @@ export function InventuAILogo() {
     <div className="flex h-6 w-6 items-center justify-center flex-shrink-0">
       <Image
         src="/agent-circles-logo-new.png"
-        alt="Agent ZERO"
+        alt="Thanus"
         width={24}
         height={24}
         priority

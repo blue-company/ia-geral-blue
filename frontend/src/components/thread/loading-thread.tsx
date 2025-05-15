@@ -54,7 +54,7 @@ export function LoadingThread({ message = '' }: LoadingThreadProps) {
           <div className="flex flex-col gap-2 max-w-3xl mx-auto">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-10 h-10 mt-2 rounded-md flex items-center justify-center overflow-hidden ml-auto mr-2">
-                <Image src="/agent_eye_buddy.png" alt="Agent ZERO" width={35} height={35} className="object-contain opacity-70" priority unoptimized />
+                <Image src="/agent_eye_buddy.png" alt="Thanus" width={35} height={35} className="object-contain opacity-70" priority unoptimized />
               </div>
               <div className="flex-1">
                 <div className="inline-flex max-w-[90%] rounded-lg bg-muted/5 px-4 py-3 text-sm">
