@@ -273,7 +273,7 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                         <div className="flex h-full items-center justify-center">
                             <div className="flex flex-col items-center gap-3 text-center">
                                 <div className="flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center overflow-hidden">
-                                    <Image src="/agent_eye_buddy.png" alt="AgentZero" width={40} height={40} className="object-contain opacity-70" priority unoptimized />
+                                    <Image src="/agent_eye_buddy.png" alt="Thanus" width={40} height={40} className="object-contain opacity-70" priority unoptimized />
                                 </div>
                                 <div className="flex items-center gap-1 text-primary/80">
                                     <span className="animate-pulse">•</span>
@@ -281,7 +281,7 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                                     <span className="animate-pulse animation-delay-400">•</span>
                                 </div>
                                 <div className="text-muted-foreground mt-2">
-                                    {readOnly ? "No messages to display." : "AgentZero está prestes a te surpreender..."}
+                                    {readOnly ? "No messages to display." : "Thanus está prestes a te surpreender..."}
                                 </div>
                             </div>
                         </div>
@@ -628,7 +628,7 @@ export const ThreadContent: React.FC<ThreadContentProps> = ({
                                     <div ref={latestMessageRef}>
                                         <div className="flex items-start gap-3">
                                             <div className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center overflow-hidden bg-primary/10">
-                                                <Image src="/agent_eye_buddy.png" alt="AgentZero" width={28} height={28} className="object-contain" />
+                                                <Image src="/agent_eye_buddy.png" alt="Thanus" width={28} height={28} className="object-contain" />
                                             </div>
                                             <div className="flex-1 space-y-2">
                                                 <div className="max-w-[90%] px-4 py-3 text-sm">

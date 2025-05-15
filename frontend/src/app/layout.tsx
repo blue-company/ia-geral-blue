@@ -51,15 +51,15 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "InventuAI - AgentZero",
-    description: "AgentZero é um assistente de IA que ajuda você a realizar tarefas do mundo real com facilidade por meio de uma conversa natural.",
+    title: "InventuAI - Thanus",
+    description: "Thanus é um assistente de IA que ajuda você a realizar tarefas do mundo real com facilidade por meio de uma conversa natural.",
     url: siteConfig.url,
     siteName: "InventuAI",
     images: [{
       url: "/banner.png",
       width: 1200,
       height: 630,
-      alt: "InventuAI - AgentZero",
+      alt: "InventuAI - Thanus",
       type: "image/png",
     }],
     locale: "en_US",
@@ -67,15 +67,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "InventuAI - AgentZero",
-    description: "AgentZero é um assistente de IA que ajuda você a realizar tarefas do mundo real com facilidade por meio de uma conversa natural.",
+    title: "InventuAI - Thanus",
+    description: "Thanus é um assistente de IA que ajuda você a realizar tarefas do mundo real com facilidade por meio de uma conversa natural.",
     creator: "@InventuAI",
     site: "@InventuAI",
     images: [{
       url: "/banner.png",
       width: 1200,
       height: 630,
-      alt: "InventuAI - AgentZero",
+      alt: "InventuAI - Thanus",
     }],
   },
   icons: {

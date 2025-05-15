@@ -310,7 +310,7 @@ function DashboardContent() {
                   Olá, {user.user_metadata?.nome ? user.user_metadata.nome.split(' ')[0] : ''}!
                 </h1>
               )}
-              <h2 className="text-2xl text-muted-foreground">O que você gostaria que o AgentZero fizesse hoje?</h2>
+              <h2 className="text-2xl text-muted-foreground">O que você gostaria que o Thanus fizesse hoje?</h2>
             </div>
             
             <ChatInput 

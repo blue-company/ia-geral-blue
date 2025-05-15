@@ -17,7 +17,7 @@ export function Agent0Logo() {
     <div className="flex h-6 w-6 items-center justify-center flex-shrink-0">
       <Image
         src="/agent0-symbol.png"
-        alt="AgentZero"
+        alt="Thanus"
         width={24}
         height={24}
         className={`${mounted && theme === 'dark' ? 'invert' : ''}`}

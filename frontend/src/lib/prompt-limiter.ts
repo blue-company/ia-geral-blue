@@ -42,7 +42,7 @@ const MAX_PROMPTS_PER_DAY = 6;
 const EXTRA_PROMPTS_PER_INVITE = 1;
 
 // Chave para armazenar no localStorage (fallback)
-const STORAGE_KEY = 'agentzero-prompt-usage';
+const STORAGE_KEY = 'thanus-prompt-usage';
 
 /**
  * Obtém a data atual no formato YYYY-MM-DD

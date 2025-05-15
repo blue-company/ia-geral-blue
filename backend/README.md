@@ -1,4 +1,4 @@
-# AgentZero Backend
+# Thanus Backend
 
 ## Running the backend
 

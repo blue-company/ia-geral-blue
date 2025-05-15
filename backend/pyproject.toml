@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "AgentZero"
+name = "Thanus"
 version = "1.0"
-description = "agente de ia geral AgentZero"
+description = "agente de ia geral Thanus"
 authors = ["marko-kraemer <mail@markokraemer.com>"]
 readme = "README.md"
 license = "MIT"
-homepage = "https://www.AgentZero.so/"
-repository = "https://github.com/InventuAI-ai/AgentZero"
+homepage = "https://www.thanus.ai/"
+repository = "https://github.com/InventuAI-ai/Thanus"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

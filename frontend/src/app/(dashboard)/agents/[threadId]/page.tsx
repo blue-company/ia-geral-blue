@@ -1006,7 +1006,7 @@ export default function ThreadPage({
   useEffect(() => {
     if (projectName) {
       // Update document title when project name changes
-      document.title = `${projectName} | AgentZero`;
+      document.title = `${projectName} | Thanus`;
 
       // Update meta tags for SEO
       const metaDescription = document.querySelector(
@@ -1022,7 +1022,7 @@ export default function ThreadPage({
       // Update OpenGraph tags if they exist
       const ogTitle = document.querySelector('meta[property="og:title"]');
       if (ogTitle) {
-        ogTitle.setAttribute('content', `${projectName} | AgentZero`);
+        ogTitle.setAttribute('content', `${projectName} | Thanus`);
       }
 
       const ogDescription = document.querySelector(
