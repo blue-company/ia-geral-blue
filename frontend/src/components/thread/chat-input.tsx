@@ -263,8 +263,8 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
   // New function to handle files locally when there's no sandboxId
   const handleLocalFiles = (files: File[]) => {
     const filteredFiles = files.filter(file => {
-      if (file.size > 50 * 1024 * 1024) {
-        toast.error(`File size exceeds 50MB limit: ${file.name}`);
+      if (file.size > 100 * 1024 * 1024) {
+        toast.error(`O tamanho do arquivo excede o limite de 100MB: ${file.name}`);
         return false;
       }
       return true;
@@ -540,7 +540,7 @@ export const ChatInput = forwardRef<ChatInputHandles, ChatInputProps>(({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p>{isAgentRunning ? 'Stop agent' : 'Send message'}</p>
+                <p>{isAgentRunning ? 'Parar agente' : 'Enviar mensagem'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
