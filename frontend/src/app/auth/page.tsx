@@ -229,7 +229,7 @@ useEffect(() => {
                     <MailCheck className="h-12 w-12 text-green-500 dark:text-green-400" />
                   </div>
                   
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text mb-4">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500 text-transparent bg-clip-text mb-4">
                     Verifique seu e-mail
                   </h1>
                   
@@ -293,7 +293,7 @@ useEffect(() => {
                 <span className="font-medium text-muted-foreground text-xs tracking-wide">Voltar para a página inicial</span>
               </Link>
               
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tighter text-center text-balance bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500 text-transparent bg-clip-text">
                 {isSignUp ? "Junte-se ao Thanus" : "Bem-vindo de volta"}
               </h1>
               <p className="text-base md:text-lg text-center text-muted-foreground font-medium text-balance leading-relaxed tracking-tight mt-2 mb-6">
@@ -483,7 +483,7 @@ useEffect(() => {
         <DialogContent className="sm:max-w-md rounded-xl bg-black border border-blue-900/30 text-white">
           <DialogHeader>
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-xl font-medium bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">Redefinir Senha</DialogTitle>
+              <DialogTitle className="text-xl font-medium bg-gradient-to-r from-purple-300 via-purple-400 to-purple-500 text-transparent bg-clip-text">Redefinir Senha</DialogTitle>
               <button 
                 onClick={() => setForgotPasswordOpen(false)}
                 className="rounded-full p-1 hover:bg-muted transition-colors"
