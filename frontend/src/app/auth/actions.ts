@@ -9,11 +9,11 @@ export async function signIn(prevState: any, formData: FormData) {
   const returnUrl = formData.get("returnUrl") as string | undefined;
   
   if (!email || !email.includes('@')) {
-    return { message: "Please enter a valid email address" };
+    return { message: "Por favor insira um email" };
   }
   
   if (!password || password.length < 6) {
-    return { message: "Password must be at least 6 characters" };
+    return { message: "Senha deve ter pelo menos 6 caracteres" };
   }
 
   const supabase = await createClient();
@@ -24,7 +24,7 @@ export async function signIn(prevState: any, formData: FormData) {
   });
 
   if (error) {
-    return { message: error.message || "Could not authenticate user" };
+    return { message: error.message || "Não foi possível autenticar o usuário" };
   }
 
   // Use client-side navigation instead of server-side redirect
@@ -33,21 +33,31 @@ export async function signIn(prevState: any, formData: FormData) {
 
 export async function signUp(prevState: any, formData: FormData) {
   const origin = formData.get("origin") as string;
+  const nome = formData.get("nome") as string;
+  const celular = formData.get("celular") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
   const returnUrl = formData.get("returnUrl") as string | undefined;
   
+  if (!nome) {
+    return { message: "Por favor insira um nome" };
+  }
+
+  if (!celular) {
+    return { message: "Por favor insira um celular" };
+  }
+
   if (!email || !email.includes('@')) {
-    return { message: "Please enter a valid email address" };
+    return { message: "Por favor insira um email" };
   }
   
   if (!password || password.length < 6) {
-    return { message: "Password must be at least 6 characters" };
+    return { message: "Senha deve ter pelo menos 6 caracteres" };
   }
 
   if (password !== confirmPassword) {
-    return { message: "Passwords do not match" };
+    return { message: "As senhas não coincidem" };
   }
 
   const supabase = await createClient();
@@ -57,11 +67,15 @@ export async function signUp(prevState: any, formData: FormData) {
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback?returnUrl=${returnUrl}`,
+      data: {
+        nome: nome,
+        celular: celular
+      }
     },
   });
 
   if (error) {
-    return { message: error.message || "Could not create account" };
+    return { message: error.message || "Não foi possível criar a conta" };
   }
 
   // Try to sign in immediately
@@ -71,7 +85,7 @@ export async function signUp(prevState: any, formData: FormData) {
   });
 
   if (signInError) {
-    return { message: "Account created! Check your email to confirm your registration." };
+    return { message: "Conta criada! Verifique seu email para confirmar seu cadastro." };
   }
 
   // Use client-side navigation instead of server-side redirect
@@ -83,7 +97,7 @@ export async function forgotPassword(prevState: any, formData: FormData) {
   const origin = formData.get("origin") as string;
   
   if (!email || !email.includes('@')) {
-    return { message: "Please enter a valid email address" };
+    return { message: "Por favor insira um email" };
   }
 
   const supabase = await createClient();
@@ -93,12 +107,12 @@ export async function forgotPassword(prevState: any, formData: FormData) {
   });
 
   if (error) {
-    return { message: error.message || "Could not send password reset email" };
+    return { message: error.message || "Não foi possível enviar o email de redefinição de senha" };
   }
 
   return { 
     success: true, 
-    message: "Check your email for a password reset link" 
+    message: "Verifique seu email para redefinir sua senha" 
   };
 }
 
@@ -107,11 +121,11 @@ export async function resetPassword(prevState: any, formData: FormData) {
   const confirmPassword = formData.get("confirmPassword") as string;
   
   if (!password || password.length < 6) {
-    return { message: "Password must be at least 6 characters" };
+    return { message: "Senha deve ter pelo menos 6 caracteres" };
   }
 
   if (password !== confirmPassword) {
-    return { message: "Passwords do not match" };
+    return { message: "As senhas não coincidem" };
   }
 
   const supabase = await createClient();
@@ -121,12 +135,12 @@ export async function resetPassword(prevState: any, formData: FormData) {
   });
 
   if (error) {
-    return { message: error.message || "Could not update password" };
+    return { message: error.message || "Não foi possível atualizar a senha" };
   }
 
   return { 
     success: true, 
-    message: "Password updated successfully" 
+    message: "Senha atualizada com sucesso" 
   };
 }
 
@@ -135,7 +149,7 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
   
   if (error) {
-    return { message: error.message || "Could not sign out" };
+    return { message: error.message || "Não foi possível fazer logout" };
   }
 
   return redirect("/");

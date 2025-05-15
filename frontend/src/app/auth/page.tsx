@@ -313,6 +313,33 @@ function LoginContent() {
                     </span>
                     <div className="flex-grow border-t border-border"></div>
                   </div>
+
+
+                  {isSignUp && (
+                    <div className="space-y-2">
+                    <Input
+                      id="nome"
+                      name="nome"
+                      type="text"
+                      placeholder="Nome"
+                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                      required
+                    />
+                  </div>
+                  )}
+
+                  {isSignUp && (
+                    <div className="space-y-2">
+                    <Input
+                      id="celular"
+                      name="celular"
+                      type="celular"
+                      placeholder="Celular"
+                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                      required
+                    />
+                  </div>
+                  )}
                   
                   {/* Email field */}
                   <div className="space-y-2">

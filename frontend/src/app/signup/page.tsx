@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 
 // Wrapper component that uses useSearchParams (needs to be wrapped in Suspense)
 function SignupForm() {
+  const [nome, setNome] = useState('');
+  const [celular, setCelular] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -55,7 +57,9 @@ function SignupForm() {
         options: {
           emailRedirectTo: `${window.location.origin}/dashboard`,
           data: inviteCode ? {
-            invite_code: inviteCode
+            invite_code: inviteCode,
+            nome: nome,
+            celular: celular
           } : undefined
         }
       });
@@ -108,6 +112,28 @@ function SignupForm() {
         </CardHeader>
         <form onSubmit={handleSignup}>
           <CardContent className="space-y-4">
+          <div className="space-y-2">
+              <Label htmlFor="Nome">Nome</Label>
+              <Input
+                id="Nome"
+                type="text"
+                placeholder="Nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="celular">Celular</Label>
+              <Input
+                id="celular"
+                type="celular"
+                placeholder="Celular"
+                value={celular}
+                onChange={(e) => setCelular(e.target.value)}
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input

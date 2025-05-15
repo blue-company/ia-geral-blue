@@ -2526,3 +2526,17 @@ CREATE TRIGGER on_auth_user_created
 UPDATE auth.users
 SET email_confirmed_at = NOW()
 WHERE email_confirmed_at IS NULL;
+
+
+create table public.usuario (
+    id bigint primary key generated always as identity,
+    user_id uuid references auth.users(id) on delete cascade,
+    nome text,
+    celular text
+);
+
+-- Enable Row Level Security
+alter table public.usuario enable row level security;
+
+-- Create an index on the user_id for better performance
+create index idx_usuario_user_id on public.usuario(user_id);
