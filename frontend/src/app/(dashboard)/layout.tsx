@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sidebar"
 // import { PricingAlert } from "@/components/billing/pricing-alert"
 import { MaintenanceAlert } from "@/components/maintenance-alert"
+import { StaticScatteredParticles } from "@/components/ui/static-scattered-particles"
 import { useAccounts } from "@/hooks/use-accounts"
 import { useAuth } from "@/components/AuthProvider"
 import { useRouter } from "next/navigation"
@@ -84,6 +85,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
+      <StaticScatteredParticles />
       <SidebarLeft />
       <SidebarInset>
         <div className="bg-background">

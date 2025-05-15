@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/components/home/theme-provider";
+import "./background.css";
 import { siteConfig } from "@/lib/site";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -21,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "black",
+  themeColor: "#0a0814",
 };
 
 export const metadata: Metadata = {
@@ -112,6 +113,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans bg-background`}
       >
+                {/* Deep space background for all pages */}
+                <div className="stars-background">
+          {/* Base color - very dark purple/black */}
+          <div className="bg-dark-space"></div>
+          
+          {/* Subtle purple glow in the center */}
+          <div className="purple-glow"></div>
+          
+          {/* Animated stars */}
+          <div className="stars-layer stars-layer-1"></div>
+          <div className="stars-layer stars-layer-2"></div>
+          <div className="stars-layer stars-layer-3"></div>
+        </div>
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe 
@@ -125,7 +139,7 @@ export default function RootLayout({
         
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

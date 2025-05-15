@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/home";
 import { ArrowRight, Github, X, AlertCircle } from "lucide-react";
 import { FlickeringGrid } from "@/components/home/ui/flickering-grid";
 import { HeroVideoSection } from "@/components/home/sections/hero-video-section";
+import { ScatteredParticles } from "@/components/ui/scattered-particles";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useState, useEffect, useRef, FormEvent } from "react";
@@ -47,6 +48,7 @@ export function HeroSection() {
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const { scrollY } = useScroll();
   const [inputValue, setInputValue] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const router = useRouter();
   const { user, isLoading } = useAuth();
   const { billingError, handleBillingError, clearBillingError } = useBillingError();
@@ -212,39 +214,40 @@ export function HeroSection() {
   };
 
   return (
-    <section id="hero" className="w-full min-h-screen flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-blue-900 -z-10"></div>
+    <section id="hero" className="w-full min-h-screen flex items-start justify-center pt-[20vh] relative overflow-hidden">
       
-      {/* Radial glow effect */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(59,130,246,0.3)_0%,_rgba(0,0,0,0)_70%)] -z-10"></div>
+      {/* Scattered particles that come together on input focus, positioned higher */}
+      <ScatteredParticles offsetY={100} />
       
       <div className="container mx-auto px-4 text-center">
-        <div className="inline-block px-4 py-1.5 mb-4 text-xs font-medium bg-gradient-to-r from-blue-300 via-blue-400 to-blue-600 text-transparent bg-clip-text border border-blue-400/50 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]">
+        <div className="inline-block px-4 py-1.5 mb-4 text-xs font-medium text-gray-300 border border-gray-400/30 rounded-full shadow-[0_0_10px_rgba(120,120,255,0.2)]">
           Beta
         </div>
         
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-br from-blue-200 via-blue-400 to-blue-600 text-transparent bg-clip-text drop-shadow-sm">
-          Conheça o<br />Thanus
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
+          Conheça o<br />THANUS
         </h1>
         
-        <p className="mb-8 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 text-transparent bg-clip-text">
+        <p className="mb-8 text-gray-300">
         Super Agent
         </p>
         
-        <form onSubmit={handleSubmit} className="max-w-xl w-full mx-auto mt-8">
+        <form onSubmit={handleSubmit} className="max-w-xl w-full mx-auto mt-16">
           <div className="relative">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Pergunte qualquer coisa ao Agent ZERO..."
-              className="w-full px-6 py-4 bg-transparent border border-blue-400/30 rounded-full text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:shadow-[0_0_20px_rgba(59,130,246,0.25)] transition-all"
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setIsInputFocused(false)}
+              placeholder="Pergunte qualquer coisa ao THANUS..."
+              className="w-full px-6 py-4 bg-transparent border border-gray-400/30 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400/50 text-lg shadow-[0_0_15px_rgba(120,120,255,0.15)] hover:shadow-[0_0_20px_rgba(120,120,255,0.25)] transition-all"
             />
             <button 
               type="submit"
               disabled={!inputValue.trim() || isSubmitting}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-400 to-blue-600 text-white p-3 rounded-full hover:from-blue-500 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-gray-500 to-gray-700 text-white p-3 rounded-full hover:from-gray-600 hover:to-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Enviar"
             >
               {isSubmitting ? (
@@ -265,7 +268,7 @@ export function HeroSection() {
         <DialogContent className="sm:max-w-md rounded-xl bg-[#F3F4F6] dark:bg-[#F9FAFB]/[0.02] border border-border">
           <DialogHeader>
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-xl font-medium">Sign in to continue</DialogTitle>
+              <DialogTitle className="text-xl font-medium">Entre para continuar</DialogTitle>
               {/* <button 
                 onClick={() => setAuthDialogOpen(false)}
                 className="rounded-full p-1 hover:bg-muted transition-colors"
@@ -274,7 +277,7 @@ export function HeroSection() {
               </button> */}
             </div>
             <DialogDescription className="text-muted-foreground">
-              Sign in or create an account to talk with InventuAI
+              Entre ou crie uma conta para conversar com Thanus
             </DialogDescription>
           </DialogHeader>
           
@@ -298,7 +301,7 @@ export function HeroSection() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-[#F3F4F6] dark:bg-[#F9FAFB]/[0.02] text-muted-foreground">
-                or continue with email
+                ou continue com email
               </span>
             </div>
           </div>
@@ -331,9 +334,9 @@ export function HeroSection() {
               <SubmitButton
                 formAction={handleSignIn}
                 className="w-full h-12 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-md"
-                pendingText="Signing in..."
+                pendingText="Entrando..."
               >
-                Sign in
+                Entrar
               </SubmitButton>
               
               <Link
@@ -341,7 +344,7 @@ export function HeroSection() {
                 className="flex h-12 items-center justify-center w-full text-center rounded-full border border-border bg-background hover:bg-accent/20 transition-all"
                 onClick={() => setAuthDialogOpen(false)}
               >
-                Create new account
+                Criar nova conta
               </Link>
             </div>
 
@@ -351,17 +354,17 @@ export function HeroSection() {
                 className="text-sm text-primary hover:underline"
                 onClick={() => setAuthDialogOpen(false)}
               >
-                More sign in options
+                Mais opções de login
               </Link>
             </div>
           </form>
 
           <div className="mt-4 text-center text-xs text-muted-foreground">
-            By continuing, you agree to our{' '}
+            Ao continuar, você concorda com nossos{' '}
             <Link href="/terms" className="text-primary hover:underline">
-              Terms of Service
+              Termos de Serviço
             </Link>{' '}
-            and{' '}<Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+            e{' '}<Link href="/privacy" className="text-primary hover:underline">Política de Privacidade</Link>
           </div>
         </DialogContent>
       </Dialog>

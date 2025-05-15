@@ -1,0 +1,259 @@
+/* Deep space background */
+.stars-background {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+}
+
+/* Base color - very dark purple/black */
+.bg-dark-space {
+  position: absolute;
+  inset: 0;
+  background-color: #0a0814;
+}
+
+/* Subtle purple glow in the center */
+.purple-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(50,20,90,0.15) 0%, rgba(0,0,0,0) 70%);
+}
+
+/* Animated stars */
+.stars-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.stars-layer-1 {
+  background-image: 
+    radial-gradient(1px 1px at 1489px 1340px, #fff, transparent),
+    radial-gradient(1px 1px at 1516px 318px, #fff, transparent),
+    radial-gradient(1px 1px at 1051px 52px, #fff, transparent),
+    radial-gradient(1px 1px at 1008px 1044px, #fff, transparent),
+    radial-gradient(1px 1px at 1440px 504px, #fff, transparent),
+    radial-gradient(1px 1px at 1169px 1569px, #fff, transparent),
+    radial-gradient(1px 1px at 296px 1137px, #fff, transparent),
+    radial-gradient(1px 1px at 1855px 146px, #fff, transparent),
+    radial-gradient(1px 1px at 353px 1068px, #fff, transparent),
+    radial-gradient(1px 1px at 1514px 1597px, #fff, transparent),
+    radial-gradient(1px 1px at 64px 580px, #fff, transparent),
+    radial-gradient(1px 1px at 900px 1026px, #fff, transparent),
+    radial-gradient(1px 1px at 1993px 1849px, #fff, transparent),
+    radial-gradient(1px 1px at 1964px 1453px, #fff, transparent),
+    radial-gradient(1px 1px at 1050px 665px, #fff, transparent),
+    radial-gradient(1px 1px at 1340px 1583px, #fff, transparent),
+    radial-gradient(1px 1px at 1547px 379px, #fff, transparent),
+    radial-gradient(1px 1px at 1254px 1748px, #fff, transparent),
+    radial-gradient(1px 1px at 1525px 1392px, #fff, transparent),
+    radial-gradient(1px 1px at 1569px 801px, #fff, transparent),
+    /* Additional stars for layer 1 */
+    radial-gradient(1px 1px at 200px 300px, #fff, transparent),
+    radial-gradient(1px 1px at 400px 700px, #fff, transparent),
+    radial-gradient(1px 1px at 600px 200px, #fff, transparent),
+    radial-gradient(1px 1px at 800px 500px, #fff, transparent),
+    radial-gradient(1px 1px at 1000px 300px, #fff, transparent),
+    radial-gradient(1px 1px at 1200px 700px, #fff, transparent),
+    radial-gradient(1px 1px at 1400px 200px, #fff, transparent),
+    radial-gradient(1px 1px at 1600px 500px, #fff, transparent),
+    radial-gradient(1px 1px at 1800px 300px, #fff, transparent),
+    radial-gradient(1px 1px at 2000px 700px, #fff, transparent),
+    radial-gradient(1px 1px at 100px 150px, #fff, transparent),
+    radial-gradient(1px 1px at 300px 450px, #fff, transparent),
+    radial-gradient(1px 1px at 500px 750px, #fff, transparent),
+    radial-gradient(1px 1px at 700px 50px, #fff, transparent),
+    radial-gradient(1px 1px at 900px 350px, #fff, transparent),
+    radial-gradient(1px 1px at 1100px 650px, #fff, transparent),
+    radial-gradient(1px 1px at 1300px 250px, #fff, transparent),
+    radial-gradient(1px 1px at 1500px 550px, #fff, transparent),
+    radial-gradient(1px 1px at 1700px 150px, #fff, transparent),
+    radial-gradient(1px 1px at 1900px 450px, #fff, transparent);
+  animation: starMove1 30s linear infinite;
+}
+
+.stars-layer-2 {
+  background-image: 
+    radial-gradient(1px 1px at 1358px 970px, #fff, transparent),
+    radial-gradient(1px 1px at 1640px 1722px, #fff, transparent),
+    radial-gradient(1px 1px at 1305px 1199px, #fff, transparent),
+    radial-gradient(1px 1px at 1738px 560px, #fff, transparent),
+    radial-gradient(1px 1px at 1594px 1903px, #fff, transparent),
+    radial-gradient(1px 1px at 1214px 1105px, #fff, transparent),
+    radial-gradient(1px 1px at 1852px 1514px, #fff, transparent),
+    radial-gradient(1px 1px at 1544px 887px, #fff, transparent),
+    radial-gradient(1px 1px at 1252px 1337px, #fff, transparent),
+    radial-gradient(1px 1px at 1187px 1573px, #fff, transparent),
+    radial-gradient(1px 1px at 1789px 1834px, #fff, transparent),
+    radial-gradient(1px 1px at 1916px 1229px, #fff, transparent),
+    radial-gradient(1px 1px at 1977px 1999px, #fff, transparent),
+    radial-gradient(1px 1px at 1936px 1878px, #fff, transparent),
+    radial-gradient(1px 1px at 1100px 1751px, #fff, transparent),
+    radial-gradient(1px 1px at 1655px 1597px, #fff, transparent),
+    radial-gradient(1px 1px at 1522px 1351px, #fff, transparent),
+    radial-gradient(1px 1px at 102px 751px, #fff, transparent),
+    radial-gradient(1px 1px at 1935px 1467px, #fff, transparent),
+    radial-gradient(1px 1px at 1310px 1040px, #fff, transparent),
+    /* Additional stars for layer 2 */
+    radial-gradient(1px 1px at 150px 250px, #fff, transparent),
+    radial-gradient(1px 1px at 350px 650px, #fff, transparent),
+    radial-gradient(1px 1px at 550px 150px, #fff, transparent),
+    radial-gradient(1px 1px at 750px 450px, #fff, transparent),
+    radial-gradient(1px 1px at 950px 250px, #fff, transparent),
+    radial-gradient(1px 1px at 1150px 650px, #fff, transparent),
+    radial-gradient(1px 1px at 1350px 150px, #fff, transparent),
+    radial-gradient(1px 1px at 1550px 450px, #fff, transparent),
+    radial-gradient(1px 1px at 1750px 250px, #fff, transparent),
+    radial-gradient(1px 1px at 1950px 650px, #fff, transparent),
+    radial-gradient(1px 1px at 50px 100px, #fff, transparent),
+    radial-gradient(1px 1px at 250px 400px, #fff, transparent),
+    radial-gradient(1px 1px at 450px 700px, #fff, transparent),
+    radial-gradient(1px 1px at 650px 100px, #fff, transparent),
+    radial-gradient(1px 1px at 850px 400px, #fff, transparent),
+    radial-gradient(1px 1px at 1050px 700px, #fff, transparent),
+    radial-gradient(1px 1px at 1250px 300px, #fff, transparent),
+    radial-gradient(1px 1px at 1450px 600px, #fff, transparent),
+    radial-gradient(1px 1px at 1650px 200px, #fff, transparent),
+    radial-gradient(1px 1px at 1850px 500px, #fff, transparent);
+  animation: starMove2 40s linear infinite;
+}
+
+.stars-layer-3 {
+  background-image: 
+    radial-gradient(1px 1px at 1333px 1143px, #fff, transparent),
+    radial-gradient(1px 1px at 1332px 1976px, #fff, transparent),
+    radial-gradient(1px 1px at 1020px 1261px, #fff, transparent),
+    radial-gradient(1px 1px at 1595px 1694px, #fff, transparent),
+    radial-gradient(1px 1px at 1883px 1524px, #fff, transparent),
+    radial-gradient(1px 1px at 1463px 1324px, #fff, transparent),
+    radial-gradient(1px 1px at 1814px 458px, #fff, transparent),
+    radial-gradient(1px 1px at 1388px 1116px, #fff, transparent),
+    radial-gradient(1px 1px at 1895px 1440px, #fff, transparent),
+    radial-gradient(1px 1px at 1123px 1426px, #fff, transparent),
+    radial-gradient(1px 1px at 1818px 1829px, #fff, transparent),
+    radial-gradient(1px 1px at 1222px 1262px, #fff, transparent),
+    radial-gradient(1px 1px at 1073px 1487px, #fff, transparent),
+    radial-gradient(1px 1px at 1893px 1578px, #fff, transparent),
+    radial-gradient(1px 1px at 1058px 1416px, #fff, transparent),
+    radial-gradient(1px 1px at 1958px 1255px, #fff, transparent),
+    radial-gradient(1px 1px at 1659px 1318px, #fff, transparent),
+    radial-gradient(1px 1px at 1498px 1343px, #fff, transparent),
+    radial-gradient(1px 1px at 1196px 1241px, #fff, transparent),
+    radial-gradient(1px 1px at 1095px 1629px, #fff, transparent),
+    /* Additional stars for layer 3 */
+    radial-gradient(1px 1px at 125px 275px, #fff, transparent),
+    radial-gradient(1px 1px at 325px 675px, #fff, transparent),
+    radial-gradient(1px 1px at 525px 175px, #fff, transparent),
+    radial-gradient(1px 1px at 725px 475px, #fff, transparent),
+    radial-gradient(1px 1px at 925px 275px, #fff, transparent),
+    radial-gradient(1px 1px at 1125px 675px, #fff, transparent),
+    radial-gradient(1px 1px at 1325px 175px, #fff, transparent),
+    radial-gradient(1px 1px at 1525px 475px, #fff, transparent),
+    radial-gradient(1px 1px at 1725px 275px, #fff, transparent),
+    radial-gradient(1px 1px at 1925px 675px, #fff, transparent),
+    radial-gradient(1px 1px at 75px 125px, #fff, transparent),
+    radial-gradient(1px 1px at 275px 425px, #fff, transparent),
+    radial-gradient(1px 1px at 475px 725px, #fff, transparent),
+    radial-gradient(1px 1px at 675px 125px, #fff, transparent),
+    radial-gradient(1px 1px at 875px 425px, #fff, transparent),
+    radial-gradient(1px 1px at 1075px 725px, #fff, transparent),
+    radial-gradient(1px 1px at 1275px 325px, #fff, transparent),
+    radial-gradient(1px 1px at 1475px 625px, #fff, transparent),
+    radial-gradient(1px 1px at 1675px 225px, #fff, transparent),
+    radial-gradient(1px 1px at 1875px 525px, #fff, transparent);
+  animation: starMove3 50s linear infinite;
+}
+
+/* Magenta particles container */
+.magenta-particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Scattered particles container */
+.scattered-particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Individual magenta particle */
+.magenta-particle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background-color: #ff00ff;
+  border-radius: 50%;
+  opacity: 0.7;
+  box-shadow: 0 0 3px 1px rgba(255, 0, 255, 0.5);
+  animation: magentaParticlesTwinkle 3s ease-in-out infinite;
+  transition: transform 1s ease-out;
+  will-change: transform;
+}
+
+/* Animations */
+@keyframes starMove1 {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-500px, -300px, 0); }
+}
+
+@keyframes starMove2 {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(500px, -400px, 0); }
+}
+
+@keyframes starMove3 {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-400px, 300px, 0); }
+}
+
+@keyframes magentaParticlesTwinkle {
+  0% {
+    opacity: 0.4;
+    box-shadow: 0 0 2px 1px rgba(255, 0, 255, 0.3);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 4px 1px rgba(255, 0, 255, 0.5);
+  }
+  100% {
+    opacity: 0.4;
+    box-shadow: 0 0 2px 1px rgba(255, 0, 255, 0.3);
+  }
+}
+
+@keyframes magentaParticlesRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation for particles transitioning */
+@keyframes particleTransition {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(var(--target-x), var(--target-y));
+  }
+}

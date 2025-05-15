@@ -104,22 +104,22 @@ export function Navbar() {
     (resolvedTheme === "dark" ? "/agent0-logo-white.png" : "/agent0-logo.png");
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-black/50 backdrop-blur-sm">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full bg-transparent">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 bg-transparent">
         <Link href="/" className="flex items-center ml-[-25px]">
-          <img src="/agent-circles-logo-new.png" alt="Agent ZERO Logo" className="h-14 w-14" />
+        <img src="/agent-circles-logo-new.png" alt="THANUS Logo" className="h-14 w-14" />
         </Link>
 
         <div className="flex items-center gap-2">
           <Link
             href="/auth"
-            className="px-4 py-1.5 text-sm font-medium text-blue-400 border border-blue-400 rounded-md hover:bg-blue-400/10 transition-colors"
+            className="px-4 py-1.5 text-sm font-medium text-gray-400 border border-gray-400 rounded-md hover:bg-gray-400/10 transition-colors"
           >
             Sign in
           </Link>
           <Link
             href="/auth?mode=signup"
-            className="px-4 py-1.5 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+            className="px-4 py-1.5 text-sm font-medium text-white bg-gray-500 rounded-md hover:bg-gray-600 transition-colors"
           >
             Sign up
           </Link>
@@ -131,7 +131,7 @@ export function Navbar() {
         {isDrawerOpen && (
           <>
             <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              className="fixed inset-0 bg-gray-500/30 backdrop-blur-sm"
               initial="hidden"
               animate="visible"
               exit="exit"
@@ -151,7 +151,7 @@ export function Navbar() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <Link href="/" className="flex items-center ml-[-15px]">
-                    <img src="/agent-circles-logo-new.png" alt="Agent ZERO Logo" className="h-14 w-14" />
+                  <img src="/agent-circles-logo-new.png" alt="THANUS Logo" className="h-14 w-14" />
                   </Link>
                   <button
                     onClick={toggleDrawer}
@@ -208,7 +208,7 @@ export function Navbar() {
                     <>
                       <Link
                         href="/auth"
-                        className="bg-blue-500 hover:bg-blue-600 text-white h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] transition-all ease-out active:scale-95 mb-2"
+                        className="bg-gray-500 hover:bg-gray-600 text-white h-8 flex items-center justify-center text-sm font-normal tracking-wide rounded-full w-full px-4 shadow-[inset_0_1px_2px_rgba(255,255,255,0.25),0_3px_3px_-1.5px_rgba(16,24,40,0.06),0_1px_1px_rgba(16,24,40,0.08)] border border-white/[0.12] transition-all ease-out active:scale-95 mb-2"
                       >
                         Criar conta
                       </Link>

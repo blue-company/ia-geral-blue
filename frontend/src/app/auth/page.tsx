@@ -13,6 +13,7 @@ import { signIn, signUp, forgotPassword } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, X, CheckCircle, AlertCircle, MailCheck, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { ScatteredParticles } from "@/components/ui/scattered-particles";
 
 import {
   Dialog,
@@ -55,7 +56,7 @@ function LoginContent() {
   // Registration success state
   const [registrationSuccess, setRegistrationSuccess] = useState(!!isSuccessMessage);
   const [registrationEmail, setRegistrationEmail] = useState("");
-  
+
   // Estado de recuperação de senha
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
@@ -69,11 +70,11 @@ function LoginContent() {
   }, []);
 
   // Set registration success state from URL params
-  useEffect(() => {
-    if (isSuccessMessage) {
-      setRegistrationSuccess(true);
-    }
-  }, [isSuccessMessage]);
+useEffect(() => {
+  if (isSuccessMessage) {
+    setRegistrationSuccess(true);
+  }
+}, [isSuccessMessage]);
 
   // Detect when scrolling is active to reduce animation complexity
   useEffect(() => {
@@ -137,7 +138,7 @@ function LoginContent() {
       window.location.href = result.redirectTo as string;
       return null; // Return null to prevent normal form action completion
     }
-    
+
     // Check if registration was successful but needs email verification
     if (result && typeof result === 'object' && 'message' in result) {
       const resultMessage = result.message as string;
@@ -154,7 +155,7 @@ function LoginContent() {
           
         window.history.pushState({ path: newUrl }, '', newUrl);
         
-        return result;
+      return result;
       }
     }
     
@@ -271,6 +272,7 @@ function LoginContent() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen w-full bg-black">
+      <ScatteredParticles />
       <div className="w-full">
         {/* Hero-like header with flickering grid */}
         <section className="w-full relative overflow-hidden">
