@@ -7,6 +7,7 @@ import { Menu } from "lucide-react";
 import { ChatInput, ChatInputHandles } from '@/components/thread/chat-input';
 import { initiateAgent, createThread, addUserMessage, startAgent, createProject, BillingError, PromptLimitExceededError } from "@/lib/api";
 import { PromptLimitModal } from "@/components/prompt-limit-modal";
+import { InviteCodeHandler } from "@/components/invite-code-handler";
 import { generateThreadName } from "@/lib/actions/threads";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -336,11 +337,14 @@ function DashboardContent() {
           
           {/* Prompt Limit Modal */}
           {user && (
-            <PromptLimitModal
-              isOpen={showLimitModal}
-              onClose={() => setShowLimitModal(false)}
-              userId={user.id}
-            />
+            <>
+              <PromptLimitModal
+                isOpen={showLimitModal}
+                onClose={() => setShowLimitModal(false)}
+                userId={user.id}
+              />
+              <InviteCodeHandler />
+            </>
           )}
         </div>
       </div>

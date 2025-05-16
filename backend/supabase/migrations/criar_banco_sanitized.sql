@@ -2569,3 +2569,40 @@ ON public.usuario
 FOR INSERT
 TO authenticated
 WITH CHECK (user_id = auth.uid());
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION gerar_codigo_convite()
+RETURNS TEXT AS $$
+DECLARE
+  resultado TEXT;
+BEGIN
+  resultado := LPAD(FLOOR(random() * 1000000)::TEXT, 6, '0');
+  RETURN resultado;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
+ALTER TABLE public."Convite"
+ADD COLUMN convite TEXT DEFAULT gerar_codigo_convite();
+
+
+
+
+
+ALTER TABLE public."Convite"
+ADD COLUMN data_consumo TIMESTAMP;
+
+
+
+ALTER TABLE public."Convite"
+ADD COLUMN dias_validade INTEGER DEFAULT 7;
