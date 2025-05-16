@@ -163,12 +163,12 @@ export function InviteCodeModal({ isOpen, onClose, userId, step, setStep }: Invi
             </p>
             <p>
               <a
-                href="https://buy.stripe.com/8x2eVe5XkcqOgos7CD"
+                href="https://buy.stripe.com/8x2eVe5XkcqOgos7CDenS0p"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-purple-600 hover:underline font-medium"
               >
-                https://buy.stripe.com/8x2eVe5XkcqOgos7CD
+                https://buy.stripe.com/8x2eVe5XkcqOgos7CDenS0p
               </a>
             </p>
             <p>
