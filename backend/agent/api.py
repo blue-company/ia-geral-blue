@@ -429,9 +429,7 @@ async def start_agent(
             status_code=404, 
             detail={
                 "error": "convite_necessario",
-                "message": prompt_message,
-                "current_count": current_count,
-                "max_allowed": max_allowed
+                "message": "Um convite é necessário para prosseguir no beta."
             }
         )
     elif validacao_convite_e_pagamento.status_code == 402:
@@ -440,9 +438,7 @@ async def start_agent(
             status_code=402, 
             detail={
                 "error": "vinculo_de_pagamento_pendente",
-                "message": prompt_message,
-                "current_count": current_count,
-                "max_allowed": max_allowed
+                "message": "É necessário realizar o vínculo de pagamento para utilizar o período de testes."
             }
         )
     else:

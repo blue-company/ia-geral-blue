@@ -165,32 +165,72 @@ function DashboardContent() {
   const handleSubmissionError = (error: any) => {
     console.error('Error during submission process:', error);
     
+    // Verificar primeiramente se é um erro de convite (404) com diferentes passos
+    if (error instanceof BillingError && error.status === 404 && error.detail?.errorType === 'convite_necessario') {
+      // Verificar qual o passo do erro de convite
+      const step = error.detail.step || 'input';
+      console.log(`[Dashboard] Erro de convite ${error.status}: passo ${step}`);
+      
+      if (step === 'input') {
+        // Passo 1: Usuário precisa inserir código de convite
+        console.log('[Dashboard] Exibindo modal de código de convite (passo input)');
+        window.dispatchEvent(new CustomEvent('needsInviteCode', { detail: { step: 'input' } }));
+      } else if (step === 'verification') {
+        // Passo 2: Usuário precisa verificar o código de convite
+        console.log('[Dashboard] Exibindo modal de verificação de convite (passo verification)');
+        window.dispatchEvent(new CustomEvent('needsInviteCode', { detail: { step: 'verification' } }));
+      } else {
+        // Fallback para casos não especificados - mostrar input padrão
+        console.log('[Dashboard] Exibindo modal de código padrão');
+        window.dispatchEvent(new CustomEvent('needsInviteCode', { detail: { step: 'input' } }));
+      }
+      return;
+    }
+    
+    // Verificar erro de pagamento pendente (402)
+    if (error instanceof BillingError && error.status === 402) {
+      console.log('[Dashboard] Pagamento pendente, exibindo modal de pagamento');
+      window.dispatchEvent(new CustomEvent('needsInviteCode', { detail: { step: 'paymentRequired' } }));
+      return;
+    }
+    
+    // Outros erros de BillingError
     if (error instanceof BillingError) {
-        // Delegate billing error handling
-        console.log("Handling BillingError:", error.detail);
-        handleBillingError({
-            message: error.detail.message || 'Monthly usage limit reached. Please upgrade your plan.',
-            currentUsage: error.detail.currentUsage as number | undefined,
-            limit: error.detail.limit as number | undefined,
-            subscription: error.detail.subscription || {
-                price_id: config.SUBSCRIPTION_TIERS.FREE.priceId,
-                plan_name: "Free"
-            }
-        });
-    } else if (error instanceof PromptLimitExceededError) {
-        // Tratar erro de limite de prompts excedido
-        console.log("Limite de prompts excedido:", error.message);
-        setShowLimitModal(true);
-    } else if (error?.status === 402 || (error?.message && error.message.includes('402'))) {
-        // Tratar erro 402 Payment Required (limite de prompts no backend)
-        console.log("Erro 402 Payment Required (possível limite de prompts):", error);
-        setShowLimitModal(true);
-    } else {
-        // Handle other errors
-        const isConnectionError = error instanceof TypeError && error.message.includes('Failed to fetch');
-        if (!isLocalMode() || isConnectionError) {
-            toast.error(error.message || "An unexpected error occurred");
+      // Delegate billing error handling
+      console.log("Handling BillingError:", error.detail);
+      handleBillingError({
+        message: error.detail.message || 'Monthly usage limit reached. Please upgrade your plan.',
+        currentUsage: error.detail.currentUsage as number | undefined,
+        limit: error.detail.limit as number | undefined,
+        subscription: error.detail.subscription || {
+          price_id: config.SUBSCRIPTION_TIERS.FREE.priceId,
+          plan_name: "Free"
         }
+      });
+      return;
+    } 
+    
+    // Erro de limite de prompts
+    if (error instanceof PromptLimitExceededError) {
+      // Tratar erro de limite de prompts excedido
+      console.log("Limite de prompts excedido:", error.message);
+      setShowLimitModal(true);
+      return;
+    } 
+    
+    // Possivel erro de limite de prompts genérico (402/426)
+    if (error?.status === 402 || error?.status === 426 || 
+        (error?.message && (error.message.includes('402') || error.message.includes('426')))) {
+      // Tratar erro 402/426 Payment Required/Upgrade Required (limite de prompts no backend)
+      console.log("Erro 402/426 Payment/Upgrade Required (possível limite de prompts):", error);
+      setShowLimitModal(true);
+      return;
+    } 
+    
+    // Handle other errors
+    const isConnectionError = error instanceof TypeError && error.message.includes('Failed to fetch');
+    if (!isLocalMode() || isConnectionError) {
+      toast.error(error.message || "An unexpected error occurred");
     }
     
     setIsSubmitting(false); // Reset submitting state on all errors
@@ -338,11 +378,6 @@ function DashboardContent() {
           {/* Prompt Limit Modal */}
           {user && (
             <>
-              <PromptLimitModal
-                isOpen={showLimitModal}
-                onClose={() => setShowLimitModal(false)}
-                userId={user.id}
-              />
               <InviteCodeHandler />
             </>
           )}

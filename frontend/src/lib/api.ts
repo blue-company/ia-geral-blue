@@ -540,13 +540,36 @@ export const startAgent = async (
     });
     
     if (!response.ok) {
-      // Check for 402 Payment Required or 426 Upgrade Required (prompt limit)
+      // Tratamento especial para 404 - Convite necessário (step 'input' no modal)
+      // Este erro ocorre quando o usuário precisa inserir um código de convite válido
+      if (response.status === 404) {
+        try {
+          const errorData = await response.json();
+          console.warn('[API] Convite necessário:', errorData);
+          
+          throw new BillingError(404, { 
+            ...errorData, 
+            errorType: 'convite_necessario', 
+            step: 'input', // Obrigatoriamente 'input' para mostrar o campo de entrada de código
+            message: errorData.message || 'Código de convite necessário' 
+          });
+        } catch (parseError) {
+          // Tratar erro de parsing como 404 genérico
+          throw new BillingError(404, { 
+            errorType: 'convite_necessario', 
+            step: 'input', // Mesmo com erro de parsing, manter o step 'input'
+            message: 'Código de convite necessário' 
+          });
+        }
+      }
+      
+      // Tratamento para 402 Payment Required (step 'paymentRequired' no modal) ou 426 Upgrade Required (prompt limit)
       if (response.status === 402 || response.status === 426) {
         try {
           const errorData = await response.json();
           console.error(`[API] Payment/Limit error starting agent (${response.status}):`, errorData);
           
-          // Verificar se é um erro de limite de prompts
+          // Primeiro, verificar se é um erro de limite de prompts (mostra o modal de limite)
           if (errorData.detail?.error === 'prompt_limit_exceeded' || errorData.error === 'prompt_limit_exceeded') {
             const detail = errorData.detail || errorData;
             console.log('[API] Prompt limit exceeded:', detail);
@@ -557,13 +580,18 @@ export const startAgent = async (
             );
           }
           
-          // Caso contrário, tratar como erro de pagamento normal
-          // Ensure detail exists and has a message property
+          // Caso contrário, tratar como erro de pagamento pendente (vinculado a convite)
+          // Este erro levará ao step 'paymentRequired' no modal de convite
           const detail = errorData.detail || errorData || { message: 'Payment Required' };
           if (typeof detail.message !== 'string') {
             detail.message = 'Payment Required'; // Default message if missing
           }
-          throw new BillingError(response.status, detail);
+          // Adicionar propriedades específicas para o erro de pagamento pendente
+          throw new BillingError(response.status, {
+            ...detail,
+            errorType: 'vinculo_de_pagamento_pendente', // Indica que o convite existe, mas falta pagamento
+            step: 'paymentRequired' // Direciona para o step correspondente no modal
+          });
         } catch (parseError) {
           // Se o erro for já um PromptLimitExceededError, apenas repassar
           if (parseError instanceof PromptLimitExceededError) {

@@ -13,12 +13,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from 'sonner';
 
+// Define consistent step types to match the InviteCodeHandler
+type InviteCodeStep = 'none' | 'input' | 'paymentRequired';
+
 interface InviteCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
   step: 'input' | 'paymentRequired';
-  setStep: (s: 'none' | 'input' | 'paymentRequired') => void;
+  setStep: (s: InviteCodeStep) => void;
 }
 
 export function InviteCodeModal({ isOpen, onClose, userId, step, setStep }: InviteCodeModalProps) {
@@ -90,7 +93,7 @@ export function InviteCodeModal({ isOpen, onClose, userId, step, setStep }: Invi
 
   return (
     <>
-      {/* Modal principal */}
+      {/* Modal principal para input inicial */}
       <Dialog open={isOpen && step === 'input' && !showWaitlistModal} onOpenChange={(open) => !open && handleClose()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

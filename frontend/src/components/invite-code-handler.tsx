@@ -4,9 +4,18 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { InviteCodeModal } from './invite-code-modal';
 
+// Define step types to ensure consistency across components
+type InviteCodeStep = 'none' | 'input' | 'paymentRequired';
+
+interface EventData {
+  detail: {
+    step: Exclude<InviteCodeStep, 'none'> // All steps except 'none'
+  }
+}
+
 export function InviteCodeHandler() {
   const [user, setUser] = useState<any>(null);
-  const [step, setStep] = useState<'none' | 'input' | 'paymentRequired'>('none');
+  const [step, setStep] = useState<InviteCodeStep>('none');
   const supabase = createClient();
 
   useEffect(() => {
@@ -40,6 +49,15 @@ export function InviteCodeHandler() {
     };
 
     getUser();
+    
+    // Listen for custom event to show modals from error handling
+    const handleNeedsInviteCode = (event: CustomEvent<EventData['detail']>) => {
+      console.log(`[INFO] Recebido evento needsInviteCode com step: ${event.detail.step}`);
+      setStep(event.detail.step);
+    };
+
+    // Add event listener for the custom event
+    window.addEventListener('needsInviteCode', handleNeedsInviteCode as EventListener);
 
     const authListener = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -53,6 +71,7 @@ export function InviteCodeHandler() {
 
     return () => {
       authListener.data.subscription.unsubscribe();
+      window.removeEventListener('needsInviteCode', handleNeedsInviteCode as EventListener);
     };
   }, []);
 
@@ -61,14 +80,19 @@ export function InviteCodeHandler() {
     setStep('none');
   };
 
-  if (!user || step === 'none') return null;
+  // Não mostrar nada se não houver usuário ou se o step for 'none'
+  if (!user || step === 'none' as InviteCodeStep) return null;
 
+  // Como step não é 'none' aqui (verificado pela condição acima)
+  // Podemos afirmar ao TypeScript que step é do tipo que o InviteCodeModal aceita
+  const currentStep = step as Exclude<InviteCodeStep, 'none'>;
+  
   return (
     <InviteCodeModal
       isOpen={step !== 'none'}
       onClose={handleClose}
       userId={user.id}
-      step={step}
+      step={currentStep}
       setStep={setStep}
     />
   );
