@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "InventuAI",
+  name: "Thanus",
   url: "https://inventu.ai/",
   description: "InventuAI",
   links: {
