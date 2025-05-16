@@ -1104,7 +1104,7 @@ export default function ThreadPage({
         setBillingData({
           currentUsage: result.subscription?.minutes_limit || 0,
           limit: result.subscription?.minutes_limit || 0,
-          message: result.message || 'Usage limit reached',
+          message: result.message || 'Período de teste expirado, contate-nos para contratar um plano.',
           accountId: project?.account_id || null,
         });
         setShowBillingAlert(true);
@@ -1234,15 +1234,6 @@ export default function ThreadPage({
           onDismiss={() => setShowBillingAlert(false)}
           isOpen={showBillingAlert}
         />
-        
-        {/* Prompt Limit Modal */}
-        {userId && (
-          <PromptLimitModal
-            isOpen={showLimitModal}
-            onClose={() => setShowLimitModal(false)}
-            userId={userId}
-          />
-        )}
       </div>
     );
   } else {
@@ -1369,14 +1360,6 @@ export default function ThreadPage({
           isOpen={showBillingAlert}
         />
         
-        {/* Prompt Limit Modal */}
-        {userId && (
-          <PromptLimitModal
-            isOpen={showLimitModal}
-            onClose={() => setShowLimitModal(false)}
-            userId={userId}
-          />
-        )}
       </div>
     );
   }

@@ -23,6 +23,7 @@ from sandbox.sandbox import create_sandbox, get_or_start_sandbox
 from services.llm import make_llm_api_call
 from utils.id_utils import normalize_uuid
 from utils.prompt_utils import check_prompt_limit
+import requests 
 
 # Initialize shared resources
 router = APIRouter()
@@ -403,20 +404,45 @@ async def start_agent(
         raise HTTPException(status_code=402, detail={"message": message, "subscription": subscription})
         
     # Verificar limite de prompts
-    can_make_prompt, prompt_message, current_count, max_allowed = await check_prompt_limit(client, formatted_user_id)
-    if not can_make_prompt:
-        logger.warning(f"Limite de prompts excedido para o usuário {formatted_user_id}: {current_count}/{max_allowed}")
-        # Usando código 402 (Payment Required) para limite de prompts excedido
-        # Este código é mais apropriado para indicar que o usuário precisa de um plano premium ou esperar até o próximo dia
+    #can_make_prompt, prompt_message, current_count, max_allowed = await check_prompt_limit(client, formatted_user_id)
+    #if not can_make_prompt:
+    #    logger.warning(f"Limite de prompts excedido para o usuário {formatted_user_id}: {current_count}/{max_allowed}")
+    #    # Usando código 402 (Payment Required) para limite de prompts excedido
+    #    # Este código é mais apropriado para indicar que o usuário precisa de um plano premium ou esperar até o próximo dia
+    #    raise HTTPException(
+    #        status_code=402, 
+    #        detail={
+    #            "error": "prompt_limit_exceeded",
+    #            "message": prompt_message,
+    #            "current_count": current_count,
+    #            "max_allowed": max_allowed
+    #        }
+    #    )
+
+    validacao_convite_e_pagamento = requests.get(f"https://n8n-blue.up.railway.app/webhook/ab889841-79cf-4dd2-a149-21734f5d97a5?user_id={user_id}")
+
+    if validacao_convite_e_pagamento.status_code == 200:
+        logger.info(f"Convite válido para o usuário {user_id}. Nenhum modal será exibido.")
+    elif validacao_convite_e_pagamento.status_code == 404:
+        logger.info(f"Nenhum convite encontrado. Exibindo modal de código.")
+        raise HTTPException(
+            status_code=404, 
+            detail={
+                "error": "convite_necessario",
+                "message": "Um convite é necessário para prosseguir no beta."
+            }
+        )
+    elif validacao_convite_e_pagamento.status_code == 402:
+        logger.info(f"Convite encontrado, mas pendente de pagamento. Exibindo modal de pagamento.")
         raise HTTPException(
             status_code=402, 
             detail={
-                "error": "prompt_limit_exceeded",
-                "message": prompt_message,
-                "current_count": current_count,
-                "max_allowed": max_allowed
+                "error": "vinculo_de_pagamento_pendente",
+                "message": "É necessário realizar o vínculo de pagamento para utilizar o período de testes."
             }
         )
+    else:
+        logger.warning(f"Resposta inesperada da API de verificação: {validacao_convite_e_pagamento.status_code}")
 
     active_run_id = await check_for_active_project_agent_run(client, project_id)
     if active_run_id:

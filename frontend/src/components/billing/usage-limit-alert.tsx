@@ -33,7 +33,7 @@ export function BillingErrorAlert({
             <AlertTriangle className="h-5 w-5 text-destructive" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-medium text-destructive mb-1">Usage Limit Reached</h3>
+            <h3 className="text-sm font-medium text-destructive mb-1">Período de teste expirado</h3>
             <p className="text-sm text-muted-foreground mb-3">{message}</p>
             <div className="flex gap-2">
               <Button
@@ -42,14 +42,14 @@ export function BillingErrorAlert({
                 onClick={onDismiss}
                 className="text-xs"
               >
-                Dismiss
+                Fechar
               </Button>
               <Button
                 size="sm"
-                onClick={() => router.push(`/settings/billing?accountId=${accountId}`)}
+                onClick={() => router.push(`/dashboard`)}
                 className="text-xs"
               >
-                Upgrade Plan
+                Continuar
               </Button>
             </div>
           </div>
