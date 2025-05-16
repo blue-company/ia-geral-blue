@@ -325,7 +325,7 @@ useEffect(() => {
                       name="nome"
                       type="text"
                       placeholder="Nome"
-                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                      className="h-12 rounded-full bg-purple-900/30 border border-purple-400/30 text-white placeholder-purple-300/70 focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-lg"
                       required
                     />
                   </div>
@@ -337,7 +337,7 @@ useEffect(() => {
                       id="celular"
                       name="celular"
                       placeholder="Celular"
-                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                      className="h-12 rounded-full bg-purple-900/30 border border-purple-400/30 text-white placeholder-purple-300/70 focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-lg"
                       required
                     />
                   </div>
@@ -356,7 +356,7 @@ useEffect(() => {
                       name="email"
                       type="email"
                       placeholder="Endereço de e-mail"
-                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                      className="h-12 rounded-full bg-purple-900/30 border border-purple-400/30 text-white placeholder-purple-300/70 focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-lg"
                       required
                     />
                   </div>
@@ -368,7 +368,7 @@ useEffect(() => {
                       name="password"
                       type="password"
                       placeholder="Senha"
-                      className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                      className="h-12 rounded-full bg-purple-900/30 border border-purple-400/30 text-white placeholder-purple-300/70 focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-lg"
                       required
                     />
                   </div>
@@ -381,7 +381,7 @@ useEffect(() => {
                         name="confirmPassword"
                         type="password"
                         placeholder="Confirme a senha"
-                        className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+                        className="h-12 rounded-full bg-purple-900/30 border border-purple-400/30 text-white placeholder-purple-300/70 focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-lg"
                         required
                       />
                     </div>
@@ -503,7 +503,7 @@ useEffect(() => {
               placeholder="Endereço de e-mail"
               value={forgotPasswordEmail}
               onChange={(e) => setForgotPasswordEmail(e.target.value)}
-              className="h-12 rounded-full bg-blue-900/30 border border-blue-400/30 text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-blue-400/50 text-lg"
+              className="h-12 rounded-full bg-purple-900/30 border border-purple-400/30 text-white placeholder-purple-300/70 focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-lg"
               required
             />
             
